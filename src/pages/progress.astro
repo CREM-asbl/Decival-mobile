@@ -1,13 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Icon from "../components/common/Icon.astro";
+import Button from "../components/common/Button.astro";
 
 // Note : les données seront chargées côté client via le store
 ---
 
 <Layout title="Progrès - Decival" currentPage="progress">
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">Votre progression</h1>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Votre progression</h1>
+      <Button id="exportButton" variant="secondary" size="sm">
+        <Icon name="download" class="w-4 h-4 mr-2" />
+        Exporter les résultats
+      </Button>
+    </div>
 
     <!-- Statistiques globales -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -106,6 +113,46 @@ import Icon from "../components/common/Icon.astro";
       </div>
     `;
   }
+
+  // Export des résultats en CSV
+  function exportResults() {
+    const history = testHistory.get();
+    const currentStats = stats.get();
+
+    // En-têtes pour les statistiques globales
+    let csvContent = "Statistiques globales\n";
+    csvContent += `Tests complétés,${currentStats.totalTests}\n`;
+    csvContent += `Score moyen,${Math.round(currentStats.averageScore)}%\n`;
+    csvContent += `Meilleur score,${Math.round(currentStats.bestScore)}%\n\n`;
+
+    // En-têtes pour l'historique des tests
+    csvContent += "Historique des tests\n";
+    csvContent += "Date,Type,Score,Questions correctes,Total questions\n";
+
+    // Données de l'historique
+    history.forEach((test) => {
+      const correctAnswers = test.items.filter((i) => i.isCorrect).length;
+      const date = new Date(test.startTime).toLocaleDateString();
+      const score = Math.round((correctAnswers / test.items.length) * 100);
+
+      csvContent += `${date},${test.type},${score}%,${correctAnswers},${test.items.length}\n`;
+    });
+
+    // Créer et télécharger le fichier
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "resultats-decival.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Écouteurs d'événements
+  document
+    .getElementById("exportButton")
+    ?.addEventListener("click", exportResults);
 
   // Écouter les changements dans les stores
   stats.subscribe(() => updateStats());
