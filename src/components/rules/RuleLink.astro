@@ -1,0 +1,25 @@
+---
+import Icon from "../common/Icon.astro";
+
+interface Props {
+  type: "addition" | "subtraction" | "multiplication" | "comparison";
+  showIcon?: boolean;
+}
+
+const { type, showIcon = true } = Astro.props;
+
+const titles = {
+  addition: "règles d'addition",
+  subtraction: "règles de soustraction",
+  multiplication: "tables de multiplication",
+  comparison: "règles de comparaison",
+};
+---
+
+<a
+  href={`/rules/${type}`}
+  class="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+>
+  {showIcon && <Icon name="book" class="w-4 h-4" />}
+  <span>Voir les {titles[type]}</span>
+</a>

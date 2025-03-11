@@ -1,0 +1,117 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Icon from "../components/common/Icon.astro";
+
+// Note : les données seront chargées côté client via le store
+---
+
+<Layout title="Progrès - Decival" currentPage="progress">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Votre progression</h1>
+
+    <!-- Statistiques globales -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="flex items-center gap-3 mb-2">
+          <Icon name="clipboard" class="w-5 h-5 text-accent" />
+          <h2 class="text-lg font-semibold">Tests complétés</h2>
+        </div>
+        <p class="text-2xl font-bold text-accent" id="totalTests">0</p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="flex items-center gap-3 mb-2">
+          <Icon name="chart" class="w-5 h-5 text-accent" />
+          <h2 class="text-lg font-semibold">Score moyen</h2>
+        </div>
+        <p class="text-2xl font-bold text-accent" id="averageScore">0%</p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="flex items-center gap-3 mb-2">
+          <Icon name="book" class="w-5 h-5 text-accent" />
+          <h2 class="text-lg font-semibold">Meilleur score</h2>
+        </div>
+        <p class="text-2xl font-bold text-accent" id="bestScore">0%</p>
+      </div>
+    </div>
+
+    <!-- Historique des tests -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="p-4 border-b">
+        <h2 class="text-xl font-semibold">Historique des tests</h2>
+      </div>
+      <div class="p-4" id="testHistory">
+        <p class="text-gray-500 text-center py-8">
+          Aucun test complété pour le moment
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { stats, testHistory } from "../stores/testStore";
+
+  // Mise à jour des statistiques
+  function updateStats() {
+    const currentStats = stats.get();
+    document.getElementById("totalTests")!.textContent =
+      currentStats.totalTests.toString();
+    document.getElementById("averageScore")!.textContent =
+      `${Math.round(currentStats.averageScore)}%`;
+    document.getElementById("bestScore")!.textContent =
+      `${Math.round(currentStats.bestScore)}%`;
+  }
+
+  // Mise à jour de l'historique
+  function updateHistory() {
+    const history = testHistory.get();
+    const historyContainer = document.getElementById("testHistory");
+
+    if (!historyContainer) return;
+
+    if (history.length === 0) {
+      historyContainer.innerHTML = `
+        <p class="text-gray-500 text-center py-8">Aucun test complété pour le moment</p>
+      `;
+      return;
+    }
+
+    historyContainer.innerHTML = `
+      <div class="space-y-4">
+        ${history
+          .map((test, index) => {
+            const score =
+              (test.items.filter((i) => i.isCorrect).length /
+                test.items.length) *
+              100;
+            const date = new Date(test.startTime).toLocaleDateString();
+            return `
+            <div class="border rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="font-semibold">Test #${history.length - index}</div>
+                <div class="text-sm text-gray-500">${date}</div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div>Score : <span class="font-bold text-accent">${Math.round(score)}%</span></div>
+                <div class="text-sm text-gray-600">
+                  ${test.items.filter((i) => i.isCorrect).length}/${test.items.length} correctes
+                </div>
+              </div>
+            </div>
+          `;
+          })
+          .join("")}
+      </div>
+    `;
+  }
+
+  // Écouter les changements dans les stores
+  stats.subscribe(() => updateStats());
+  testHistory.subscribe(() => updateHistory());
+
+  // Mise à jour initiale
+  updateStats();
+  updateHistory();
+</script>

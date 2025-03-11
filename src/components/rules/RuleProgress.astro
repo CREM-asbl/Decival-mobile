@@ -1,0 +1,81 @@
+---
+import { getRuleProgress } from "../../stores/ruleProgressStore";
+import Icon from "../common/Icon.astro";
+
+interface Props {
+  ruleId: string;
+  showDetails?: boolean;
+}
+
+const { ruleId, showDetails = false } = Astro.props;
+
+const progress = getRuleProgress(ruleId);
+const hasProgress = progress !== undefined;
+
+// Calculer le ratio de succès
+const successRatio = hasProgress
+  ? Math.round(
+      (progress.successCount /
+        (progress.successCount + progress.failureCount)) *
+        100,
+    )
+  : 0;
+
+// Déterminer le statut
+const status = hasProgress
+  ? progress.mastered
+    ? "Maîtrisé"
+    : successRatio >= 75
+      ? "En bonne voie"
+      : successRatio >= 50
+        ? "En progrès"
+        : "À travailler"
+  : "Pas encore commencé";
+
+// Couleurs en fonction du statut
+const colors = {
+  Maîtrisé: "text-green-600 bg-green-50",
+  "En bonne voie": "text-blue-600 bg-blue-50",
+  "En progrès": "text-yellow-600 bg-yellow-50",
+  "À travailler": "text-red-600 bg-red-50",
+  "Pas encore commencé": "text-gray-600 bg-gray-50",
+};
+---
+
+<div class={`rounded-lg p-3 ${colors[status]}`}>
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <Icon name="chart" class="w-4 h-4" />
+      <span class="font-medium">{status}</span>
+    </div>
+    {
+      hasProgress && (
+        <span class="text-sm">
+          {progress.successCount}/
+          {progress.successCount + progress.failureCount}
+        </span>
+      )
+    }
+  </div>
+
+  {
+    showDetails && hasProgress && (
+      <div class="mt-3 space-y-2">
+        <div class="w-full bg-white rounded-full h-2">
+          <div
+            class="bg-current h-2 rounded-full transition-all"
+            style={`width: ${successRatio}%`}
+          />
+        </div>
+        <p class="text-sm">
+          {progress.lastAttemptDate && (
+            <span>
+              Dernier essai :{" "}
+              {new Date(progress.lastAttemptDate).toLocaleDateString()}
+            </span>
+          )}
+        </p>
+      </div>
+    )
+  }
+</div>

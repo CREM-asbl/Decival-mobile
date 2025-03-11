@@ -1,0 +1,88 @@
+---
+import Input from "../common/Input.astro";
+import Button from "../common/Button.astro";
+import { AdditionItem } from "../../types/addition";
+
+interface Props {
+  item: AdditionItem;
+  onNext?: () => void;
+  isLastItem?: boolean;
+}
+
+const { item, isLastItem = false } = Astro.props;
+---
+
+<div
+  class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto"
+  role="group"
+  aria-labelledby="calculation-title"
+>
+  <div class="text-center mb-8">
+    <h2 id="calculation-title" class="sr-only">Calcul d'addition</h2>
+    <div
+      class="text-4xl font-bold mb-6 flex items-center justify-center gap-4"
+      aria-label={`${item.firstNumber} plus ${item.secondNumber}`}
+      role="math"
+    >
+      <span>{item.firstNumber}</span>
+      <span class="text-accent" aria-hidden="true">+</span>
+      <span>{item.secondNumber}</span>
+    </div>
+
+    <div class="w-full max-w-xs mx-auto">
+      <Input
+        type="number"
+        name="answer"
+        label="Votre réponse"
+        required
+        min={0}
+        max={999}
+        class="text-center text-2xl"
+        role="textbox"
+        aria-labelledby="calculation-title"
+      />
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-4">
+    <Button
+      type="submit"
+      variant="primary"
+      size="lg"
+      class="w-full sm:w-auto"
+      aria-label={isLastItem
+        ? "Terminer le test"
+        : "Valider et passer à la question suivante"}
+    >
+      {isLastItem ? "Terminer" : "Suivant"}
+    </Button>
+  </div>
+</div>
+
+<script>
+  const form = document.querySelector("form");
+  const input = document.querySelector(
+    'input[name="answer"]',
+  ) as HTMLInputElement;
+
+  if (form && input) {
+    // Focus sur l'input au chargement
+    input.focus();
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const answer = parseInt(input.value);
+
+      // Dispatch d'un événement custom avec la réponse
+      const event = new CustomEvent("answer-submitted", {
+        detail: { answer },
+        bubbles: true,
+      });
+      form.dispatchEvent(event);
+
+      // Reset du formulaire
+      input.value = "";
+      input.focus();
+    });
+  }
+</script>

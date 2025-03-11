@@ -1,49 +1,52 @@
-# Welcome to [Astro](https://astro.build)
+Portage du vieux projet Decival accessible dans le dossier ./old pour le rendre mobile.
+Le portage sera en HTML5 dans l'architecture Astro.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
+## Étapes de développement avec l'approche TDD (Test-Driven Development)
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### 1. Analyse préliminaire
+- [ ] Analyser l'application Decival existante et identifier les fonctionnalités clés
+- [ ] Déterminer les besoins spécifiques pour la version mobile
+- [ ] Définir l'architecture de l'application sous Astro
 
-![basics](https://user-images.githubusercontent.com/4677417/186188965-73453154-fdec-4d6b-9c34-cb35c248ae5b.png)
+### 2. Configuration de l'environnement de test
+- [ ] Installer et configurer un framework de tests (Jest, Vitest ou Playwright)
+- [ ] Mettre en place la structure des tests (dossier `/tests` ou `/src/__tests__`)
+- [ ] Configurer les tests pour les composants Astro
 
+### 3. Développement des composants UI principaux
+- [ ] **Étape 1**: Écrire les tests pour le composant A
+- [ ] Implémenter le composant A jusqu'à ce que les tests passent
+- [ ] **Étape 2**: Écrire les tests pour le composant B
+- [ ] Implémenter le composant B jusqu'à ce que les tests passent
+- [ ] Refactoriser le code tout en maintenant les tests au vert
 
-## 🚀 Project Structure
+### 4. Adaptation des fonctionnalités principales
+Pour chaque fonctionnalité du projet original à porter:
+- [ ] Écrire les tests correspondants
+- [ ] Implémenter la fonctionnalité dans l'architecture Astro
+- [ ] Vérifier que les tests passent
+- [ ] Refactoriser si nécessaire
 
-Inside of your Astro project, you'll see the following folders and files:
+### 5. Développement des fonctionnalités spécifiques mobile
+- [ ] Écrire des tests pour les interactions tactiles
+- [ ] Implémenter le responsive design (tests avec différentes tailles d'écran)
+- [ ] Tester et implémenter les fonctionnalités hors ligne
+- [ ] Optimiser les performances sur appareils mobiles
 
-```
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+### 6. Intégration et tests système
+- [ ] Écrire des tests d'intégration
+- [ ] Réaliser des tests end-to-end (E2E)
+- [ ] Corriger les bugs détectés
+- [ ] Optimiser les performances globales
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### 7. Tests utilisateurs et finitions
+- [ ] Réaliser des tests avec de vrais utilisateurs
+- [ ] Collecter et analyser les retours d'expérience
+- [ ] Apporter les ajustements finaux
+- [ ] Préparer la documentation utilisateur
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                | Action                                             |
-| :--------------------- | :------------------------------------------------- |
-| `npm install`          | Installs dependencies                              |
-| `npm run dev`          | Starts local dev server at `localhost:3000`        |
-| `npm run build`        | Build your production site to `./dist/`            |
-| `npm run preview`      | Preview your build locally, before deploying       |
-| `npm run astro ...`    | Run CLI commands like `astro add`, `astro preview` |
-| `npm run astro --help` | Get help using the Astro CLI                       |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### 8. Déploiement
+- [ ] Préparer la configuration de production
+- [ ] Déployer l'application
+- [ ] Effectuer des tests post-déploiement
+- [ ] Mettre en place un système de monitoring et d'analyse de performances

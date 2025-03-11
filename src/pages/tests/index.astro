@@ -1,0 +1,55 @@
+---
+import Button from "../../components/common/Button.astro";
+import Layout from "../../layouts/Layout.astro";
+
+const testTypes = [
+  {
+    id: "addition",
+    title: "Additions",
+    description: "Pratiquer les additions",
+    href: "/tests/addition",
+  },
+  {
+    id: "subtraction",
+    title: "Soustractions",
+    description: "Pratiquer les soustractions",
+    href: "/tests/subtraction",
+  },
+  {
+    id: "multiplication",
+    title: "Multiplications",
+    description: "Pratiquer les multiplications",
+    href: "/tests/multiplication",
+  },
+  {
+    id: "comparison",
+    title: "Comparaisons",
+    description: "Comparer des nombres",
+    href: "/tests/comparison",
+  },
+];
+---
+
+<Layout title="Tests - Decival" currentPage="tests">
+  <div class="max-w-lg mx-auto py-6 px-4">
+    <h1 class="text-2xl font-bold mb-6">Choisissez votre exercice</h1>
+
+    <div class="space-y-4">
+      {
+        testTypes.map((test) => (
+          <div class="bg-white rounded-lg shadow p-4">
+            <h2 class="text-xl font-semibold mb-2">{test.title}</h2>
+            <p class="text-gray-600 mb-4">{test.description}</p>
+            <div class="flex justify-end">
+              <a href={test.href} class="no-underline">
+                <Button variant="primary" size="md" type="link">
+                  Commencer
+                </Button>
+              </a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Layout>

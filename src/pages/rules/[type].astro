@@ -1,0 +1,64 @@
+---
+import RuleCard from "../../components/rules/RuleCard.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getRulesByType } from "../../stores/rulesStore";
+import type { RuleType } from "../../types/rules";
+
+export function getStaticPaths() {
+  return [
+    { params: { type: "addition" } },
+    { params: { type: "subtraction" } },
+    { params: { type: "multiplication" } },
+    { params: { type: "comparison" } },
+  ];
+}
+
+const { type } = Astro.params;
+const rules = getRulesByType(type as RuleType);
+
+const titles = {
+  addition: "Règles d'addition",
+  subtraction: "Règles de soustraction",
+  multiplication: "Tables de multiplication",
+  comparison: "Règles de comparaison",
+};
+
+const descriptions = {
+  addition: "Apprenez à additionner correctement les nombres",
+  subtraction: "Maîtrisez les techniques de soustraction",
+  multiplication: "Découvrez et pratiquez les tables de multiplication",
+  comparison: "Comparez efficacement les nombres",
+};
+---
+
+<Layout title={`${titles[type as RuleType]} - Decival`} currentPage="rules">
+  <div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+      <a
+        href="/rules"
+        class="inline-flex items-center text-gray-600 hover:text-accent"
+      >
+        <svg
+          class="w-5 h-5 mr-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Retour aux règles
+      </a>
+    </div>
+
+    <h1 class="text-2xl font-bold mb-2">{titles[type as RuleType]}</h1>
+    <p class="text-gray-600 mb-6">{descriptions[type as RuleType]}</p>
+
+    <div class="space-y-6">
+      {rules.map((rule) => <RuleCard rule={rule} showFullDetails />)}
+    </div>
+  </div>
+</Layout>

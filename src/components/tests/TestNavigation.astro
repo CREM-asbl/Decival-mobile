@@ -1,0 +1,37 @@
+---
+interface Props {
+  title: string;
+  showBack?: boolean;
+}
+
+const { title, showBack = true } = Astro.props;
+---
+
+<nav class="bg-white shadow-sm fixed top-16 left-0 right-0 z-40">
+  <div class="container mx-auto px-4 py-3 flex items-center gap-4">
+    {
+      showBack && (
+        <a
+          href="/tests"
+          class="text-gray-600 hover:text-gray-900 transition-colors"
+          aria-label="Retour à la liste des tests"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </a>
+      )
+    }
+    <h1 class="text-lg font-semibold text-gray-900">{title}</h1>
+  </div>
+</nav>

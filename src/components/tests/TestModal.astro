@@ -1,0 +1,50 @@
+---
+import Modal from "../common/Modal.astro";
+import Button from "../common/Button.astro";
+import TestResult from "./TestResult.astro";
+
+interface Props {
+  id: string;
+  currentItem: {
+    id: string;
+    firstNumber: number;
+    secondNumber: number;
+    correctAnswer: number;
+  };
+  userAnswer: number;
+  operationType: "addition" | "subtraction" | "multiplication" | "comparison";
+  onContinue?: () => void;
+}
+
+const { id, currentItem, userAnswer, operationType } = Astro.props;
+---
+
+<Modal id={id} title="Résultat">
+  <TestResult
+    id={currentItem.id}
+    answer={userAnswer}
+    expectedAnswer={currentItem.correctAnswer}
+    operationType={operationType}
+    details={{
+      firstNumber: currentItem.firstNumber,
+      secondNumber: currentItem.secondNumber,
+    }}
+  />
+  <div slot="footer" class="flex justify-end gap-3">
+    <Button variant="primary" id="continueButton">Continuer</Button>
+  </div>
+</Modal>
+
+<script>
+  const continueButton = document.getElementById("continueButton");
+  const modal = document.getElementById("result-modal");
+
+  if (continueButton && modal) {
+    continueButton.addEventListener("click", () => {
+      modal.classList.add("hidden");
+      // Dispatch un événement custom pour la navigation
+      const event = new CustomEvent("test-continue");
+      document.dispatchEvent(event);
+    });
+  }
+</script>

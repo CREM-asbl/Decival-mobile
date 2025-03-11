@@ -1,0 +1,119 @@
+---
+import Icon from "../../components/common/Icon.astro";
+import RuleProgress from "../../components/rules/RuleProgress.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getAllProgress } from "../../stores/ruleProgressStore";
+import { getRulesByType } from "../../stores/rulesStore";
+import type { RuleType } from "../../types/rules";
+
+const progress = getAllProgress();
+const ruleTypes: RuleType[] = [
+  "addition",
+  "subtraction",
+  "multiplication",
+  "comparison",
+];
+
+const typeLabels = {
+  addition: "Additions",
+  subtraction: "Soustractions",
+  multiplication: "Multiplications",
+  comparison: "Comparaisons",
+};
+
+// Calculer les statistiques pour chaque type
+const typeStats = ruleTypes.reduce(
+  (acc, type) => {
+    const rules = getRulesByType(type);
+    const ruleIds = rules.map((r) => r.id);
+    const typeProgress = ruleIds.map((id) => progress.progress[id]);
+
+    const totalRules = rules.length;
+    const masteredRules = typeProgress.filter((p) => p?.mastered).length;
+    const currentStreak = progress.currentStreak[type];
+
+    acc[type] = {
+      totalRules,
+      masteredRules,
+      currentStreak,
+    };
+
+    return acc;
+  },
+  {} as Record<
+    RuleType,
+    { totalRules: number; masteredRules: number; currentStreak: number }
+  >,
+);
+---
+
+<Layout title="Résumé des règles - Decival" currentPage="rules">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Résumé des règles</h1>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {
+        ruleTypes.map((type) => {
+          const stats = typeStats[type];
+          const rules = getRulesByType(type);
+
+          return (
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <Icon name="book" class="w-6 h-6 text-accent" />
+                  <h2 class="text-xl font-semibold">{typeLabels[type]}</h2>
+                </div>
+                <div class="text-sm text-gray-600">
+                  {stats.masteredRules}/{stats.totalRules} maîtrisées
+                </div>
+              </div>
+
+              <div class="bg-accent/10 rounded-lg p-4 mb-4">
+                <div class="flex items-center gap-2">
+                  <Icon name="chart" class="w-5 h-5 text-accent" />
+                  <span class="font-medium">
+                    Série actuelle : {stats.currentStreak}
+                  </span>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                {rules.map((rule) => (
+                  <div class="border rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                      <h3 class="font-medium">{rule.title}</h3>
+                    </div>
+                    <RuleProgress ruleId={rule.id} showDetails />
+                  </div>
+                ))}
+              </div>
+
+              <div class="mt-4 text-center">
+                <a
+                  href={`/rules/${type}`}
+                  class="inline-flex items-center text-accent hover:text-accent/80"
+                >
+                  Voir toutes les règles
+                  <svg
+                    class="w-5 h-5 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</Layout>

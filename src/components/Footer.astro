@@ -1,0 +1,46 @@
+---
+import Icon from "./common/Icon.astro";
+
+interface Props {
+  currentPage?: string;
+}
+
+const { currentPage = "home" } = Astro.props;
+
+const navItems = [
+  { id: "home", label: "Accueil", icon: "home", href: "/" },
+  { id: "tests", label: "Tests", icon: "clipboard", href: "/tests" },
+  { id: "progress", label: "Progrès", icon: "chart", href: "/progress" },
+  { id: "rules", label: "Règles", icon: "book", href: "/rules" },
+];
+---
+
+<footer
+  class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50"
+>
+  <nav class="container mx-auto px-4">
+    <ul class="flex justify-around items-center h-16">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                "flex flex-col items-center p-2 text-sm transition-colors duration-200",
+                currentPage === item.id
+                  ? "text-accent font-medium"
+                  : "text-gray-600 hover:text-gray-800",
+              ]}
+            >
+              <Icon
+                name={item.icon as "home" | "clipboard" | "chart" | "book"}
+                class="w-6 h-6 mb-1"
+              />
+              <span>{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</footer>
