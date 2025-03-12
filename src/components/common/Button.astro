@@ -1,11 +1,11 @@
 ---
 export interface Props {
   variant?: "primary" | "secondary";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md";
   type?: "button" | "submit" | "link";
   class?: string;
   id?: string;
-  [key: string]: any; // Pour accepter d'autres attributs HTML standard
+  [key: string]: any;
 }
 
 const {
@@ -18,13 +18,13 @@ const {
 } = Astro.props;
 
 const baseClasses =
-  "inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-300 opacity-100";
+  "relative inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 ease-out";
 
 const variantClasses = {
   primary:
-    "text-white bg-accent hover:bg-accent-hover focus:ring-accent active:bg-accent-active hover:opacity-90",
+    "text-white bg-accent hover:bg-accent-hover focus:ring-accent active:bg-accent-active hover:opacity-90 active:translate-y-px",
   secondary:
-    "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300 hover:opacity-90",
+    "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300 hover:opacity-90 active:translate-y-px",
 };
 
 const sizeClasses = {
@@ -33,7 +33,8 @@ const sizeClasses = {
   lg: "px-6 py-3 text-lg",
 };
 
-const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+const rippleClass = "overflow-hidden";
+const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${rippleClass} ${className}`;
 ---
 
 <button
@@ -43,4 +44,80 @@ const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} 
   {...rest}
 >
   <slot />
+  <div class="ripple-container"></div>
 </button>
+
+<style>
+  .ripple-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  @keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  import { playSound } from "../../stores/soundStore";
+
+  function createRipple(event: MouseEvent) {
+    const button = event.currentTarget as HTMLButtonElement;
+    const rippleContainer = button.querySelector(
+      ".ripple-container",
+    ) as HTMLElement;
+
+    if (!rippleContainer) return;
+
+    const circle = document.createElement("div");
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+
+    const rect = button.getBoundingClientRect();
+    const x = event.clientX - rect.left - radius;
+    const y = event.clientY - rect.top - radius;
+
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${x}px`;
+    circle.style.top = `${y}px`;
+    circle.classList.add("ripple");
+
+    // Utiliser querySelector au lieu de getElementsByClassName
+    const existingRipple = rippleContainer.querySelector(".ripple");
+    if (existingRipple) {
+      existingRipple.remove();
+    }
+
+    rippleContainer.appendChild(circle);
+    playSound("click", 0.3);
+  }
+
+  // Ajouter l'effet de ripple et le son sur tous les boutons
+  if (typeof window !== "undefined") {
+    window.addEventListener("DOMContentLoaded", () => {
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach((button) => {
+        button.addEventListener("click", createRipple);
+        button.addEventListener("mouseenter", () => {
+          playSound("hover", 0.1);
+        });
+      });
+    });
+  }
+</script>

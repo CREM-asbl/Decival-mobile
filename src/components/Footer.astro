@@ -12,11 +12,12 @@ const navItems = [
   { id: "tests", label: "Tests", icon: "clipboard", href: "/tests" },
   { id: "progress", label: "Progrès", icon: "chart", href: "/progress" },
   { id: "rules", label: "Règles", icon: "book", href: "/rules" },
+  { id: "settings", label: "Paramètres", icon: "settings", href: "/settings" },
 ];
 ---
 
 <footer
-  class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50"
+  class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 z-50"
 >
   <nav class="container mx-auto px-4">
     <ul class="flex justify-around items-center h-16">
@@ -28,12 +29,19 @@ const navItems = [
               class:list={[
                 "flex flex-col items-center p-2 text-sm transition-colors duration-200",
                 currentPage === item.id
-                  ? "text-accent font-medium"
-                  : "text-gray-600 hover:text-gray-800",
+                  ? "text-accent font-medium dark:text-accent"
+                  : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white",
               ]}
             >
               <Icon
-                name={item.icon as "home" | "clipboard" | "chart" | "book"}
+                name={
+                  item.icon as
+                    | "home"
+                    | "clipboard"
+                    | "chart"
+                    | "book"
+                    | "settings"
+                }
                 class="w-6 h-6 mb-1"
               />
               <span>{item.label}</span>

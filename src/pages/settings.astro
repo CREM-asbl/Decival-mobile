@@ -1,0 +1,30 @@
+---
+import AnimationSettings from "../components/common/AnimationSettings.astro";
+import SoundSettings from "../components/common/SoundSettings.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Paramètres - Decival">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Paramètres</h1>
+
+    <div class="space-y-6 max-w-lg">
+      <SoundSettings />
+      <AnimationSettings />
+    </div>
+
+    <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+      <h2 class="text-lg font-semibold mb-2">À propos des paramètres</h2>
+      <p class="text-sm text-gray-600">
+        Ces paramètres vous permettent de personnaliser votre expérience sur
+        Decival. Les préférences sont automatiquement sauvegardées et appliquées
+        à toutes vos sessions.
+      </p>
+      <p class="text-sm text-gray-600 mt-2">
+        Les sons et animations sont conçus pour renforcer votre apprentissage
+        tout en restant discrets. Vous pouvez les ajuster ou les désactiver
+        selon vos besoins.
+      </p>
+    </div>
+  </div>
+</Layout>

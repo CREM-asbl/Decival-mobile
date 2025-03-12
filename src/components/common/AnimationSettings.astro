@@ -1,0 +1,83 @@
+---
+import { getAnimationPreferences } from "../../stores/animationStore";
+
+const preferences = getAnimationPreferences();
+---
+
+<div class="bg-white rounded-lg shadow p-4">
+  <h3 class="text-lg font-semibold mb-4">Paramètres d'animation</h3>
+
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <label for="animations-enabled" class="text-sm text-gray-700">
+        Activer les animations
+      </label>
+      <input
+        type="checkbox"
+        id="animations-enabled"
+        class="toggle-checkbox"
+        checked={preferences.animationsEnabled}
+      />
+    </div>
+
+    <p class="text-xs text-gray-500">
+      Note : Les animations seront automatiquement désactivées si vous avez
+      activé l'option "Réduire les animations" dans les paramètres de votre
+      système.
+    </p>
+  </div>
+</div>
+
+<style>
+  .toggle-checkbox {
+    appearance: none;
+    width: 40px;
+    height: 24px;
+    background-color: #e5e7eb;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .toggle-checkbox:checked {
+    background-color: rgb(var(--accent));
+  }
+
+  .toggle-checkbox::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background-color: white;
+    transition: transform 0.3s;
+  }
+
+  .toggle-checkbox:checked::before {
+    transform: translateX(16px);
+  }
+
+  .toggle-checkbox:focus {
+    outline: 2px solid rgba(var(--accent), 0.5);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  import { updateAnimationPreferences } from "../../stores/animationStore";
+
+  const checkbox = document.getElementById(
+    "animations-enabled",
+  ) as HTMLInputElement;
+
+  if (checkbox) {
+    checkbox.addEventListener("change", () => {
+      updateAnimationPreferences({
+        animationsEnabled: checkbox.checked,
+      });
+    });
+  }
+</script>

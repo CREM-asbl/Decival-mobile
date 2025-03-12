@@ -1,0 +1,127 @@
+---
+import { getSoundPreferences } from "../../stores/soundStore";
+
+const preferences = getSoundPreferences();
+---
+
+<div class="bg-white rounded-lg shadow p-4">
+  <h3 class="text-lg font-semibold mb-4">Sons et retours</h3>
+
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <label for="sounds-enabled" class="text-sm text-gray-700">
+        Activer les sons
+      </label>
+      <input
+        type="checkbox"
+        id="sounds-enabled"
+        class="toggle-checkbox"
+        checked={preferences.enabled}
+      />
+    </div>
+
+    <div class="space-y-2">
+      <label for="volume" class="text-sm text-gray-700 block"> Volume </label>
+      <input
+        type="range"
+        id="volume"
+        min="0"
+        max="1"
+        step="0.1"
+        value={preferences.volume}
+        class="w-full accent-accent"
+      />
+    </div>
+
+    <div class="text-xs text-gray-500">
+      Les sons ajoutent des retours auditifs pour une meilleure expérience
+      d'apprentissage. Vous pouvez les désactiver à tout moment.
+    </div>
+  </div>
+</div>
+
+<style>
+  .toggle-checkbox {
+    appearance: none;
+    width: 40px;
+    height: 24px;
+    background-color: #e5e7eb;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .toggle-checkbox:checked {
+    background-color: rgb(var(--accent));
+  }
+
+  .toggle-checkbox::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background-color: white;
+    transition: transform 0.3s;
+  }
+
+  .toggle-checkbox:checked::before {
+    transform: translateX(16px);
+  }
+
+  .toggle-checkbox:focus {
+    outline: 2px solid rgba(var(--accent), 0.5);
+    outline-offset: 2px;
+  }
+
+  input[type="range"] {
+    height: 6px;
+    border-radius: 3px;
+    background-color: #e5e7eb;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: rgb(var(--accent));
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  import { playSound, updateSoundPreferences } from "../../stores/soundStore";
+
+  const checkbox = document.getElementById(
+    "sounds-enabled",
+  ) as HTMLInputElement;
+  const volumeSlider = document.getElementById("volume") as HTMLInputElement;
+
+  if (checkbox) {
+    checkbox.addEventListener("change", () => {
+      updateSoundPreferences({
+        enabled: checkbox.checked,
+      });
+      if (checkbox.checked) {
+        playSound("click");
+      }
+    });
+  }
+
+  if (volumeSlider) {
+    volumeSlider.addEventListener("change", () => {
+      const volume = parseFloat(volumeSlider.value);
+      updateSoundPreferences({ volume });
+      playSound("click", volume);
+    });
+  }
+</script>

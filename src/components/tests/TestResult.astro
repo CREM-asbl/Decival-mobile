@@ -1,19 +1,14 @@
 ---
-import { validateRule } from "../../logic/ruleValidation";
-import {
-  updateRuleProgress,
-  updateTypeStreak,
-  getRuleProgress,
-} from "../../stores/ruleProgressStore";
-import { getRuleById } from "../../stores/rulesStore";
-import type { RuleType } from "../../types/rules";
+import { getRuleProgress } from "../../stores/ruleProgressStore";
+import { validateAnswer } from "../../logic/validationLogic";
+import RuleLink from "../rules/RuleLink.astro";
 
 interface Props {
   id: string;
-  answer: number;
-  expectedAnswer: number;
-  operationType: RuleType;
-  details: {
+  answer: number | string;
+  expectedAnswer: number | string;
+  operationType: "addition" | "subtraction" | "multiplication" | "comparison";
+  details?: {
     firstNumber: number;
     secondNumber: number;
   };
@@ -21,24 +16,10 @@ interface Props {
 
 const { id, answer, expectedAnswer, operationType, details } = Astro.props;
 
-const ruleId = `${operationType}-1`;
-const validation = validateRule({
-  ruleId,
-  answer,
-  expectedAnswer,
-  details,
-});
-
-const rule = getRuleById(ruleId);
+const ruleId = `${operationType}-${id}`;
 const progress = getRuleProgress(ruleId);
+const validation = validateAnswer(answer, expectedAnswer, details);
 
-// Mettre à jour la progression côté client
-if (typeof window !== "undefined") {
-  updateRuleProgress(ruleId, validation.isValid);
-  updateTypeStreak(operationType, validation.isValid);
-}
-
-// Choisir un message d'encouragement adapté
 const encouragementMessages = {
   firstSuccess: "Continue comme ça !",
   maintainStreak: "Tu es sur la bonne voie !",
@@ -57,99 +38,120 @@ if (progress?.mastered) {
 }
 ---
 
-<div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+<div class="transform-gpu">
   <div
-    class={`text-center mb-4 ${validation.isValid ? "text-green-600" : "text-red-600"}`}
+    class={`bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto transition-all duration-500 ease-out ${
+      validation.isValid ? "scale-100" : "scale-95"
+    }`}
+    data-result="true"
   >
-    <h3 class="text-xl font-bold mb-2">
-      {validation.isValid ? "✨ Bravo !" : "😕 Pas tout à fait..."}
-    </h3>
-    <p>{validation.feedback}</p>
-    <p class="text-sm mt-2 text-gray-600">{encouragement}</p>
-  </div>
+    <div
+      class={`text-center mb-4 transition-colors duration-300 ${
+        validation.isValid ? "text-green-600" : "text-red-600"
+      }`}
+    >
+      <h3 class="text-xl font-bold mb-2 flex items-center justify-center gap-2">
+        {
+          validation.isValid ? (
+            <>
+              <span class="animate-bounce">✨</span>
+              <span>Bravo !</span>
+              <span class="animate-bounce">✨</span>
+            </>
+          ) : (
+            <>
+              <span class="animate-pulse">😕</span>
+              <span>Pas tout à fait...</span>
+            </>
+          )
+        }
+      </h3>
+      <p>{validation.feedback}</p>
+      <p class="text-base mt-4">
+        Votre réponse : <span class="font-mono">{answer}</span>
+        <br />
+        La bonne réponse : <span class="font-mono">{expectedAnswer}</span>
+      </p>
+    </div>
 
-  {
-    !validation.isValid && validation.suggestedStep && (
-      <div class="bg-blue-50 p-4 rounded-lg mt-4">
-        <p class="text-blue-800">
-          <span class="font-semibold">Conseil :</span>{" "}
-          {validation.suggestedStep}
-        </p>
-        {rule && (
-          <div class="mt-3">
-            <a
-              href={`/rules/${operationType}#${ruleId}`}
-              class="inline-flex items-center text-blue-600 hover:text-blue-800"
-            >
-              <svg
-                class="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-              Revoir la règle : {rule.title}
-            </a>
+    {
+      progress && (
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg transform transition-all duration-500 hover:scale-102">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium">
+              Progression sur cette règle :
+            </span>
+            <span class="text-sm">
+              {progress.successCount}/
+              {progress.successCount + progress.failureCount} réussis
+            </span>
           </div>
-        )}
-      </div>
-    )
-  }
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div
+              class="bg-accent h-2 rounded-full transition-all duration-1000 ease-out"
+              style={`width: ${Math.round(
+                (progress.successCount /
+                  (progress.successCount + progress.failureCount)) *
+                  100,
+              )}%`}
+            />
+          </div>
+          <p class="text-sm mt-2 text-gray-600">{encouragement}</p>
+        </div>
+      )
+    }
 
-  <div class="mt-6 text-center text-gray-600">
-    <p>
-      Votre réponse : <span class="font-mono">{answer}</span>
-      <br />
-      La bonne réponse : <span class="font-mono">{expectedAnswer}</span>
-    </p>
+    {
+      !validation.isValid && validation.suggestedStep && (
+        <div class="bg-blue-50 p-4 rounded-lg mt-4 transform transition-all duration-500 hover:scale-102">
+          <p class="text-blue-800">
+            <span class="font-semibold">Conseil :</span>{" "}
+            {validation.suggestedStep}
+          </p>
+          {operationType && (
+            <div class="mt-3">
+              <RuleLink type={operationType} />
+            </div>
+          )}
+        </div>
+      )
+    }
   </div>
-
-  {
-    progress && (
-      <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-sm font-medium">Progression sur cette règle :</span>
-          <span class="text-sm">
-            {progress.successCount}/
-            {progress.successCount + progress.failureCount} réussis
-          </span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div
-            class="bg-accent h-2 rounded-full transition-all duration-300"
-            style={`width: ${Math.round(
-              (progress.successCount /
-                (progress.successCount + progress.failureCount)) *
-                100,
-            )}%`}
-          />
-        </div>
-      </div>
-    )
-  }
 </div>
 
-<script
-  define:vars={{
-    ruleId,
-    operationType,
-    validation: { isValid: validation.isValid },
-  }}
->
-  // Mise à jour de la progression côté client
-  import {
-    updateRuleProgress,
-    updateTypeStreak,
-  } from "../../stores/ruleProgressStore";
+<script>
+  import { playSound } from "../../stores/soundStore";
 
-  if (ruleId && operationType) {
-    updateRuleProgress(ruleId, validation.isValid);
-    updateTypeStreak(operationType, validation.isValid);
-  }
+  // Jouer un son et ajouter une animation lors de l'affichage du résultat
+  document.addEventListener("DOMContentLoaded", () => {
+    const resultElement = document.querySelector("[data-result]");
+    if (!resultElement) return;
+
+    const isValid = resultElement.querySelector(".text-green-600") !== null;
+    playSound(isValid ? "correct" : "incorrect");
+
+    // Ajouter une classe pour l'animation d'entrée
+    resultElement.classList.add("animate-fade-in");
+  });
 </script>
+
+<style>
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  .scale-102 {
+    scale: 1.02;
+  }
+</style>

@@ -203,7 +203,10 @@ startNewTest(test);
       2000,
     );
 
-    resultModal?.classList.remove("hidden");
+    // Utiliser la fonction openModal avec le bon ID
+    if (typeof window[`openModal_result-modal`] === "function") {
+      window[`openModal_result-modal`]();
+    }
   }
 
   /**
@@ -221,7 +224,10 @@ startNewTest(test);
     test.status = "completed";
     completeTest(test);
 
-    testCompleteModal?.classList.remove("hidden");
+    // Utiliser la fonction openModal avec le bon ID
+    if (typeof window[`openModal_test-complete-modal`] === "function") {
+      window[`openModal_test-complete-modal`]();
+    }
     showToast(`🎉 Test terminé ! Score : ${Math.round(results.score)}%`, 4000);
   }
 
@@ -271,7 +277,10 @@ startNewTest(test);
   // Gestionnaire du bouton Continuer
   if (continueButton) {
     continueButton.addEventListener("click", () => {
-      resultModal?.classList.add("hidden");
+      // Utiliser la fonction closeModal avec le bon ID
+      if (typeof window[`closeModal_result-modal`] === "function") {
+        window[`closeModal_result-modal`]();
+      }
 
       // Incrémenter l'index après avoir validé la réponse et fermé la modal
       currentQuestionIndex++;
@@ -292,7 +301,9 @@ startNewTest(test);
       currentQuestionIndex = 0;
       updateProgressDisplay();
       updateQuestion();
-      testCompleteModal?.classList.add("hidden");
+      if (typeof window[`closeModal_test-complete-modal`] === "function") {
+        window[`closeModal_test-complete-modal`]();
+      }
       showToast("🔄 Nouveau test commencé !", 2000);
     });
   }

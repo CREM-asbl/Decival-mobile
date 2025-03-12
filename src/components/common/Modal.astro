@@ -12,11 +12,13 @@ const { id, title, showClose = true } = Astro.props;
 
 <div
   id={id}
-  class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+  class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300"
   role="dialog"
   aria-modal="true"
 >
-  <div class="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl">
+  <div
+    class="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl transform translate-y-4 transition-all duration-300"
+  >
     <div class="flex items-center justify-between p-4 border-b">
       <h2 class="text-xl font-semibold text-gray-900">{title}</h2>
       {
@@ -62,24 +64,44 @@ const { id, title, showClose = true } = Astro.props;
     const modal = document.getElementById(id);
     if (!modal) return;
 
+    // Fonction pour ouvrir le modal avec animation
+    function openModal() {
+      modal.classList.remove("pointer-events-none", "opacity-0");
+      modal.querySelector("div").classList.remove("translate-y-4");
+    }
+
+    // Fonction pour fermer le modal avec animation
+    function closeModal() {
+      modal.classList.add("opacity-0");
+      modal.querySelector("div").classList.add("translate-y-4");
+      setTimeout(() => {
+        modal.classList.add("pointer-events-none");
+      }, 300);
+    }
+
     // Fermer avec le bouton
     const closeButton = modal.querySelector("[data-modal-close]");
-    closeButton?.addEventListener("click", () => {
-      modal.classList.add("hidden");
-    });
+    closeButton?.addEventListener("click", closeModal);
 
     // Fermer avec Escape
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !modal.classList.contains("hidden")) {
-        modal.classList.add("hidden");
+      if (
+        e.key === "Escape" &&
+        !modal.classList.contains("pointer-events-none")
+      ) {
+        closeModal();
       }
     });
 
     // Fermer en cliquant en dehors
     modal.addEventListener("click", (e) => {
       if (e.target === modal) {
-        modal.classList.add("hidden");
+        closeModal();
       }
     });
+
+    // Exposer les fonctions globalement pour pouvoir les utiliser ailleurs
+    window[`openModal_${id}`] = openModal;
+    window[`closeModal_${id}`] = closeModal;
   });
 </script>

@@ -1,0 +1,56 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div class={`page-transition ${className}`}>
+  <slot />
+</div>
+
+<style>
+  .page-transition {
+    animation: slide-in 0.3s ease-out;
+  }
+
+  @keyframes slide-in {
+    0% {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-transition {
+      animation: fade 0.3s ease-out;
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  }
+</style>
+
+<script>
+  class PageTransition extends HTMLElement {
+    constructor() {
+      super();
+      this.addEventListener("animationend", () => {
+        this.classList.remove("page-transition");
+      });
+    }
+  }
+
+  customElements.define("page-transition", PageTransition);
+</script>

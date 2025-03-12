@@ -15,39 +15,49 @@ const typeStyles = {
 
 <div
   id={id}
-  class={`fixed bottom-20 left-1/2 -translate-x-1/2 transform px-4 py-2 rounded-lg border shadow-lg opacity-0 transition-all duration-300 translate-y-2 pointer-events-none ${typeStyles[type]}`}
+  class={`fixed bottom-20 left-1/2 -translate-x-1/2 transform px-4 py-2 rounded-lg border shadow-lg opacity-0 pointer-events-none transition-all duration-300 ease-out ${typeStyles[type]}`}
   role="alert"
 >
   <slot />
 </div>
 
-<style>
-  .show {
-    opacity: 1 !important;
-    transform: translateX(-50%) translateY(0) !important;
-  }
-</style>
-
 <script>
-  // Fonction utilitaire pour créer la fonction showToast
   function createShowToast(toastId) {
     let timeoutId;
+    let animationFrame;
+
     return function (message, duration = 3000) {
       const toast = document.getElementById(toastId);
       if (!toast) return;
 
-      toast.textContent = message;
-      toast.classList.add("show");
-
+      // Annuler les animations précédentes
       if (timeoutId) clearTimeout(timeoutId);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
 
+      toast.textContent = message;
+
+      // Animation d'entrée
+      animationFrame = requestAnimationFrame(() => {
+        toast.classList.remove("opacity-0", "pointer-events-none");
+        toast.classList.add("translate-y-0");
+        toast.style.transform = "translate(-50%, 0)";
+      });
+
+      // Animation de sortie
       timeoutId = setTimeout(() => {
-        toast.classList.remove("show");
+        toast.classList.add("opacity-0");
+        toast.style.transform = "translate(-50%, 1rem)";
+
+        // Nettoyer après l'animation
+        setTimeout(() => {
+          toast.classList.add("pointer-events-none");
+          toast.style.transform = "translate(-50%, 2rem)";
+        }, 300);
       }, duration);
     };
   }
 
-  // Initialiser la fonction showToast pour chaque toast au chargement
+  // Initialiser la fonction showToast pour chaque toast
   document.addEventListener("DOMContentLoaded", () => {
     const toasts = document.querySelectorAll('[role="alert"]');
     toasts.forEach((toast) => {

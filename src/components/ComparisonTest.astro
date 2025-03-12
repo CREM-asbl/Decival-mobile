@@ -1,6 +1,7 @@
 ---
-import Button from "../common/Button.astro";
-import { ComparisonItem } from "../../types/comparison";
+import Button from "./common/Button.astro";
+import PageTransition from "./common/PageTransition.astro";
+import { ComparisonItem } from "../types/comparison";
 
 interface Props {
   item: ComparisonItem;
@@ -11,64 +12,87 @@ interface Props {
 const { item, isLastItem = false } = Astro.props;
 ---
 
-<div
-  class="w-full bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto"
-  role="group"
-  aria-labelledby="comparison-title"
->
-  <div class="text-center mb-8">
-    <h2 id="comparison-title" class="sr-only">Comparaison de nombres</h2>
-    <div
-      class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 sm:text-5xl"
-      aria-label={`Comparer ${item.firstNumber} et ${item.secondNumber}`}
-      role="math"
-    >
-      <span>{item.firstNumber}</span>
-      <span class="text-accent text-3xl sm:text-4xl" aria-hidden="true">?</span>
-      <span>{item.secondNumber}</span>
+<PageTransition>
+  <div
+    class="w-full bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto"
+    role="group"
+    aria-labelledby="comparison-title"
+  >
+    <div class="text-center mb-8">
+      <h2 id="comparison-title" class="sr-only">Comparaison de nombres</h2>
+      <div
+        class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 sm:text-5xl"
+        aria-label={`Comparer ${item.firstNumber} et ${item.secondNumber}`}
+        role="math"
+      >
+        <span class="transition-all duration-300 hover:scale-110"
+          >{item.firstNumber}</span
+        >
+        <span
+          class="text-accent text-3xl sm:text-4xl animate-pulse"
+          aria-hidden="true">?</span
+        >
+        <span class="transition-all duration-300 hover:scale-110"
+          >{item.secondNumber}</span
+        >
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-4">
+      <Button
+        type="button"
+        data-value="<"
+        class="choice-btn w-20 h-20 text-2xl transition-transform duration-300 hover:scale-105 active:scale-95"
+      >
+        &lt;
+      </Button>
+      <Button
+        type="button"
+        data-value="="
+        class="choice-btn w-20 h-20 text-2xl transition-transform duration-300 hover:scale-105 active:scale-95"
+      >
+        =
+      </Button>
+      <Button
+        type="button"
+        data-value=">"
+        class="choice-btn w-20 h-20 text-2xl transition-transform duration-300 hover:scale-105 active:scale-95"
+      >
+        &gt;
+      </Button>
     </div>
   </div>
-
-  <form id="comparison-form" class="flex justify-center gap-4 sm:gap-6">
-    <button
-      type="submit"
-      class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-white border-2 border-accent text-2xl sm:text-3xl text-accent hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors"
-      name="answer"
-      value="<"
-      aria-label="Plus petit que"
-    >
-      &lt;
-    </button>
-    <button
-      type="submit"
-      class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-white border-2 border-accent text-2xl sm:text-3xl text-accent hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors"
-      name="answer"
-      value="="
-      aria-label="Égal à"
-    >
-      =
-    </button>
-    <button
-      type="submit"
-      class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-white border-2 border-accent text-2xl sm:text-3xl text-accent hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors"
-      name="answer"
-      value=">"
-      aria-label="Plus grand que"
-    >
-      &gt;
-    </button>
-  </form>
-</div>
+</PageTransition>
 
 <script>
-  const form = document.getElementById("comparison-form");
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const answer = formData.get("answer");
-    const event = new CustomEvent("answer-submitted", {
-      detail: { answer },
+  const buttons = document.querySelectorAll(".choice-btn");
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      // Ajouter une classe pour l'animation de clic
+      button.classList.add("clicked");
+
+      // Retirer la classe après l'animation
+      setTimeout(() => {
+        button.classList.remove("clicked");
+      }, 300);
     });
-    document.dispatchEvent(event);
   });
 </script>
+
+<style>
+  .clicked {
+    animation: clickEffect 0.3s ease-out;
+  }
+
+  @keyframes clickEffect {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.95);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+</style>
