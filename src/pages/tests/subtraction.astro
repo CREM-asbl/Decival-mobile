@@ -1,6 +1,5 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import SubtractionTest from "../../components/tests/SubtractionTest.astro";
 import TestNavigation from "../../components/tests/TestNavigation.astro";
 import Button from "../../components/common/Button.astro";
 import Modal from "../../components/common/Modal.astro";
@@ -39,18 +38,43 @@ startNewTest(test);
     </div>
 
     <form id="testForm" class="mt-8">
-      <SubtractionTest item={currentItem} isLastItem={false} />
+      <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+        <div class="text-center mb-8">
+          <div
+            class="text-4xl font-bold mb-6 flex items-center justify-center gap-4"
+          >
+            <span id="firstNumber">{currentItem.firstNumber}</span>
+            <span class="text-accent">−</span>
+            <span id="secondNumber">{currentItem.secondNumber}</span>
+          </div>
+
+          <div class="w-full max-w-xs mx-auto">
+            <div class="flex flex-col gap-1">
+              <input
+                type="number"
+                name="answer"
+                required
+                min="0"
+                max="999"
+                class="w-full px-4 py-2 rounded-md border border-gray-300 text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                inputmode="numeric"
+                pattern="[0-9]*"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-4">
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          >
+            Suivant
+          </button>
+        </div>
+      </div>
     </form>
   </div>
-
-  <Toast id="feedback-toast" />
-
-  <audio id="correct-sound" preload="auto">
-    <source src="/sounds/correct.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="incorrect-sound" preload="auto">
-    <source src="/sounds/incorrect.mp3" type="audio/mpeg" />
-  </audio>
 
   <Modal id="result-modal" title="Résultat">
     <div class="text-center py-4">
@@ -85,6 +109,15 @@ startNewTest(test);
       <Button variant="primary" id="restartButton">Recommencer</Button>
     </div>
   </Modal>
+
+  <Toast id="feedback-toast" />
+
+  <audio id="correct-sound" preload="auto">
+    <source src="/sounds/correct.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="incorrect-sound" preload="auto">
+    <source src="/sounds/incorrect.mp3" type="audio/mpeg" />
+  </audio>
 </Layout>
 
 <script>
@@ -95,10 +128,14 @@ startNewTest(test);
   } from "../../logic/subtractionLogic";
   import { completeTest, currentTest } from "../../stores/testStore";
 
+  // État global
   let test = currentTest.get() || createSubtractionTest(5);
   let currentQuestionIndex = 0;
 
+  // Éléments du DOM
   const form = document.getElementById("testForm");
+  const firstNumberElement = document.getElementById("firstNumber");
+  const secondNumberElement = document.getElementById("secondNumber");
   const resultModal = document.getElementById("result-modal");
   const testCompleteModal = document.getElementById("test-complete-modal");
   const currentQuestionElement = document.getElementById("currentQuestion");
@@ -115,17 +152,10 @@ startNewTest(test);
   // @ts-ignore - La fonction est définie dans le composant Toast
   const showToast = window.showToast_feedback;
 
-  function playSound(isCorrect: boolean) {
-    const sound = isCorrect ? correctSound : incorrectSound;
-    if (sound) {
-      sound.currentTime = 0;
-      sound
-        .play()
-        .catch((err) => console.log("Erreur lors de la lecture du son:", err));
-    }
-  }
-
-  function updateProgress() {
+  /**
+   * Met à jour l'affichage de la progression
+   */
+  function updateProgressDisplay() {
     if (currentQuestionElement) {
       currentQuestionElement.textContent = (
         currentQuestionIndex + 1
@@ -137,17 +167,31 @@ startNewTest(test);
     }
   }
 
-  function showResult(
-    isCorrect: boolean,
-    userAnswer: number,
-    correctAnswer: number,
-  ) {
+  /**
+   * Joue un son en fonction du résultat de la réponse
+   */
+  function playSound(isCorrect) {
+    const sound = isCorrect ? correctSound : incorrectSound;
+    if (sound) {
+      sound.currentTime = 0;
+      sound
+        .play()
+        .catch((err) => console.log("Erreur lors de la lecture du son:", err));
+    }
+  }
+
+  /**
+   * Affiche la modal de résultat
+   */
+  function showResult(isCorrect, userAnswer, correctAnswer) {
     const resultText = document.getElementById("resultText");
     const correctAnswerElement = document.getElementById("correctAnswer");
 
     if (resultText) {
       resultText.textContent = isCorrect ? "correcte !" : "incorrecte";
-      resultText.className = `font-bold ${isCorrect ? "text-green-600" : "text-red-600"}`;
+      resultText.className = `font-bold ${
+        isCorrect ? "text-green-600" : "text-red-600"
+      }`;
     }
     if (correctAnswerElement) {
       correctAnswerElement.textContent = correctAnswer.toString();
@@ -163,6 +207,9 @@ startNewTest(test);
     resultModal?.classList.remove("hidden");
   }
 
+  /**
+   * Affiche la modal de fin de test
+   */
   function showTestComplete() {
     const results = evaluateTest(test);
     const finalScoreElement = document.getElementById("finalScore");
@@ -179,60 +226,37 @@ startNewTest(test);
     showToast(`🎉 Test terminé ! Score : ${Math.round(results.score)}%`, 4000);
   }
 
+  /**
+   * Met à jour l'affichage de la question courante
+   */
   function updateQuestion() {
-    const testForm = document.getElementById("testForm");
-    if (testForm) {
-      const currentItem = test.items[currentQuestionIndex];
-      testForm.innerHTML = `
-        <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
-          <div class="text-center mb-8">
-            <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4">
-              <span>${currentItem.firstNumber}</span>
-              <span class="text-accent">−</span>
-              <span>${currentItem.secondNumber}</span>
-            </div>
+    const currentItem = test.items[currentQuestionIndex];
+    if (firstNumberElement && secondNumberElement) {
+      firstNumberElement.textContent = currentItem.firstNumber.toString();
+      secondNumberElement.textContent = currentItem.secondNumber.toString();
+    }
 
-            <div class="w-full max-w-xs mx-auto">
-              <div class="flex flex-col gap-1">
-                <input
-                  type="number"
-                  name="answer"
-                  required
-                  min="0"
-                  max="999"
-                  class="w-full px-4 py-2 rounded-md border border-gray-300 text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-4">
-            <button
-              type="submit"
-              class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
-            >
-              ${currentQuestionIndex === test.items.length - 1 ? "Terminer" : "Suivant"}
-            </button>
-          </div>
-        </div>
-      `;
-
-      const input = testForm.querySelector(
-        'input[name="answer"]',
-      ) as HTMLInputElement;
-      if (input) {
-        input.focus();
-      }
+    // Focus sur l'input
+    const input = document.querySelector(
+      "input[name='answer']",
+    ) as HTMLInputElement;
+    if (input) {
+      input.value = "";
+      input.focus();
     }
   }
 
+  // Gestionnaire de soumission du formulaire
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const formData = new FormData(e.target as HTMLFormElement);
       const answer = parseInt(formData.get("answer") as string);
+
+      if (isNaN(answer)) {
+        showToast("Veuillez entrer une réponse valide", 2000);
+        return;
+      }
 
       const currentItem = test.items[currentQuestionIndex];
       const isCorrect = checkAnswer(currentItem, answer);
@@ -241,35 +265,49 @@ startNewTest(test);
       currentItem.userAnswer = answer;
       currentItem.isCorrect = isCorrect;
 
-      showResult(isCorrect, answer, currentItem.correctAnswer!);
+      showResult(isCorrect, answer, currentItem.correctAnswer);
     });
   }
 
+  // Gestionnaire du bouton Continuer
   if (continueButton) {
     continueButton.addEventListener("click", () => {
       resultModal?.classList.add("hidden");
+
+      // Incrémenter l'index après avoir validé la réponse et fermé la modal
       currentQuestionIndex++;
 
       if (currentQuestionIndex >= test.items.length) {
         showTestComplete();
       } else {
-        updateProgress();
+        updateProgressDisplay(); // Mettre à jour l'affichage de la progression
         updateQuestion();
       }
     });
   }
 
+  // Gestionnaire du bouton Recommencer
   if (restartButton) {
     restartButton.addEventListener("click", () => {
       test = createSubtractionTest(5);
       currentQuestionIndex = 0;
-      updateProgress();
+      updateProgressDisplay();
       updateQuestion();
       testCompleteModal?.classList.add("hidden");
       showToast("🔄 Nouveau test commencé !", 2000);
     });
   }
 
-  // Initialisation de la première question
-  updateQuestion();
+  // Focus sur l'input au chargement
+  window.addEventListener("load", () => {
+    const input = document.querySelector(
+      "input[name='answer']",
+    ) as HTMLInputElement;
+    if (input) {
+      input.focus();
+    }
+  });
+
+  // Initialisation
+  updateProgressDisplay();
 </script>

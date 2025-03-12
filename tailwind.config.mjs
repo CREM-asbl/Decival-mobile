@@ -4,7 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        accent: 'rgb(var(--accent))',
+        accent: {
+          DEFAULT: 'rgb(var(--accent))',
+          hover: 'rgb(var(--accent-hover, var(--accent)))',
+          active: 'rgb(var(--accent-active, var(--accent)))'
+        },
       },
     },
   },

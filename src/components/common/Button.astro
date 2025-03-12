@@ -4,6 +4,8 @@ export interface Props {
   size?: "sm" | "md" | "lg";
   type?: "button" | "submit" | "link";
   class?: string;
+  id?: string;
+  [key: string]: any; // Pour accepter d'autres attributs HTML standard
 }
 
 const {
@@ -11,14 +13,18 @@ const {
   size = "md",
   type = "button",
   class: className = "",
+  id,
+  ...rest
 } = Astro.props;
 
 const baseClasses =
-  "inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors";
+  "inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-300";
 
 const variantClasses = {
-  primary: "text-white bg-accent hover:bg-accent/90 focus:ring-accent",
-  secondary: "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
+  primary:
+    "text-white bg-accent hover:bg-accent-hover focus:ring-accent active:bg-accent-active",
+  secondary:
+    "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300",
 };
 
 const sizeClasses = {
@@ -30,6 +36,11 @@ const sizeClasses = {
 const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 ---
 
-<button type={type === "link" ? "button" : type} class={classes}>
+<button
+  type={type === "link" ? "button" : type}
+  class={classes}
+  id={id}
+  {...rest}
+>
   <slot />
 </button>
