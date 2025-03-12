@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { MultiplicationItem, MultiplicationTest } from '../types/multiplication';
+import { type MultiplicationItem, type MultiplicationTest } from '../types/multiplication';
 
 export function generateMultiplicationItem(): MultiplicationItem {
   // On commence avec des nombres simples pour l'apprentissage (1-12)

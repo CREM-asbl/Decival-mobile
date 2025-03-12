@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { ComparisonItem, ComparisonTest } from '../types/comparison';
+import { type ComparisonItem, type ComparisonTest } from '../types/comparison';
 
 export function generateComparisonItem(): ComparisonItem {
   // Générer deux nombres différents pour la comparaison

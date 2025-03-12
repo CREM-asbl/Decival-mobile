@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { SubtractionItem, SubtractionTest } from '../types/subtraction';
+import { type SubtractionItem, type SubtractionTest } from '../types/subtraction';
 
 export function generateSubtractionItem(): SubtractionItem {
   // Générer des nombres de manière à avoir toujours une soustraction positive

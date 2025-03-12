@@ -1,0 +1,284 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import TestNavigation from "../../components/tests/TestNavigation.astro";
+import Button from "../../components/common/Button.astro";
+import Modal from "../../components/common/Modal.astro";
+import Toast from "../../components/common/Toast.astro";
+import { createComparisonTest } from "../../logic/comparisonLogic";
+import { startNewTest, completeTest } from "../../stores/testStore";
+
+// Création d'un test d'exemple
+const test = createComparisonTest(5);
+const currentItem = test.items[0];
+
+// Démarrer le test
+startNewTest(test);
+---
+
+<Layout title="Test de comparaison - Decival" currentPage="tests">
+  <TestNavigation title="Test de comparaison" />
+
+  <div class="container mx-auto px-4 py-8 mt-16">
+    <div class="mb-6">
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-600">
+          Question <span id="currentQuestion">1</span>/<span id="totalQuestions"
+            >{test.items.length}</span
+          >
+        </div>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+        <div
+          class="bg-accent h-2 rounded-full"
+          style="width: 20%"
+          id="progressBar"
+        >
+        </div>
+      </div>
+    </div>
+
+    <form id="testForm" class="mt-8">
+      <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+        <div class="text-center mb-8">
+          <div
+            class="text-4xl font-bold mb-6 flex items-center justify-center gap-4"
+          >
+            <span id="firstNumber">{currentItem.firstNumber}</span>
+            <span class="text-accent text-2xl">?</span>
+            <span id="secondNumber">{currentItem.secondNumber}</span>
+          </div>
+
+          <div class="w-full max-w-xs mx-auto flex justify-center gap-4">
+            <button type="button" class="comparison-btn" data-value="<"
+              >&lt;</button
+            >
+            <button type="button" class="comparison-btn" data-value="="
+              >=</button
+            >
+            <button type="button" class="comparison-btn" data-value=">"
+              >&gt;</button
+            >
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <Modal id="result-modal" title="Résultat">
+    <div class="text-center py-4">
+      <p class="text-xl mb-2">
+        Votre réponse est <span id="resultText" class="font-bold"></span>
+      </p>
+      <p class="text-gray-600">
+        La bonne réponse était : <span id="correctAnswer" class="font-semibold"
+        ></span>
+      </p>
+    </div>
+    <div slot="footer" class="flex justify-end gap-3">
+      <Button variant="primary" id="continueButton">Continuer</Button>
+    </div>
+  </Modal>
+
+  <Modal id="test-complete-modal" title="Test terminé">
+    <div class="text-center py-4">
+      <h3 class="text-xl font-bold mb-4">Félicitations !</h3>
+      <p class="mb-2">Vous avez terminé le test de comparaison.</p>
+      <div class="text-lg">
+        Score : <span id="finalScore" class="font-bold text-accent">0</span>%
+      </div>
+      <p class="mt-4 text-sm text-gray-600">
+        Consultez vos progrès dans l'onglet "Progrès"
+      </p>
+    </div>
+    <div slot="footer" class="flex justify-end gap-3">
+      <a href="/tests" class="no-underline">
+        <Button variant="secondary" data-modal-close>Fermer</Button>
+      </a>
+      <Button variant="primary" id="restartButton">Recommencer</Button>
+    </div>
+  </Modal>
+
+  <Toast id="feedback-toast" />
+
+  <audio id="correct-sound" preload="auto">
+    <source src="/sounds/correct.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="incorrect-sound" preload="auto">
+    <source src="/sounds/incorrect.mp3" type="audio/mpeg" />
+  </audio>
+</Layout>
+
+<style>
+  .comparison-btn {
+    @apply w-12 h-12 text-2xl font-bold rounded-full bg-accent text-white hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent;
+  }
+</style>
+
+<script>
+  import {
+    checkAnswer,
+    createComparisonTest,
+    evaluateTest,
+  } from "../../logic/comparisonLogic";
+  import { completeTest, currentTest } from "../../stores/testStore";
+
+  // État global
+  let test = currentTest.get() || createComparisonTest(5);
+  let currentQuestionIndex = 0;
+  let selectedAnswer: string | null = null;
+
+  // Éléments du DOM
+  const form = document.getElementById("testForm");
+  const firstNumberElement = document.getElementById("firstNumber");
+  const secondNumberElement = document.getElementById("secondNumber");
+  const resultModal = document.getElementById("result-modal");
+  const testCompleteModal = document.getElementById("test-complete-modal");
+  const currentQuestionElement = document.getElementById("currentQuestion");
+  const progressBar = document.getElementById("progressBar");
+  const continueButton = document.getElementById("continueButton");
+  const restartButton = document.getElementById("restartButton");
+  const correctSound = document.getElementById(
+    "correct-sound",
+  ) as HTMLAudioElement;
+  const incorrectSound = document.getElementById(
+    "incorrect-sound",
+  ) as HTMLAudioElement;
+
+  // Fonction pour afficher les toasts
+  function showToast(message: string, duration: number = 2000) {
+    if (typeof window.showToast_feedback === "function") {
+      window.showToast_feedback(message, duration);
+    }
+  }
+
+  /**
+   * Met à jour l'affichage de la progression
+   */
+  function updateProgressDisplay() {
+    if (currentQuestionElement) {
+      currentQuestionElement.textContent = (
+        currentQuestionIndex + 1
+      ).toString();
+    }
+    if (progressBar) {
+      const progress = ((currentQuestionIndex + 1) / test.items.length) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+  }
+
+  /**
+   * Joue un son en fonction du résultat de la réponse
+   */
+  function playSound(isCorrect: boolean) {
+    const sound = isCorrect ? correctSound : incorrectSound;
+    if (sound) {
+      sound.currentTime = 0;
+      sound
+        .play()
+        .catch((err) => console.log("Erreur lors de la lecture du son:", err));
+    }
+  }
+
+  /**
+   * Affiche la modal de résultat
+   */
+  function showResult(
+    isCorrect: boolean,
+    userAnswer: string,
+    correctAnswer: string,
+  ) {
+    const resultText = document.getElementById("resultText");
+    const correctAnswerElement = document.getElementById("correctAnswer");
+
+    if (resultText) {
+      resultText.textContent = isCorrect ? "correcte !" : "incorrecte";
+      resultText.className = `font-bold ${isCorrect ? "text-green-600" : "text-red-600"}`;
+    }
+    if (correctAnswerElement) {
+      correctAnswerElement.textContent = correctAnswer;
+    }
+
+    playSound(isCorrect);
+    showToast(
+      isCorrect ? "✨ Bravo ! C'est correct !" : "😕 Pas tout à fait...",
+      2000,
+    );
+
+    resultModal?.classList.remove("hidden");
+  }
+
+  /**
+   * Affiche la modal de fin de test
+   */
+  function showTestComplete() {
+    const results = evaluateTest(test);
+    const finalScoreElement = document.getElementById("finalScore");
+    if (finalScoreElement) {
+      finalScoreElement.textContent = Math.round(results.score).toString();
+    }
+
+    test.endTime = new Date();
+    test.status = "completed";
+    completeTest(test);
+
+    testCompleteModal?.classList.remove("hidden");
+    showToast(`🎉 Test terminé ! Score : ${Math.round(results.score)}%`, 4000);
+  }
+
+  /**
+   * Met à jour l'affichage de la question courante
+   */
+  function updateQuestion() {
+    const currentItem = test.items[currentQuestionIndex];
+    if (firstNumberElement && secondNumberElement) {
+      firstNumberElement.textContent = currentItem.firstNumber.toString();
+      secondNumberElement.textContent = currentItem.secondNumber.toString();
+    }
+  }
+
+  // Gestionnaire des boutons de comparaison
+  document.querySelectorAll(".comparison-btn").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const answer = (e.currentTarget as HTMLButtonElement).dataset.value;
+      if (!answer) return;
+
+      const currentItem = test.items[currentQuestionIndex];
+      const isCorrect = checkAnswer(currentItem, answer);
+
+      currentItem.userAnswer = answer;
+      currentItem.isCorrect = isCorrect;
+
+      showResult(isCorrect, answer, currentItem.correctAnswer);
+    });
+  });
+
+  // Gestionnaire du bouton Continuer
+  if (continueButton) {
+    continueButton.addEventListener("click", () => {
+      resultModal?.classList.add("hidden");
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex >= test.items.length) {
+        showTestComplete();
+      } else {
+        updateProgressDisplay();
+        updateQuestion();
+      }
+    });
+  }
+
+  // Gestionnaire du bouton Recommencer
+  if (restartButton) {
+    restartButton.addEventListener("click", () => {
+      test = createComparisonTest(5);
+      currentQuestionIndex = 0;
+      updateProgressDisplay();
+      updateQuestion();
+      testCompleteModal?.classList.add("hidden");
+      showToast("🔄 Nouveau test commencé !", 2000);
+    });
+  }
+
+  // Initialisation
+  updateProgressDisplay();
+</script>

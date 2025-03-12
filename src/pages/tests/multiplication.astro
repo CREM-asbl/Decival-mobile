@@ -150,10 +150,11 @@ startNewTest(test);
   ) as HTMLAudioElement;
 
   // Fonction pour afficher les toasts
-  let showToast;
-  document.addEventListener("DOMContentLoaded", () => {
-    showToast = window.showToast_feedback;
-  });
+  function showToast(message: string, duration: number = 2000) {
+    if (typeof window.showToast_feedback === "function") {
+      window.showToast_feedback(message, duration);
+    }
+  }
 
   /**
    * Met à jour l'affichage de la progression
