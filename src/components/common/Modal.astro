@@ -21,14 +21,16 @@ const { id, title, showClose = true } = Astro.props;
       <h2 class="text-xl font-semibold text-gray-900">{title}</h2>
       {
         showClose && (
-          <button
+          <Button
             type="button"
-            class="text-gray-400 hover:text-gray-500"
+            variant="secondary"
+            size="sm"
+            class="!p-1 !bg-transparent hover:!bg-gray-100"
             data-modal-close
+            aria-label="Fermer"
           >
-            <span class="sr-only">Fermer</span>
             <svg
-              class="h-6 w-6"
+              class="h-6 w-6 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -40,7 +42,7 @@ const { id, title, showClose = true } = Astro.props;
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </Button>
         )
       }
     </div>

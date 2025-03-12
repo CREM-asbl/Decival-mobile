@@ -1,5 +1,5 @@
 ---
-
+import Button from "./common/Button.astro";
 ---
 
 <div
@@ -13,12 +13,7 @@
         Accédez à l'application même hors ligne
       </p>
     </div>
-    <button
-      id="install-button"
-      class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90"
-    >
-      Installer
-    </button>
+    <Button id="install-button" variant="primary" size="md"> Installer </Button>
   </div>
 </div>
 
@@ -38,19 +33,13 @@
       if (!deferredPrompt) return;
 
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
+      const result = await deferredPrompt.userChoice;
 
-      if (outcome === "accepted") {
-        console.log("Application installée");
+      if (result.outcome === "accepted") {
+        const installPWA = document.getElementById("install-pwa");
+        installPWA?.classList.add("hidden");
       }
 
       deferredPrompt = null;
-      document.getElementById("install-pwa")?.classList.add("hidden");
     });
-
-  // Cacher le bouton si l'app est déjà installée
-  window.addEventListener("appinstalled", () => {
-    document.getElementById("install-pwa")?.classList.add("hidden");
-    deferredPrompt = null;
-  });
 </script>

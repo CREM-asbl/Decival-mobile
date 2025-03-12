@@ -49,15 +49,33 @@ startNewTest(test);
           </div>
 
           <div class="w-full max-w-xs mx-auto flex justify-center gap-4">
-            <button type="button" class="comparison-btn" data-value="<"
-              >&lt;</button
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              class="comparison-btn w-16 h-16 text-2xl"
+              data-value="<"
             >
-            <button type="button" class="comparison-btn" data-value="="
-              >=</button
+              &lt;
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              class="comparison-btn w-16 h-16 text-2xl"
+              data-value="="
             >
-            <button type="button" class="comparison-btn" data-value=">"
-              >&gt;</button
+              =
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              class="comparison-btn w-16 h-16 text-2xl"
+              data-value=">"
             >
+              &gt;
+            </Button>
           </div>
         </div>
       </div>
@@ -107,12 +125,6 @@ startNewTest(test);
     <source src="/sounds/incorrect.mp3" type="audio/mpeg" />
   </audio>
 </Layout>
-
-<style>
-  .comparison-btn {
-    @apply w-12 h-12 text-2xl font-bold rounded-full bg-accent text-white hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent;
-  }
-</style>
 
 <script>
   import {
