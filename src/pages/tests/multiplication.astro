@@ -149,8 +149,11 @@ startNewTest(test);
     "incorrect-sound",
   ) as HTMLAudioElement;
 
-  // @ts-ignore - La fonction est définie dans le composant Toast
-  const showToast = window.showToast_feedback;
+  // Fonction pour afficher les toasts
+  let showToast;
+  document.addEventListener("DOMContentLoaded", () => {
+    showToast = window.showToast_feedback;
+  });
 
   /**
    * Met à jour l'affichage de la progression

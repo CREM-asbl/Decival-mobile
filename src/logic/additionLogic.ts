@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { AdditionItem, AdditionTest } from '../types/addition';
+import { type AdditionItem, type AdditionTest } from '../types/addition';
 
 export function generateAdditionItem(): AdditionItem {
   const firstNumber = Math.floor(Math.random() * 100);

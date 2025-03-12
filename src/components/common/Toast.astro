@@ -28,25 +28,33 @@ const typeStyles = {
   }
 </style>
 
-<script define:vars={{ id }}>
-  let timeoutId;
+<script>
+  // Fonction utilitaire pour créer la fonction showToast
+  function createShowToast(toastId) {
+    let timeoutId;
+    return function (message, duration = 3000) {
+      const toast = document.getElementById(toastId);
+      if (!toast) return;
 
-  function showToast(message, duration = 3000) {
-    const toast = document.getElementById(id);
-    if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add("show");
 
-    toast.textContent = message;
-    toast.classList.add("show");
+      if (timeoutId) clearTimeout(timeoutId);
 
-    // Si un timeout précédent existe, on le nettoie
-    if (timeoutId) clearTimeout(timeoutId);
-
-    // Nouveau timeout pour cacher le toast
-    timeoutId = setTimeout(() => {
-      toast.classList.remove("show");
-    }, duration);
+      timeoutId = setTimeout(() => {
+        toast.classList.remove("show");
+      }, duration);
+    };
   }
 
-  // Exposer la fonction showToast globalement pour ce toast spécifique
-  window[`showToast_${id}`] = showToast;
+  // Initialiser la fonction showToast pour chaque toast au chargement
+  document.addEventListener("DOMContentLoaded", () => {
+    const toasts = document.querySelectorAll('[role="alert"]');
+    toasts.forEach((toast) => {
+      const id = toast.id;
+      if (id) {
+        window[`showToast_${id}`] = createShowToast(id);
+      }
+    });
+  });
 </script>

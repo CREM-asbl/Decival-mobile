@@ -1,5 +1,5 @@
 import { atom } from 'nanostores';
-import { RuleType } from '../types/rules';
+import { type RuleType } from '../types/rules';
 import { loadRuleProgress, saveRuleProgress } from '../utils/persistence';
 
 interface RuleProgress {

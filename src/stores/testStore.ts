@@ -1,7 +1,7 @@
 import { atom } from 'nanostores';
-import { AdditionTest } from '../types/addition';
-import { MultiplicationTest } from '../types/multiplication';
-import { SubtractionTest } from '../types/subtraction';
+import { type AdditionTest } from '../types/addition';
+import { type MultiplicationTest } from '../types/multiplication';
+import { type SubtractionTest } from '../types/subtraction';
 import { updateRuleProgress } from './ruleProgressStore';
 
 type Test = AdditionTest | SubtractionTest | MultiplicationTest;
