@@ -51,31 +51,30 @@ const SOUND_EFFECTS: Record<string, SoundEffect> = {
   }
 };
 
-export function playEffect(effectName: keyof typeof SOUND_EFFECTS): void {
-  const ctx = getAudioContext();
-  const effect = SOUND_EFFECTS[effectName];
+export function playEffect(soundName: string, userVolume: number = 1) {
+  const context = getAudioContext();
+  const effect = SOUND_EFFECTS[soundName];
 
-  const oscillator = ctx.createOscillator();
-  const gainNode = ctx.createGain();
+  if (!effect) {
+    console.warn(`Son "${soundName}" non trouvé`);
+    return;
+  }
+
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
 
   oscillator.type = effect.type;
-  oscillator.frequency.value = effect.frequency;
+  oscillator.frequency.setValueAtTime(effect.frequency, context.currentTime);
 
-  gainNode.gain.value = effect.volume;
+  gainNode.gain.setValueAtTime(effect.volume * userVolume, context.currentTime);
 
   if (effect.fadeOut) {
-    gainNode.gain.setValueAtTime(effect.volume, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAt(0.01, ctx.currentTime + effect.duration);
+    gainNode.gain.linearRampToValueAtTime(0, context.currentTime + effect.duration);
   }
 
   oscillator.connect(gainNode);
-  gainNode.connect(ctx.destination);
+  gainNode.connect(context.destination);
 
-  oscillator.start(ctx.currentTime);
-  oscillator.stop(ctx.currentTime + effect.duration);
-}
-
-// Expose pour le debuggage
-if (typeof window !== 'undefined') {
-  (window as any).playEffect = playEffect;
+  oscillator.start();
+  oscillator.stop(context.currentTime + effect.duration);
 }

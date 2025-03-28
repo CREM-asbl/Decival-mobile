@@ -1,28 +1,25 @@
 import { SOUNDS } from '../stores/soundStore';
 
-const preloadedSounds = new Map<string, AudioBuffer>();
+export async function preloadSounds() {
+  const audioFiles = Object.values(SOUNDS);
 
-async function loadSound(url: string): Promise<AudioBuffer> {
-  const response = await fetch(url);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioContext = new AudioContext();
-  return await audioContext.decodeAudioData(arrayBuffer);
-}
+  const loadPromises = audioFiles.map((audioPath) => {
+    return new Promise((resolve, reject) => {
+      const audio = new Audio();
+      audio.src = audioPath;
 
-export async function preloadSounds(): Promise<void> {
-  try {
-    const loadPromises = Object.entries(SOUNDS).map(async ([key, url]) => {
-      const buffer = await loadSound(url);
-      preloadedSounds.set(key, buffer);
+      audio.oncanplaythrough = () => resolve(audio);
+      audio.onerror = reject;
+
+      // Déclencher le chargement
+      audio.load();
     });
+  });
 
+  try {
     await Promise.all(loadPromises);
     console.log('Sons préchargés avec succès');
   } catch (error) {
     console.error('Erreur lors du préchargement des sons:', error);
   }
-}
-
-export function getPreloadedSound(key: keyof typeof SOUNDS): AudioBuffer | undefined {
-  return preloadedSounds.get(key);
 }
