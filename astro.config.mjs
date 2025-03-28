@@ -1,10 +1,12 @@
 import tailwind from '@astrojs/tailwind';
+import vue from '@astrojs/vue';
 import { defineConfig } from 'astro/config';
 import serviceWorker from 'astrojs-service-worker';
 
 export default defineConfig({
   integrations: [
     tailwind(),
+    vue(),
     serviceWorker({
       workbox: {
         // Mise en cache des ressources statiques
