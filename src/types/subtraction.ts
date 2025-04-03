@@ -9,6 +9,8 @@ export interface SubtractionItem {
 
 export interface SubtractionTest {
   id: string;
+  type: 'subtraction';
+  mode: 'integer' | 'decimal';
   items: SubtractionItem[];
   currentItemIndex: number;
   startTime: Date;

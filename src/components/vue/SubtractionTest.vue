@@ -1,6 +1,13 @@
 <template>
   <div class="container mx-auto px-4 py-8 mt-16">
-    <div class="mb-6">
+    <!-- Mode selector -->
+    <TestModeSelector
+      v-if="!testStarted"
+      testType="subtraction"
+      @modeSelected="startTestWithMode"
+    />
+
+    <div v-if="testStarted" class="mb-6">
       <div class="flex items-center justify-between">
         <div class="text-sm text-gray-600">
           Question {{ currentQuestionIndex + 1 }}/{{ test.items.length }}
@@ -11,20 +18,22 @@
       </div>
     </div>
 
-    <form @submit.prevent="handleSubmit" class="mt-8">
+    <form v-if="testStarted" @submit.prevent="handleSubmit" class="mt-8">
       <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
         <div class="text-center mb-8">
           <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4">
-            <span>{{ currentItem.firstNumber }}</span>
+            <span>{{ formatNumber(currentItem.firstNumber) }}</span>
             <span class="text-accent">−</span>
-            <span>{{ currentItem.secondNumber }}</span>
+            <span>{{ formatNumber(currentItem.secondNumber) }}</span>
           </div>
 
           <div class="w-full max-w-xs mx-auto">
             <div class="flex flex-col gap-1">
-              <input v-model="answer" type="number" required min="0" max="999"
+              <input v-model="answer" :type="test.mode === 'decimal' ? 'number' : 'number'" required min="0" max="999"
+                :step="test.mode === 'decimal' ? '0.1' : '1'"
                 class="w-full px-4 py-2 rounded-md border border-gray-300 text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                inputmode="numeric" pattern="[0-9]*" />
+                :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" pattern="[0-9]*" />
+              <small v-if="test.mode === 'decimal'" class="text-gray-500 text-center">Utilisez un point (.) comme séparateur décimal</small>
             </div>
           </div>
         </div>
@@ -46,7 +55,7 @@
               'incorrecte' }}</span>
           </p>
           <p class="text-gray-600">
-            La bonne réponse était : <span class="font-semibold">{{ currentItem.correctAnswer }}</span>
+            La bonne réponse était : <span class="font-semibold">{{ formatNumber(currentItem.correctAnswer) }}</span>
           </p>
         </div>
         <div class="flex justify-end gap-3 mt-4">
@@ -85,36 +94,56 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { currentTest, completeTest } from '../../stores/testStore'
+import { computed, ref } from 'vue'
 import { createSubtractionTest } from '../../logic/subtractionLogic'
 import { playSound } from '../../stores/soundStore'
+import { completeTest, currentTest } from '../../stores/testStore'
+import TestModeSelector from '../tests/TestModeSelector.vue'
 
 // État local
+const testStarted = ref(false)
 const currentQuestionIndex = ref(0)
 const answer = ref('')
 const showResultModal = ref(false)
 const showCompleteModal = ref(false)
 const isCorrect = ref(false)
 const score = ref(0)
+const testMode = ref('integer')
 
 // Récupérer ou créer un test
-const test = currentTest.get() || createSubtractionTest(5)
+const test = ref(null)
+
+// Démarrer un test avec le mode sélectionné
+function startTestWithMode(mode) {
+  testMode.value = mode
+  test.value = createSubtractionTest(5, mode)
+  currentTest.set(test.value)
+  testStarted.value = true
+}
 
 // Calculer la progression
-const progress = computed(() => ((currentQuestionIndex.value + 1) / test.items.length) * 100)
+const progress = computed(() => ((currentQuestionIndex.value + 1) / test.value?.items.length) * 100)
 
 // Obtenir l'item courant
-const currentItem = computed(() => test.items[currentQuestionIndex.value])
+const currentItem = computed(() => test.value?.items[currentQuestionIndex.value])
 
 // Gérer la soumission du formulaire
 function handleSubmit() {
-  const userAnswer = parseInt(answer.value)
-  isCorrect.value = userAnswer === currentItem.value.correctAnswer
+  const userAnswer = test.value.mode === 'decimal' ? parseFloat(answer.value) : parseInt(answer.value)
+
+  if (test.value.mode === 'decimal') {
+    // Pour les décimaux, on arrondit à 1 chiffre après la virgule
+    const expectedAnswer = parseFloat(currentItem.value.correctAnswer.toFixed(1))
+    const normalizedUserAnswer = parseFloat(userAnswer.toFixed(1))
+    isCorrect.value = normalizedUserAnswer === expectedAnswer
+  } else {
+    // Pour les entiers, comparaison simple
+    isCorrect.value = userAnswer === currentItem.value.correctAnswer
+  }
 
   // Mettre à jour l'item avec la réponse
-  test.items[currentQuestionIndex.value].userAnswer = userAnswer
-  test.items[currentQuestionIndex.value].isCorrect = isCorrect.value
+  test.value.items[currentQuestionIndex.value].userAnswer = userAnswer
+  test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value
 
   // Jouer le son approprié
   playSound(isCorrect.value ? 'correct' : 'incorrect')
@@ -123,18 +152,26 @@ function handleSubmit() {
   showResultModal.value = true
 }
 
+// Formater un nombre pour l'affichage (afficher les décimaux seulement si nécessaire)
+function formatNumber(number) {
+  if (test.value?.mode === 'decimal') {
+    return number.toFixed(1)
+  }
+  return number
+}
+
 // Gérer le clic sur Continuer
 function handleContinue() {
   showResultModal.value = false
   answer.value = ''
 
-  if (currentQuestionIndex.value + 1 >= test.items.length) {
+  if (currentQuestionIndex.value + 1 >= test.value.items.length) {
     // Calculer le score final
-    const correctAnswers = test.items.filter(item => item.isCorrect).length
-    score.value = Math.round((correctAnswers / test.items.length) * 100)
+    const correctAnswers = test.value.items.filter(item => item.isCorrect).length
+    score.value = Math.round((correctAnswers / test.value.items.length) * 100)
 
     // Terminer le test
-    completeTest(test)
+    completeTest(test.value)
 
     // Afficher la modal de fin
     showCompleteModal.value = true
@@ -146,8 +183,9 @@ function handleContinue() {
 
 // Gérer le redémarrage
 function handleRestart() {
-  // Créer un nouveau test
-  const newTest = createSubtractionTest(5)
+  // Créer un nouveau test avec le même mode
+  const newTest = createSubtractionTest(5, testMode.value)
+  test.value = newTest
   currentTest.set(newTest)
 
   // Réinitialiser l'état local

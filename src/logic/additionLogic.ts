@@ -1,22 +1,38 @@
 import { nanoid } from 'nanoid';
 import { type AdditionItem, type AdditionTest } from '../types/addition';
 
-export function generateAdditionItem(): AdditionItem {
-  const firstNumber = Math.floor(Math.random() * 100);
-  const secondNumber = Math.floor(Math.random() * 100);
+export function generateAdditionItem(mode: 'integer' | 'decimal' = 'integer'): AdditionItem {
+  if (mode === 'integer') {
+    // Générer des nombres entiers comme avant
+    const firstNumber = Math.floor(Math.random() * 100);
+    const secondNumber = Math.floor(Math.random() * 100);
 
-  return {
-    id: nanoid(),
-    firstNumber,
-    secondNumber,
-    correctAnswer: firstNumber + secondNumber
-  };
+    return {
+      id: nanoid(),
+      firstNumber,
+      secondNumber,
+      correctAnswer: firstNumber + secondNumber
+    };
+  } else {
+    // Générer des nombres décimaux (à 1 chiffre après la virgule)
+    const firstNumber = Math.round(Math.random() * 100) / 10;
+    const secondNumber = Math.round(Math.random() * 100) / 10;
+
+    return {
+      id: nanoid(),
+      firstNumber,
+      secondNumber,
+      correctAnswer: parseFloat((firstNumber + secondNumber).toFixed(1))
+    };
+  }
 }
 
-export function createAdditionTest(numberOfItems: number = 10): AdditionTest {
+export function createAdditionTest(numberOfItems: number = 10, mode: 'integer' | 'decimal' = 'integer'): AdditionTest {
   return {
     id: nanoid(),
-    items: Array.from({ length: numberOfItems }, () => generateAdditionItem()),
+    type: 'addition',
+    mode,
+    items: Array.from({ length: numberOfItems }, () => generateAdditionItem(mode)),
     currentItemIndex: 0,
     startTime: new Date(),
     status: 'not_started'
@@ -24,8 +40,15 @@ export function createAdditionTest(numberOfItems: number = 10): AdditionTest {
 }
 
 export function checkAnswer(item: AdditionItem, answer: number): boolean {
-  const isCorrect = answer === item.correctAnswer;
-  return isCorrect;
+  // Pour les nombres décimaux, comparer avec une précision d'un chiffre après la virgule
+  if (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) {
+    const expectedAnswer = parseFloat((item.correctAnswer as number).toFixed(1));
+    const userAnswer = parseFloat(answer.toFixed(1));
+    return userAnswer === expectedAnswer;
+  }
+
+  // Pour les nombres entiers, comparaison simple
+  return answer === item.correctAnswer;
 }
 
 export function evaluateTest(test: AdditionTest): {

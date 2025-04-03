@@ -1,23 +1,39 @@
 import { nanoid } from 'nanoid';
 import { type MultiplicationItem, type MultiplicationTest } from '../types/multiplication';
 
-export function generateMultiplicationItem(): MultiplicationItem {
-  // On commence avec des nombres simples pour l'apprentissage (1-12)
-  const firstNumber = Math.floor(Math.random() * 12) + 1;
-  const secondNumber = Math.floor(Math.random() * 12) + 1;
+export function generateMultiplicationItem(mode: 'integer' | 'decimal' = 'integer'): MultiplicationItem {
+  if (mode === 'integer') {
+    // Nombres entiers simples (1-12) pour l'apprentissage
+    const firstNumber = Math.floor(Math.random() * 12) + 1;
+    const secondNumber = Math.floor(Math.random() * 12) + 1;
 
-  return {
-    id: nanoid(),
-    firstNumber,
-    secondNumber,
-    correctAnswer: firstNumber * secondNumber
-  };
+    return {
+      id: nanoid(),
+      firstNumber,
+      secondNumber,
+      correctAnswer: firstNumber * secondNumber
+    };
+  } else {
+    // Multiplication avec nombres décimaux (1 chiffre après la virgule)
+    // On utilise des nombres plus petits pour les décimaux
+    const firstNumber = Math.round((Math.random() * 10) * 10) / 10;
+    const secondNumber = Math.round((Math.random() * 10) * 10) / 10;
+
+    return {
+      id: nanoid(),
+      firstNumber,
+      secondNumber,
+      correctAnswer: parseFloat((firstNumber * secondNumber).toFixed(1))
+    };
+  }
 }
 
-export function createMultiplicationTest(numberOfItems: number = 10): MultiplicationTest {
+export function createMultiplicationTest(numberOfItems: number = 10, mode: 'integer' | 'decimal' = 'integer'): MultiplicationTest {
   return {
     id: nanoid(),
-    items: Array.from({ length: numberOfItems }, () => generateMultiplicationItem()),
+    type: 'multiplication',
+    mode,
+    items: Array.from({ length: numberOfItems }, () => generateMultiplicationItem(mode)),
     currentItemIndex: 0,
     startTime: new Date(),
     status: 'not_started'
@@ -25,8 +41,15 @@ export function createMultiplicationTest(numberOfItems: number = 10): Multiplica
 }
 
 export function checkAnswer(item: MultiplicationItem, answer: number): boolean {
-  const isCorrect = answer === item.correctAnswer;
-  return isCorrect;
+  // Pour les nombres décimaux, comparer avec une précision d'un chiffre après la virgule
+  if (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) {
+    const expectedAnswer = parseFloat((item.correctAnswer as number).toFixed(1));
+    const userAnswer = parseFloat(answer.toFixed(1));
+    return userAnswer === expectedAnswer;
+  }
+
+  // Pour les nombres entiers, comparaison simple
+  return answer === item.correctAnswer;
 }
 
 export function evaluateTest(test: MultiplicationTest): {

@@ -1,6 +1,6 @@
 ---
-import Layout from "../../layouts/Layout.astro";
 import Icon from "../../components/common/Icon.astro";
+import Layout from "../../layouts/Layout.astro";
 
 const ruleCategories = [
   {
@@ -9,8 +9,8 @@ const ruleCategories = [
     description: "Comment additionner correctement les nombres",
     examples: [
       { text: "24 + 13 = 37", explanation: "Addition simple" },
-      { text: "45 + 8 = 53", explanation: "Addition avec un chiffre" }
-    ]
+      { text: "45 + 8 = 53", explanation: "Addition avec un chiffre" },
+    ],
   },
   {
     id: "subtraction",
@@ -18,8 +18,8 @@ const ruleCategories = [
     description: "Comment soustraire des nombres",
     examples: [
       { text: "52 - 31 = 21", explanation: "Soustraction simple" },
-      { text: "40 - 7 = 33", explanation: "Soustraction avec un chiffre" }
-    ]
+      { text: "40 - 7 = 33", explanation: "Soustraction avec un chiffre" },
+    ],
   },
   {
     id: "multiplication",
@@ -27,8 +27,8 @@ const ruleCategories = [
     description: "Les tables de multiplication de 1 à 12",
     examples: [
       { text: "6 × 7 = 42", explanation: "Multiplication simple" },
-      { text: "8 × 9 = 72", explanation: "Multiplication avancée" }
-    ]
+      { text: "8 × 9 = 72", explanation: "Multiplication avancée" },
+    ],
   },
   {
     id: "comparison",
@@ -36,9 +36,18 @@ const ruleCategories = [
     description: "Comment comparer deux nombres",
     examples: [
       { text: "45 > 32", explanation: "Plus grand que" },
-      { text: "17 < 24", explanation: "Plus petit que" }
-    ]
-  }
+      { text: "17 < 24", explanation: "Plus petit que" },
+    ],
+  },
+  {
+    id: "decimal",
+    title: "Règles des nombres décimaux",
+    description: "Comment travailler avec les nombres à virgule",
+    examples: [
+      { text: "3.5 + 2.7 = 6.2", explanation: "Addition de décimaux" },
+      { text: "5.0 > 4.9", explanation: "Comparaison de décimaux" },
+    ],
+  },
 ];
 ---
 

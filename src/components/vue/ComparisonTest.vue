@@ -1,6 +1,13 @@
 <template>
   <div class="container mx-auto px-4 py-8 mt-16">
-    <div class="mb-6">
+    <!-- Mode selector -->
+    <TestModeSelector
+      v-if="!testStarted"
+      testType="comparison"
+      @modeSelected="startTestWithMode"
+    />
+
+    <div v-if="testStarted" class="mb-6">
       <div class="flex items-center justify-between">
         <div class="text-sm text-gray-600">
           Question {{ currentQuestionIndex + 1 }}/{{ test.items.length }}
@@ -11,13 +18,13 @@
       </div>
     </div>
 
-    <form @submit.prevent="handleSubmit" class="mt-8">
+    <form v-if="testStarted" @submit.prevent class="mt-8">
       <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
         <div class="text-center mb-8">
           <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4">
-            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.firstNumber }}</span>
+            <span class="transition-all duration-300 hover:scale-110">{{ formatNumber(currentItem.firstNumber) }}</span>
             <span class="text-accent text-3xl" aria-hidden="true">?</span>
-            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.secondNumber }}</span>
+            <span class="transition-all duration-300 hover:scale-110">{{ formatNumber(currentItem.secondNumber) }}</span>
           </div>
         </div>
 
@@ -49,7 +56,7 @@
               'incorrecte' }}</span>
           </p>
           <p class="text-gray-600">
-            La bonne réponse était : <span class="font-semibold">{{ currentItem.correctAnswer }}</span>
+            La bonne réponse était : <span class="font-semibold">{{ currentItem.firstNumber }} {{ currentItem.correctAnswer }} {{ currentItem.secondNumber }}</span>
           </p>
         </div>
         <div class="flex justify-end gap-3 mt-4">
@@ -88,34 +95,53 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { currentTest, completeTest } from '../../stores/testStore'
+import { computed, ref } from 'vue'
 import { createComparisonTest } from '../../logic/comparisonLogic'
 import { playSound } from '../../stores/soundStore'
+import { completeTest, currentTest } from '../../stores/testStore'
+import TestModeSelector from '../tests/TestModeSelector.vue'
 
 // État local
+const testStarted = ref(false)
 const currentQuestionIndex = ref(0)
 const showResultModal = ref(false)
 const showCompleteModal = ref(false)
 const isCorrect = ref(false)
 const score = ref(0)
+const testMode = ref('integer')
 
 // Récupérer ou créer un test
-const test = currentTest.get() || createComparisonTest(5)
+const test = ref(null)
+
+// Démarrer un test avec le mode sélectionné
+function startTestWithMode(mode) {
+  testMode.value = mode
+  test.value = createComparisonTest(5, mode)
+  currentTest.set(test.value)
+  testStarted.value = true
+}
 
 // Calculer la progression
-const progress = computed(() => ((currentQuestionIndex.value + 1) / test.items.length) * 100)
+const progress = computed(() => ((currentQuestionIndex.value + 1) / test.value?.items.length) * 100)
 
 // Obtenir l'item courant
-const currentItem = computed(() => test.items[currentQuestionIndex.value])
+const currentItem = computed(() => test.value?.items[currentQuestionIndex.value])
+
+// Formater un nombre pour l'affichage (afficher les décimaux seulement si nécessaire)
+function formatNumber(number) {
+  if (test.value?.mode === 'decimal') {
+    return number.toFixed(1)
+  }
+  return number
+}
 
 // Gérer la réponse
 function handleAnswer(answer) {
   isCorrect.value = answer === currentItem.value.correctAnswer
 
   // Mettre à jour l'item avec la réponse
-  test.items[currentQuestionIndex.value].userAnswer = answer
-  test.items[currentQuestionIndex.value].isCorrect = isCorrect.value
+  test.value.items[currentQuestionIndex.value].userAnswer = answer
+  test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value
 
   // Jouer le son approprié
   playSound(isCorrect.value ? 'correct' : 'incorrect')
@@ -128,13 +154,13 @@ function handleAnswer(answer) {
 function handleContinue() {
   showResultModal.value = false
 
-  if (currentQuestionIndex.value + 1 >= test.items.length) {
+  if (currentQuestionIndex.value + 1 >= test.value.items.length) {
     // Calculer le score final
-    const correctAnswers = test.items.filter(item => item.isCorrect).length
-    score.value = Math.round((correctAnswers / test.items.length) * 100)
+    const correctAnswers = test.value.items.filter(item => item.isCorrect).length
+    score.value = Math.round((correctAnswers / test.value.items.length) * 100)
 
     // Terminer le test
-    completeTest(test)
+    completeTest(test.value)
 
     // Afficher la modal de fin
     showCompleteModal.value = true
@@ -146,13 +172,13 @@ function handleContinue() {
 
 // Gérer le redémarrage
 function handleRestart() {
-  // Créer un nouveau test
-  const newTest = createComparisonTest(5)
+  // Créer un nouveau test avec le même mode
+  const newTest = createComparisonTest(5, testMode.value)
+  test.value = newTest
   currentTest.set(newTest)
 
   // Réinitialiser l'état local
   currentQuestionIndex.value = 0
-  showResultModal.value = false
   showCompleteModal.value = false
   score.value = 0
 }

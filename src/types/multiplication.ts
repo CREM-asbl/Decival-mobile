@@ -9,6 +9,8 @@ export interface MultiplicationItem {
 
 export interface MultiplicationTest {
   id: string;
+  type: 'multiplication';
+  mode: 'integer' | 'decimal';
   items: MultiplicationItem[];
   currentItemIndex: number;
   startTime: Date;

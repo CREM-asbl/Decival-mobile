@@ -9,6 +9,8 @@ export interface AdditionItem {
 
 export interface AdditionTest {
   id: string;
+  type: 'addition';
+  mode: 'integer' | 'decimal';
   items: AdditionItem[];
   currentItemIndex: number;
   startTime: Date;
