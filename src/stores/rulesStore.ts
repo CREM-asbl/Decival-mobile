@@ -101,6 +101,32 @@ const defaultRules: Record<RuleType, Rule[]> = {
         'Le symbole > pointe vers le plus grand nombre'
       ]
     }
+  ],
+  decimal: [
+    {
+      id: 'dec-1',
+      type: 'decimal',
+      title: 'Nombres décimaux',
+      description: 'Comment travailler avec les nombres à virgule',
+      steps: [
+        'Aligner les nombres en faisant correspondre les virgules',
+        'S\'assurer que les nombres ont le même nombre de décimales (ajouter des zéros si nécessaire)',
+        'Procéder comme pour une addition normale',
+        'Placer la virgule au même endroit dans le résultat'
+      ],
+      examples: [
+        {
+          problem: '3.5 + 2.7',
+          solution: '6.2',
+          explanation: 'Additionner 5 et 7 dixièmes = 12 dixièmes = 1 unité et 2 dixièmes, puis 3 + 2 + 1 = 6 unités'
+        }
+      ],
+      tips: [
+        'La virgule sépare la partie entière de la partie décimale',
+        'Les chiffres après la virgule représentent des fractions de l\'unité',
+        'Le premier chiffre après la virgule représente les dixièmes, le deuxième les centièmes, etc.'
+      ]
+    }
   ]
 };
 

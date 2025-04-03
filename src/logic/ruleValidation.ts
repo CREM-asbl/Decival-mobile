@@ -32,6 +32,8 @@ export function validateRule({ ruleId, answer, expectedAnswer, details }: Valida
       return validateMultiplication({ ruleId, answer, expectedAnswer, details });
     case 'comparison':
       return validateComparison({ ruleId, answer, expectedAnswer, details });
+    case 'decimal':
+      return validateDecimal({ ruleId, answer, expectedAnswer, details });
     default:
       return {
         ruleId,
@@ -138,4 +140,53 @@ function validateComparison({ ruleId, answer, expectedAnswer }: ValidationContex
     feedback: "La comparaison n'est pas correcte. Vérifiez le sens des symboles < et >.",
     suggestedStep: "Comparez les chiffres de gauche à droite"
   };
+}
+
+function validateDecimal({ ruleId, answer, expectedAnswer, details }: ValidationContext): RuleValidation {
+  // Convertir et arrondir les nombres à 1 décimale pour une comparaison précise
+  const userAnswer = parseFloat(Number(answer).toFixed(1));
+  const correctAnswer = parseFloat(Number(expectedAnswer).toFixed(1));
+  const isCorrect = userAnswer === correctAnswer;
+
+  const { firstNumber = 0, secondNumber = 0 } = details || {};
+
+  if (isCorrect) {
+    return {
+      ruleId,
+      isValid: true,
+      feedback: "Excellent ! L'opération avec des nombres décimaux est correcte."
+    };
+  }
+
+  // Analyse des erreurs courantes avec les nombres décimaux
+  const hasWrongDecimalPlacement = Math.abs(userAnswer * 10 - correctAnswer) < 1 ||
+    Math.abs(userAnswer - correctAnswer * 10) < 1;
+
+  // Vérifier si l'élève a oublié la virgule
+  const hasIgnoredDecimal = Math.abs(Math.round(userAnswer) - correctAnswer) < 0.1 ||
+    Math.abs(userAnswer - Math.round(correctAnswer)) < 0.1;
+
+  // Feedback spécifique selon l'erreur détectée
+  if (hasWrongDecimalPlacement) {
+    return {
+      ruleId,
+      isValid: false,
+      feedback: "Attention à la position de la virgule ! Vérifiez votre alignement.",
+      suggestedStep: "Alignez les virgules des nombres avant d'additionner"
+    };
+  } else if (hasIgnoredDecimal) {
+    return {
+      ruleId,
+      isValid: false,
+      feedback: "N'oubliez pas la partie décimale des nombres !",
+      suggestedStep: "La virgule sépare la partie entière et la partie décimale"
+    };
+  } else {
+    return {
+      ruleId,
+      isValid: false,
+      feedback: "Ce n'est pas la bonne réponse. Vérifiez votre calcul.",
+      suggestedStep: "Additionnez séparément les parties entières et décimales"
+    };
+  }
 }

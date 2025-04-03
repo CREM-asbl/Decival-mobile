@@ -1,6 +1,6 @@
 export interface Rule {
   id: string;
-  type: 'addition' | 'subtraction' | 'multiplication' | 'comparison';
+  type: 'addition' | 'subtraction' | 'multiplication' | 'comparison' | 'decimal';
   title: string;
   description: string;
   examples: Example[];
@@ -21,4 +21,4 @@ export interface RuleValidation {
   suggestedStep?: string;
 }
 
-export type RuleType = 'addition' | 'subtraction' | 'multiplication' | 'comparison';
+export type RuleType = 'addition' | 'subtraction' | 'multiplication' | 'comparison' | 'decimal';

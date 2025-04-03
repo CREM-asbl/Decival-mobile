@@ -2,6 +2,7 @@
 import { getRuleProgress } from "../../stores/ruleProgressStore";
 import { validateAnswer } from "../../logic/validationLogic";
 import RuleLink from "../rules/RuleLink.astro";
+import MasteryEffect from "../common/MasteryEffect.astro";
 
 interface Props {
   id: string;
@@ -19,6 +20,10 @@ const { id, answer, expectedAnswer, operationType, details } = Astro.props;
 const ruleId = `${operationType}-${id}`;
 const progress = getRuleProgress(ruleId);
 const validation = validateAnswer(answer, expectedAnswer, details);
+
+// Déterminer si la maîtrise vient d'être atteinte
+const justMastered =
+  validation.isValid && progress?.mastered && progress.successCount === 5;
 
 const encouragementMessages = {
   firstSuccess: "Continue comme ça !",
@@ -38,12 +43,14 @@ if (progress?.mastered) {
 }
 ---
 
-<div class="transform-gpu">
+<div class="transform-gpu relative">
+  <MasteryEffect show={justMastered} />
   <div
     class={`bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto transition-all duration-500 ease-out ${
       validation.isValid ? "scale-100" : "scale-95"
-    }`}
+    } ${justMastered ? "mastery-glow" : ""}`}
     data-result="true"
+    data-just-mastered={justMastered}
   >
     <div
       class={`text-center mb-4 transition-colors duration-300 ${
@@ -97,6 +104,11 @@ if (progress?.mastered) {
             />
           </div>
           <p class="text-sm mt-2 text-gray-600">{encouragement}</p>
+          {justMastered && (
+            <div class="mt-4 text-center font-bold text-accent animate-pulse">
+              Félicitations ! Tu as maîtrisé cette règle ! 🎉
+            </div>
+          )}
         </div>
       )
     }
@@ -128,7 +140,18 @@ if (progress?.mastered) {
     if (!resultElement) return;
 
     const isValid = resultElement.querySelector(".text-green-600") !== null;
-    playSound(isValid ? "correct" : "incorrect");
+    const justMastered =
+      resultElement.getAttribute("data-just-mastered") === "true";
+
+    // Jouer un son en fonction du résultat
+    if (justMastered) {
+      playSound("correct", 0.7);
+      setTimeout(() => {
+        playSound("correct", 0.5);
+      }, 300);
+    } else {
+      playSound(isValid ? "correct" : "incorrect");
+    }
 
     // Ajouter une classe pour l'animation d'entrée
     resultElement.classList.add("animate-fade-in");
@@ -153,5 +176,26 @@ if (progress?.mastered) {
 
   .scale-102 {
     scale: 1.02;
+  }
+
+  .mastery-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+    position: relative;
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 5px rgba(var(--accent), 0.5);
+    }
+    to {
+      box-shadow: 0 0 20px rgba(var(--accent), 0.8);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mastery-glow {
+      animation: none;
+      box-shadow: 0 0 10px rgba(var(--accent), 0.6);
+    }
   }
 </style>

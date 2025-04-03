@@ -1,0 +1,230 @@
+---
+interface Props {
+  show: boolean;
+}
+
+const { show } = Astro.props;
+---
+
+{
+  show && (
+    <div class="mastery-effect" aria-hidden="true">
+      <div class="confetti-container">
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+        <div class="confetti" />
+      </div>
+      <div class="mastery-badge">
+        <span class="mastery-icon">✨</span>
+        <span class="mastery-text">Maîtrisé!</span>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .mastery-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .mastery-badge {
+    background-color: rgb(var(--accent));
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(var(--accent), 0.3);
+    animation: badge-appear 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mastery-icon {
+    font-size: 1.5em;
+    animation: spin 1.5s infinite linear;
+  }
+
+  .mastery-text {
+    font-size: 1.25rem;
+  }
+
+  .confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ffde59;
+    border-radius: 0;
+    opacity: 0.8;
+    animation: confetti-fall 3s ease-in-out forwards;
+  }
+
+  .confetti:nth-child(1) {
+    left: 10%;
+    animation-delay: 0s;
+    background-color: #ff7eb9;
+    transform: rotate(15deg);
+  }
+  .confetti:nth-child(2) {
+    left: 20%;
+    animation-delay: 0.2s;
+    background-color: #7afcff;
+    transform: rotate(30deg);
+  }
+  .confetti:nth-child(3) {
+    left: 30%;
+    animation-delay: 0.4s;
+    background-color: #feff9c;
+    transform: rotate(45deg);
+  }
+  .confetti:nth-child(4) {
+    left: 40%;
+    animation-delay: 0.6s;
+    background-color: #ff9c9c;
+    transform: rotate(60deg);
+  }
+  .confetti:nth-child(5) {
+    left: 50%;
+    animation-delay: 0.8s;
+    background-color: #b39ddb;
+    transform: rotate(75deg);
+  }
+  .confetti:nth-child(6) {
+    left: 60%;
+    animation-delay: 1s;
+    background-color: #52b788;
+    transform: rotate(90deg);
+  }
+  .confetti:nth-child(7) {
+    left: 70%;
+    animation-delay: 1.2s;
+    background-color: #ff7eb9;
+    transform: rotate(105deg);
+  }
+  .confetti:nth-child(8) {
+    left: 80%;
+    animation-delay: 1.4s;
+    background-color: #7afcff;
+    transform: rotate(120deg);
+  }
+  .confetti:nth-child(9) {
+    left: 90%;
+    animation-delay: 1.6s;
+    background-color: #feff9c;
+    transform: rotate(135deg);
+  }
+  .confetti:nth-child(10) {
+    left: 95%;
+    animation-delay: 1.8s;
+    background-color: #ff9c9c;
+    transform: rotate(150deg);
+  }
+
+  @keyframes confetti-fall {
+    0% {
+      top: -10px;
+      transform: translateY(0) rotate(0deg);
+    }
+    100% {
+      top: 100%;
+      transform: translateY(0) rotate(360deg);
+    }
+  }
+
+  @keyframes badge-appear {
+    0% {
+      transform: scale(0) rotate(-10deg);
+      opacity: 0;
+    }
+    70% {
+      transform: scale(1.1) rotate(5deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .confetti {
+      animation: confetti-fall-reduced 2s ease-in-out forwards;
+    }
+
+    .mastery-badge {
+      animation: badge-appear-reduced 0.5s ease-out forwards;
+    }
+
+    .mastery-icon {
+      animation: none;
+    }
+
+    @keyframes confetti-fall-reduced {
+      0% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes badge-appear-reduced {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  }
+</style>
+
+<script>
+  // Supprimer automatiquement l'effet après un délai
+  if (typeof window !== "undefined") {
+    const masteryEffects = document.querySelectorAll(".mastery-effect");
+    masteryEffects.forEach((effect) => {
+      setTimeout(() => {
+        effect.classList.add("fade-out");
+        setTimeout(() => {
+          effect.remove();
+        }, 500);
+      }, 3000);
+    });
+  }
+</script>

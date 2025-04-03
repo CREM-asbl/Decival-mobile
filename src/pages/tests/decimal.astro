@@ -1,0 +1,10 @@
+---
+import TestNavigation from "../../components/tests/TestNavigation.astro";
+import DecimalTest from "../../components/vue/DecimalTest.vue";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Test de nombres décimaux - Decival" currentPage="tests">
+  <TestNavigation title="Test de nombres décimaux" />
+  <DecimalTest client:only />
+</Layout>

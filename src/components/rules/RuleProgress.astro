@@ -1,6 +1,8 @@
 ---
 import { getRuleProgress } from "../../stores/ruleProgressStore";
 import Icon from "../common/Icon.astro";
+import { ANIMATION_CLASSES } from "../../utils/animations";
+import { getConditionalAnimationClass } from "../../stores/animationStore";
 
 interface Props {
   ruleId: string;
@@ -40,13 +42,19 @@ const colors = {
   "À travailler": "text-red-600 bg-red-50",
   "Pas encore commencé": "text-gray-600 bg-gray-50",
 };
+
+// Classes d'animation
+const transitionClass = getConditionalAnimationClass("status-transition");
 ---
 
-<div class={`rounded-lg p-3 ${colors[status]}`}>
+<div
+  class={`rounded-lg p-3 ${colors[status]} ${transitionClass}`}
+  data-status={status}
+>
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-2">
       <Icon name="chart" class="w-4 h-4" />
-      <span class="font-medium">{status}</span>
+      <span class="font-medium status-text">{status}</span>
     </div>
     {
       hasProgress && (
@@ -79,3 +87,50 @@ const colors = {
     )
   }
 </div>
+
+<style>
+  .status-transition {
+    transition:
+      background-color 0.5s ease,
+      color 0.5s ease;
+  }
+
+  .status-text {
+    transition: transform 0.3s ease;
+  }
+
+  .status-transition:hover .status-text {
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
+  // Observer pour détecter les changements de statut
+  if (typeof window !== "undefined") {
+    const statusElements = document.querySelectorAll("[data-status]");
+
+    // Créer un observateur pour suivre les changements d'attributs
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-status"
+        ) {
+          const element = mutation.target as HTMLElement;
+
+          // Ajouter une classe pour l'animation
+          element.classList.add("status-updating");
+
+          setTimeout(() => {
+            element.classList.remove("status-updating");
+          }, 600);
+        }
+      });
+    });
+
+    // Observer chaque élément de statut
+    statusElements.forEach((el) => {
+      observer.observe(el, { attributes: true });
+    });
+  }
+</script>
