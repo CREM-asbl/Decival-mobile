@@ -5,6 +5,9 @@ export interface ComparisonItem {
   correctAnswer: string;
   userAnswer?: string;
   isCorrect?: boolean;
+  // Nouveaux champs pour le système d'erreurs proportionnelles
+  type?: number;
+  errorTypes?: string[];
 }
 
 export interface ComparisonTest {

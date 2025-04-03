@@ -127,27 +127,56 @@ const progress = computed(() => ((currentQuestionIndex.value + 1) / test.value?.
 // Obtenir l'item courant
 const currentItem = computed(() => test.value?.items[currentQuestionIndex.value])
 
-// Formater un nombre pour l'affichage (afficher les décimaux seulement si nécessaire)
+// Formater un nombre pour l'affichage (afficher les décimaux de manière adaptée)
 function formatNumber(number) {
   if (test.value?.mode === 'decimal') {
-    return number.toFixed(1)
+    // Déterminer le nombre de décimales nécessaires
+    const numberStr = number.toString();
+    const decimalPart = numberStr.includes('.') ? numberStr.split('.')[1] : '';
+
+    // Si le nombre a un type spécifique (pour les exercices proportionnels)
+    if (currentItem.value && currentItem.value.type !== undefined) {
+      // Pour les comparaisons, les types impliquent différentes précisions
+      const type = currentItem.value.type;
+
+      // Types 0, 6 = 1 décimale, type 1, 2, 3, 4, 5 peuvent avoir 2 décimales
+      const precision = (type === 0 || type === 6) ? 1 :
+                       ((type >= 1 && type <= 5) ? 2 : 1);
+
+      return number.toFixed(precision);
+    }
+    // Si pas de type spécifique mais le nombre a des décimales significatives
+    else if (decimalPart && decimalPart.length > 1 && parseFloat('0.' + decimalPart) !== 0) {
+      // Conserver les décimales significatives (jusqu'à 2 maximum)
+      return number.toFixed(Math.min(decimalPart.length, 2));
+    }
+    // Par défaut, afficher au moins une décimale pour les nombres décimaux
+    else {
+      return number.toFixed(1);
+    }
   }
-  return number
+  return number;
 }
 
 // Gérer la réponse
 function handleAnswer(answer) {
-  isCorrect.value = answer === currentItem.value.correctAnswer
+  // Vérifier que la réponse est valide (doit être l'un des symboles de comparaison)
+  if (!['<', '=', '>'].includes(answer)) {
+    return; // Ne rien faire si la réponse est invalide
+  }
+
+  // Vérifier si la réponse est correcte
+  isCorrect.value = answer === currentItem.value.correctAnswer;
 
   // Mettre à jour l'item avec la réponse
-  test.value.items[currentQuestionIndex.value].userAnswer = answer
-  test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value
+  test.value.items[currentQuestionIndex.value].userAnswer = answer;
+  test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value;
 
   // Jouer le son approprié
-  playSound(isCorrect.value ? 'correct' : 'incorrect')
+  playSound(isCorrect.value ? 'correct' : 'incorrect');
 
   // Afficher la modal de résultat
-  showResultModal.value = true
+  showResultModal.value = true;
 }
 
 // Gérer le clic sur Continuer

@@ -30,7 +30,7 @@
           <div class="w-full max-w-xs mx-auto">
             <div class="flex flex-col gap-1">
               <input v-model="answer" :type="test.mode === 'decimal' ? 'number' : 'number'" required min="0" max="999"
-                :step="test.mode === 'decimal' ? '0.1' : '1'"
+                :step="inputStep"
                 class="w-full px-4 py-2 rounded-md border border-gray-300 text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                 :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" pattern="[0-9]*" />
               <small v-if="test.mode === 'decimal'" class="text-gray-500 text-center">Utilisez un point (.) comme séparateur décimal</small>
@@ -127,37 +127,120 @@ const progress = computed(() => ((currentQuestionIndex.value + 1) / test.value?.
 // Obtenir l'item courant
 const currentItem = computed(() => test.value?.items[currentQuestionIndex.value])
 
+// Calculer le pas d'incrément pour l'input
+const inputStep = computed(() => {
+  // Pour la multiplication avec nombres décimaux, utiliser un step plus fin (0.001)
+  // car les résultats peuvent nécessiter jusqu'à 3 décimales de précision
+  if (test.value?.mode === 'decimal') {
+    return 0.001;
+  }
+  // Par défaut pour les entiers
+  return 1;
+});
+
 // Gérer la soumission du formulaire
 function handleSubmit() {
-  const userAnswer = test.value.mode === 'decimal' ? parseFloat(answer.value) : parseInt(answer.value)
+  // Vérifier que la réponse n'est pas vide
+  if (answer.value === null || answer.value === undefined || answer.value === '') {
+    return; // Ne rien faire si le champ est vide
+  }
+
+  // Convertir et valider la réponse
+  let userAnswer;
 
   if (test.value.mode === 'decimal') {
-    // Pour les décimaux, on arrondit à 1 chiffre après la virgule
-    const expectedAnswer = parseFloat(currentItem.value.correctAnswer.toFixed(1))
-    const normalizedUserAnswer = parseFloat(userAnswer.toFixed(1))
-    isCorrect.value = normalizedUserAnswer === expectedAnswer
+    // Convertir en string pour la validation du format si ce n'est pas déjà une string
+    const answerStr = String(answer.value);
+
+    // Vérifier que c'est un nombre décimal valide
+    if (!/^-?\d+(\.\d+)?$/.test(answerStr)) {
+      // Format invalide, ne pas soumettre
+      return;
+    }
+    userAnswer = parseFloat(answerStr);
+
+    // Vérifier que c'est dans la plage acceptable
+    if (isNaN(userAnswer) || userAnswer < 0 || userAnswer > 1000) {
+      return;
+    }
+
+    // Pour les décimaux, adapter la précision selon le type d'exercice
+    let precision = 1;
+    if (currentItem.value && currentItem.value.type !== undefined) {
+      // Logique de précision basée sur le type de multiplication
+      if (currentItem.value.type === 2 || currentItem.value.type === 3) {
+        precision = 2;
+      } else if (currentItem.value.type === 4) {
+        precision = 3;
+      }
+    }
+
+    const expectedAnswer = parseFloat(currentItem.value.correctAnswer.toFixed(precision));
+    const normalizedUserAnswer = parseFloat(userAnswer.toFixed(precision));
+    isCorrect.value = normalizedUserAnswer === expectedAnswer;
   } else {
+    // Convertir en string pour la validation du format si ce n'est pas déjà une string
+    const answerStr = String(answer.value);
+
+    // Vérifier que c'est un entier valide
+    if (!/^-?\d+$/.test(answerStr)) {
+      // Format invalide, ne pas soumettre
+      return;
+    }
+    userAnswer = parseInt(answerStr);
+
+    // Vérifier que c'est dans la plage acceptable (pour éviter erreurs de débordement)
+    if (isNaN(userAnswer) || userAnswer < 0 || userAnswer > 1000) {
+      return;
+    }
+
     // Pour les entiers, comparaison simple
-    isCorrect.value = userAnswer === currentItem.value.correctAnswer
+    isCorrect.value = userAnswer === currentItem.value.correctAnswer;
   }
 
   // Mettre à jour l'item avec la réponse
-  test.value.items[currentQuestionIndex.value].userAnswer = userAnswer
-  test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value
+  test.value.items[currentQuestionIndex.value].userAnswer = userAnswer;
+  test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value;
 
   // Jouer le son approprié
-  playSound(isCorrect.value ? 'correct' : 'incorrect')
+  playSound(isCorrect.value ? 'correct' : 'incorrect');
 
   // Afficher la modal de résultat
-  showResultModal.value = true
+  showResultModal.value = true;
 }
 
-// Formater un nombre pour l'affichage (afficher les décimaux seulement si nécessaire)
+// Formater un nombre pour l'affichage (afficher les décimaux de manière adaptée)
 function formatNumber(number) {
   if (test.value?.mode === 'decimal') {
-    return number.toFixed(1)
+    // Déterminer le nombre de décimales nécessaires
+    // On analyse la valeur pour voir combien de décimales significatives elle a réellement
+    const numberStr = number.toString();
+    const decimalPart = numberStr.includes('.') ? numberStr.split('.')[1] : '';
+
+    // Si le nombre a un type spécifique (pour les exercices proportionnels)
+    if (currentItem.value && currentItem.value.type !== undefined) {
+      // Utiliser la précision selon le type d'exercice
+      const type = currentItem.value.type;
+      // Types 2-3 = 2 décimales, type 4 = 3 décimales, autres types = 1 décimale
+      let precision = 1;
+      if (type === 2 || type === 3) {
+        precision = 2;
+      } else if (type === 4) {
+        precision = 3;
+      }
+      return number.toFixed(precision);
+    }
+    // Si pas de type spécifique mais le nombre a des décimales significatives
+    else if (decimalPart && decimalPart.length > 1 && parseFloat('0.' + decimalPart) !== 0) {
+      // Préserver jusqu'à 2 décimales significatives sans arrondir à 1 décimale par défaut
+      return number.toFixed(Math.min(decimalPart.length, 2));
+    }
+    // Par défaut, afficher au moins une décimale pour les nombres décimaux
+    else {
+      return number.toFixed(1);
+    }
   }
-  return number
+  return number;
 }
 
 // Gérer le clic sur Continuer

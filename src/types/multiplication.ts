@@ -5,6 +5,9 @@ export interface MultiplicationItem {
   correctAnswer?: number;
   userAnswer?: number;
   isCorrect?: boolean;
+  // Nouveaux champs pour le système d'erreurs proportionnelles
+  type?: number;
+  errorTypes?: string[];
 }
 
 export interface MultiplicationTest {
