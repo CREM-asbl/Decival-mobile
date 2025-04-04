@@ -1,5 +1,20 @@
 import { atom } from 'nanostores';
-import { Rule, RuleType } from '../types/rules';
+import type { RuleType } from '../types/rules';
+
+// Définir l'interface Rule directement dans ce fichier pour éviter les problèmes d'hydratation
+interface Rule {
+  id: string;
+  type: 'addition' | 'subtraction' | 'multiplication' | 'comparison' | 'decimal';
+  title: string;
+  description: string;
+  examples: Array<{
+    problem: string;
+    solution: string;
+    explanation: string;
+  }>;
+  steps: string[];
+  tips: string[];
+}
 
 const defaultRules: Record<RuleType, Rule[]> = {
   addition: [
@@ -234,3 +249,6 @@ export function getRuleById(id: string): Rule | undefined {
   const allRules = Object.values(rules.get()).flat();
   return allRules.find(rule => rule.id === id);
 }
+
+// Exporter le type Rule pour que d'autres fichiers puissent l'utiliser
+export type { Rule };

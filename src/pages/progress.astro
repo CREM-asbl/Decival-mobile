@@ -3,8 +3,9 @@ import Layout from "../layouts/Layout.astro";
 import Icon from "../components/common/Icon.astro";
 import Button from "../components/common/Button.astro";
 import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
+import ProgressPanel from "../components/vue/ProgressPanel.vue";
 
-// Note : les données seront chargées côté client via le store
+// Note : les données seront chargées côté client via les components Vue
 ---
 
 <Layout title="Progrès - Decival" currentPage="progress">
@@ -17,134 +18,15 @@ import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
       </Button>
     </div>
 
-    <!-- Statistiques globales -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-white rounded-lg shadow p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <Icon name="clipboard" class="w-5 h-5 text-accent" />
-          <h2 class="text-lg font-semibold">Tests complétés</h2>
-        </div>
-        <p class="text-2xl font-bold text-accent" id="totalTests">0</p>
-      </div>
-
-      <div class="bg-white rounded-lg shadow p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <Icon name="chart" class="w-5 h-5 text-accent" />
-          <h2 class="text-lg font-semibold">Score moyen</h2>
-        </div>
-        <p class="text-2xl font-bold text-accent" id="averageScore">0%</p>
-      </div>
-
-      <div class="bg-white rounded-lg shadow p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <Icon name="book" class="w-5 h-5 text-accent" />
-          <h2 class="text-lg font-semibold">Meilleur score</h2>
-        </div>
-        <p class="text-2xl font-bold text-accent" id="bestScore">0%</p>
-      </div>
-    </div>
-
-    <!-- Analyses d'erreurs -->
-    <div class="bg-white rounded-lg shadow mb-8">
-      <div class="p-4 border-b">
-        <h2 class="text-xl font-semibold">Analyses des erreurs</h2>
-      </div>
-      <div class="p-4">
-        <ErrorAnalysisPanel client:only />
-      </div>
-    </div>
-
-    <!-- Historique des tests -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="p-4 border-b">
-        <h2 class="text-xl font-semibold">Historique des tests</h2>
-      </div>
-      <div class="p-4" id="testHistory">
-        <p class="text-gray-500 text-center py-8">
-          Aucun test complété pour le moment
-        </p>
-      </div>
-    </div>
+    <!-- Composant Vue pour la progression -->
+    <ProgressPanel client:only />
   </div>
 </Layout>
 
 <script>
+  // Script minimal pour gérer l'export CSV uniquement
   import { stats, testHistory } from "../stores/testStore";
 
-  // Mise à jour des statistiques
-  function updateStats() {
-    const currentStats = stats.get();
-    document.getElementById("totalTests")!.textContent =
-      currentStats.totalTests.toString();
-    document.getElementById("averageScore")!.textContent =
-      `${Math.round(currentStats.averageScore)}%`;
-    document.getElementById("bestScore")!.textContent =
-      `${Math.round(currentStats.bestScore)}%`;
-  }
-
-  // Mise à jour de l'historique
-  function updateHistory() {
-    const history = testHistory.get();
-    const historyContainer = document.getElementById("testHistory");
-
-    if (!historyContainer) return;
-
-    if (history.length === 0) {
-      historyContainer.innerHTML = `
-        <p class="text-gray-500 text-center py-8">Aucun test complété pour le moment</p>
-      `;
-      return;
-    }
-
-    historyContainer.innerHTML = `
-      <div class="space-y-4">
-        ${history
-          .map((test, index) => {
-            const score =
-              (test.items.filter((i) => i.isCorrect).length /
-                test.items.length) *
-              100;
-            const date = new Date(test.startTime).toLocaleDateString();
-
-            // Traduction du type de test
-            const testTypeNames = {
-              addition: "Addition",
-              subtraction: "Soustraction",
-              multiplication: "Multiplication",
-              comparison: "Comparaison",
-              division: "Division",
-            };
-
-            // Traduction du mode (type de nombre)
-            const modeNames = {
-              integer: "Entiers",
-              decimal: "Décimaux",
-            };
-
-            const typeName = testTypeNames[test.type] || test.type;
-            const modeName = modeNames[test.mode] || test.mode;
-
-            return `
-            <div class="border rounded-lg p-4">
-              <div class="flex items-center justify-between mb-2">
-                <div class="font-semibold">${typeName} - ${modeName}</div>
-                <div class="text-sm text-gray-500">${date}</div>
-              </div>
-              <div class="flex items-center justify-between">
-                <div>Score : <span class="font-bold text-accent">${Math.round(score)}%</span></div>
-                <div class="text-sm text-gray-600">
-                  ${test.items.filter((i) => i.isCorrect).length}/${test.items.length} correctes
-                </div>
-              </div>
-            </div>
-          `;
-          })
-          .join("")}
-      </div>
-    `;
-  }
-
-  // Export des résultats en CSV
   function exportResults() {
     const history = testHistory.get();
     const currentStats = stats.get();
@@ -179,16 +61,11 @@ import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
     document.body.removeChild(link);
   }
 
-  // Écouteurs d'événements
-  document
-    .getElementById("exportButton")
-    ?.addEventListener("click", exportResults);
-
-  // Écouter les changements dans les stores
-  stats.subscribe(() => updateStats());
-  testHistory.subscribe(() => updateHistory());
-
-  // Mise à jour initiale
-  updateStats();
-  updateHistory();
+  // Écouteur d'événement pour le bouton d'exportation
+  document.addEventListener("DOMContentLoaded", () => {
+    const exportButton = document.getElementById("exportButton");
+    if (exportButton) {
+      exportButton.addEventListener("click", exportResults);
+    }
+  });
 </script>

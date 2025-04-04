@@ -1,0 +1,70 @@
+---
+import type { RuleTypeStats } from "../../stores/rulesSummaryStore";
+import type { Rule } from "../../types/rules";
+import Icon from "../common/Icon.astro";
+import RuleProgress from "./RuleProgress.astro";
+
+interface Props {
+  type: string;
+  typeLabel: string;
+  stats: RuleTypeStats;
+  rules: Rule[];
+}
+
+const { type, typeLabel, stats, rules } = Astro.props;
+---
+
+<div class="bg-white rounded-lg shadow-lg p-6">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-3">
+      <Icon name="book" class="w-6 h-6 text-accent" />
+      <h2 class="text-xl font-semibold">{typeLabel}</h2>
+    </div>
+    <div class="text-sm text-gray-600">
+      {stats.masteredRules}/{stats.totalRules} maîtrisées
+    </div>
+  </div>
+
+  <div class="bg-accent/10 rounded-lg p-4 mb-4">
+    <div class="flex items-center gap-2">
+      <Icon name="chart" class="w-5 h-5 text-accent" />
+      <span class="font-medium">
+        Série actuelle : {stats.currentStreak}
+      </span>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    {
+      rules.map((rule) => (
+        <div class="border rounded-lg p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium">{rule.title}</h3>
+          </div>
+          <RuleProgress ruleId={rule.id} showDetails />
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-4 text-center">
+    <a
+      href={`/rules/${type}`}
+      class="inline-flex items-center text-accent hover:text-accent/80"
+    >
+      Voir toutes les règles
+      <svg
+        class="w-5 h-5 ml-1"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"></path>
+      </svg>
+    </a>
+  </div>
+</div>

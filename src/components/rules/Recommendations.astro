@@ -1,0 +1,73 @@
+---
+import { getRecommendations } from "../../stores/rulesSummaryStore";
+import Icon from "../common/Icon.astro";
+
+const recommendations = getRecommendations();
+
+// Définir les icônes selon le type de recommandation
+const icons = {
+  strength: "badge",
+  weakness: "target",
+  opportunity: "lightbulb",
+  tip: "info",
+};
+
+// Définir les couleurs selon le type de recommandation
+const colors = {
+  strength: "text-emerald-600 bg-emerald-50 border-emerald-200",
+  weakness: "text-red-600 bg-red-50 border-red-200",
+  opportunity: "text-blue-600 bg-blue-50 border-blue-200",
+  tip: "text-amber-600 bg-amber-50 border-amber-200",
+};
+---
+
+{
+  recommendations.length > 0 && (
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+      <div class="flex items-center gap-2 mb-4">
+        <Icon name="chart" class="w-5 h-5 text-accent" />
+        <h2 class="text-xl font-semibold">Recommandations personnalisées</h2>
+      </div>
+
+      <div class="space-y-3">
+        {recommendations.map((rec) => (
+          <div
+            class={`p-4 rounded-lg border ${colors[rec.type]} flex items-start gap-3`}
+          >
+            <div class={`rounded-full p-2 ${colors[rec.type]}`}>
+              <Icon name={icons[rec.type]} class="w-5 h-5" />
+            </div>
+            <div>
+              <div class="font-medium">
+                {rec.type === "strength" && "Point fort"}
+                {rec.type === "weakness" && "Point à améliorer"}
+                {rec.type === "opportunity" && "Opportunité"}
+                {rec.type === "tip" && "Conseil"}
+              </div>
+              <p class="text-sm mt-1">{rec.message}</p>
+              {rec.ruleId && (
+                <a
+                  href={`/rules/detail/${rec.ruleId}`}
+                  class="inline-flex items-center text-sm mt-2 text-accent hover:underline"
+                >
+                  Voir la règle
+                  <svg
+                    class="w-4 h-4 ml-1"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
