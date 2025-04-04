@@ -105,10 +105,29 @@ import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
                 test.items.length) *
               100;
             const date = new Date(test.startTime).toLocaleDateString();
+
+            // Traduction du type de test
+            const testTypeNames = {
+              addition: "Addition",
+              subtraction: "Soustraction",
+              multiplication: "Multiplication",
+              comparison: "Comparaison",
+              division: "Division",
+            };
+
+            // Traduction du mode (type de nombre)
+            const modeNames = {
+              integer: "Entiers",
+              decimal: "Décimaux",
+            };
+
+            const typeName = testTypeNames[test.type] || test.type;
+            const modeName = modeNames[test.mode] || test.mode;
+
             return `
             <div class="border rounded-lg p-4">
               <div class="flex items-center justify-between mb-2">
-                <div class="font-semibold">Test #${history.length - index}</div>
+                <div class="font-semibold">${typeName} - ${modeName}</div>
                 <div class="text-sm text-gray-500">${date}</div>
               </div>
               <div class="flex items-center justify-between">
@@ -138,7 +157,7 @@ import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
 
     // En-têtes pour l'historique des tests
     csvContent += "Historique des tests\n";
-    csvContent += "Date,Type,Score,Questions correctes,Total questions\n";
+    csvContent += "Date,Type,Mode,Score,Questions correctes,Total questions\n";
 
     // Données de l'historique
     history.forEach((test) => {
@@ -146,7 +165,7 @@ import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
       const date = new Date(test.startTime).toLocaleDateString();
       const score = Math.round((correctAnswers / test.items.length) * 100);
 
-      csvContent += `${date},${test.type},${score}%,${correctAnswers},${test.items.length}\n`;
+      csvContent += `${date},${test.type},${test.mode},${score}%,${correctAnswers},${test.items.length}\n`;
     });
 
     // Créer et télécharger le fichier
