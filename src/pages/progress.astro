@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Icon from "../components/common/Icon.astro";
 import Button from "../components/common/Button.astro";
+import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
 
 // Note : les données seront chargées côté client via le store
 ---
@@ -40,6 +41,16 @@ import Button from "../components/common/Button.astro";
           <h2 class="text-lg font-semibold">Meilleur score</h2>
         </div>
         <p class="text-2xl font-bold text-accent" id="bestScore">0%</p>
+      </div>
+    </div>
+
+    <!-- Analyses d'erreurs -->
+    <div class="bg-white rounded-lg shadow mb-8">
+      <div class="p-4 border-b">
+        <h2 class="text-xl font-semibold">Analyses des erreurs</h2>
+      </div>
+      <div class="p-4">
+        <ErrorAnalysisPanel client:only />
       </div>
     </div>
 

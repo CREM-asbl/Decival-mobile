@@ -8,6 +8,11 @@ export interface AdditionItem {
   // Nouveaux champs pour le système d'erreurs proportionnelles
   type?: number;
   errorTypes?: string[];
+  // Champ pour stocker l'analyse d'erreur
+  errorAnalysis?: {
+    errorType: string;
+    feedback: string;
+  };
 }
 
 export interface AdditionTest {

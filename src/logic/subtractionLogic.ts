@@ -66,3 +66,69 @@ export function evaluateTest(test: SubtractionTest): {
     score
   };
 }
+
+/**
+ * Analyse la réponse pour identifier les erreurs spécifiques
+ */
+export function analyzeError(item: SubtractionItem, userAnswer: number): {
+  errorType: string,
+  feedback: string
+} {
+  // Si la réponse est correcte, pas d'erreur à analyser
+  const correctAnswer = typeof item.correctAnswer === 'number' && item.correctAnswer % 1 !== 0
+    ? parseFloat((item.correctAnswer).toFixed(1))
+    : item.correctAnswer;
+
+  const formattedUserAnswer = typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0
+    ? parseFloat(userAnswer.toFixed(1))
+    : userAnswer;
+
+  if (formattedUserAnswer === correctAnswer) {
+    return { errorType: 'none', feedback: 'Réponse correcte' };
+  }
+
+  // Analyser les erreurs possibles de soustraction
+
+  // Vérifier si l'élève a inversé l'ordre des nombres
+  const invertedResult = item.secondNumber - item.firstNumber;
+  const hasInvertedOrder = Math.abs(formattedUserAnswer - invertedResult) < 0.1;
+
+  if (hasInvertedOrder) {
+    return {
+      errorType: 'invertedOrder',
+      feedback: "Attention à l'ordre : il faut soustraire le second nombre du premier, pas l'inverse"
+    };
+  }
+
+  // Vérifier si l'erreur est liée à la gestion des emprunts
+  const hasBorrowingError =
+    Math.abs(formattedUserAnswer - correctAnswer) === 10 ||
+    Math.abs(formattedUserAnswer - correctAnswer) === 1;
+
+  if (hasBorrowingError) {
+    return {
+      errorType: 'borrowing',
+      feedback: "N'oubliez pas de gérer les emprunts correctement dans la soustraction"
+    };
+  }
+
+  // Vérifier si l'erreur est liée à l'alignement décimal (pour les nombres décimaux)
+  if (typeof item.firstNumber === 'number' && (item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0)) {
+    const decimalAlignmentError =
+      Math.abs(formattedUserAnswer - parseFloat((item.firstNumber - Math.floor(item.secondNumber)).toFixed(1))) < 0.1 ||
+      Math.abs(formattedUserAnswer - parseFloat((Math.floor(item.firstNumber) - item.secondNumber).toFixed(1))) < 0.1;
+
+    if (decimalAlignmentError) {
+      return {
+        errorType: 'decimalAlignment',
+        feedback: "Assurez-vous d'aligner correctement les virgules avant de soustraire"
+      };
+    }
+  }
+
+  // Erreur par défaut si aucun pattern spécifique n'est détecté
+  return {
+    errorType: 'calculation',
+    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.'
+  };
+}

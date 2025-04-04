@@ -54,7 +54,7 @@
             Votre réponse est <span :class="isCorrect ? 'text-green-600' : 'text-red-600'">{{ isCorrect ? 'correcte !' :
               'incorrecte' }}</span>
           </p>
-          <p class="text-gray-600">
+          <p class="text-gray-600 mb-2">
             La bonne réponse était : <span class="font-semibold">{{ formatNumber(currentItem.correctAnswer) }}</span>
           </p>
         </div>
@@ -95,7 +95,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { createSubtractionTest } from '../../logic/subtractionLogic'
+import { analyzeError, createSubtractionTest } from '../../logic/subtractionLogic'
 import { playSound } from '../../stores/soundStore'
 import { completeTest, currentTest } from '../../stores/testStore'
 import TestModeSelector from '../tests/TestModeSelector.vue'
@@ -109,6 +109,7 @@ const showCompleteModal = ref(false)
 const isCorrect = ref(false)
 const score = ref(0)
 const testMode = ref('integer')
+const errorAnalysis = ref(null) // Pour stocker l'analyse de l'erreur
 
 // Récupérer ou créer un test
 const test = ref(null)
@@ -191,6 +192,15 @@ function handleSubmit() {
   // Mettre à jour l'item avec la réponse
   test.value.items[currentQuestionIndex.value].userAnswer = userAnswer;
   test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value;
+
+  // Analyser l'erreur si la réponse est incorrecte
+  if (!isCorrect.value) {
+    const analysis = analyzeError(currentItem.value, userAnswer);
+    // Stocker l'analyse dans l'item au lieu de l'afficher directement
+    test.value.items[currentQuestionIndex.value].errorAnalysis = analysis;
+  } else {
+    errorAnalysis.value = null;
+  }
 
   // Jouer le son approprié
   playSound(isCorrect.value ? 'correct' : 'incorrect');

@@ -5,6 +5,13 @@ export interface SubtractionItem {
   correctAnswer?: number;
   userAnswer?: number;
   isCorrect?: boolean;
+  // Nouveaux champs pour le système d'analyses d'erreurs
+  type?: number;
+  errorTypes?: string[];
+  errorAnalysis?: {
+    errorType: string;
+    feedback: string;
+  };
 }
 
 export interface SubtractionTest {
