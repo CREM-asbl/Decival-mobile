@@ -26,6 +26,30 @@ const defaultRules: Record<RuleType, Rule[]> = {
         'Toujours commencer par les unités',
         'Ne pas oublier les retenues'
       ]
+    },
+    {
+      id: 'add-dec-1',
+      type: 'decimal',
+      title: 'Addition de nombres décimaux',
+      description: 'Comment additionner des nombres décimaux',
+      steps: [
+        'Aligner les nombres verticalement en faisant correspondre les virgules',
+        'Ajouter des zéros après la virgule si nécessaire pour avoir le même nombre de décimales',
+        'Additionner comme avec des nombres entiers',
+        'Placer la virgule dans le résultat à la même position que dans les nombres'
+      ],
+      examples: [
+        {
+          problem: '3,5 + 2,7',
+          solution: '6,2',
+          explanation: 'Additionner 5 et 7 dixièmes = 12 dixièmes = 1 unité et 2 dixièmes, puis 3 + 2 + 1 = 6 unités'
+        }
+      ],
+      tips: [
+        'La virgule doit être alignée verticalement',
+        'Un nombre peut être complété avec des zéros après la virgule',
+        'Le nombre de décimales du résultat est le même que celui des nombres avec le plus de décimales'
+      ]
     }
   ],
   subtraction: [
@@ -50,6 +74,30 @@ const defaultRules: Record<RuleType, Rule[]> = {
       tips: [
         'Le plus grand nombre doit toujours être en haut',
         'Bien gérer les emprunts'
+      ]
+    },
+    {
+      id: 'sub-dec-1',
+      type: 'decimal',
+      title: 'Soustraction de nombres décimaux',
+      description: 'Comment soustraire des nombres décimaux',
+      steps: [
+        'Aligner les nombres verticalement en faisant correspondre les virgules',
+        'Ajouter des zéros après la virgule si nécessaire',
+        'Soustraire comme avec des nombres entiers',
+        'Placer la virgule dans le résultat à la même position'
+      ],
+      examples: [
+        {
+          problem: '5,8 - 2,3',
+          solution: '3,5',
+          explanation: 'Soustraire 3 dixièmes de 8 dixièmes = 5 dixièmes, puis 2 de 5 = 3'
+        }
+      ],
+      tips: [
+        'La virgule doit être alignée verticalement',
+        'On peut ajouter des zéros après la virgule sans changer la valeur du nombre',
+        'Le résultat garde le même nombre de décimales que les nombres de départ'
       ]
     }
   ],
@@ -76,6 +124,29 @@ const defaultRules: Record<RuleType, Rule[]> = {
         'Réviser régulièrement les tables',
         'Utiliser les doubles pour faciliter les calculs'
       ]
+    },
+    {
+      id: 'mult-dec-1',
+      type: 'decimal',
+      title: 'Multiplication de nombres décimaux',
+      description: 'Comment multiplier des nombres décimaux',
+      steps: [
+        'Compter le nombre total de chiffres après la virgule dans les deux nombres',
+        'Multiplier comme avec des nombres entiers (en ignorant la virgule)',
+        'Dans le résultat, placer la virgule en comptant depuis la droite autant de chiffres qu\'il y en avait au total'
+      ],
+      examples: [
+        {
+          problem: '2,5 × 1,2',
+          solution: '3,0',
+          explanation: 'Au total 2 chiffres après la virgule (1 + 1), multiplier 25 × 12 = 300, donc 3,0'
+        }
+      ],
+      tips: [
+        'Compter le nombre total de décimales dans les deux nombres',
+        'Multiplier comme des entiers puis replacer la virgule',
+        'Le résultat a autant de décimales que la somme des décimales des nombres'
+      ]
     }
   ],
   comparison: [
@@ -99,6 +170,29 @@ const defaultRules: Record<RuleType, Rule[]> = {
       tips: [
         'Le symbole < ressemble à un L pour "Less than"',
         'Le symbole > pointe vers le plus grand nombre'
+      ]
+    },
+    {
+      id: 'comp-dec-1',
+      type: 'decimal',
+      title: 'Comparaison de nombres décimaux',
+      description: 'Comment comparer des nombres décimaux',
+      steps: [
+        'Si besoin, ajouter des zéros après la virgule pour avoir le même nombre de décimales',
+        'Comparer d\'abord les parties entières',
+        'Si les parties entières sont égales, comparer chiffre par chiffre après la virgule'
+      ],
+      examples: [
+        {
+          problem: '3,14 ? 3,2',
+          solution: '3,14 < 3,20',
+          explanation: 'En ajoutant un zéro : 3,20 > 3,14 car après 3, 20 > 14'
+        }
+      ],
+      tips: [
+        'On peut ajouter des zéros après la virgule sans changer la valeur',
+        '0,20 est égal à 0,2',
+        'Comparer les nombres de gauche à droite'
       ]
     }
   ],

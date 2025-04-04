@@ -143,50 +143,73 @@ function validateComparison({ ruleId, answer, expectedAnswer }: ValidationContex
 }
 
 function validateDecimal({ ruleId, answer, expectedAnswer, details }: ValidationContext): RuleValidation {
-  // Convertir et arrondir les nombres à 1 décimale pour une comparaison précise
-  const userAnswer = parseFloat(Number(answer).toFixed(1));
-  const correctAnswer = parseFloat(Number(expectedAnswer).toFixed(1));
-  const isCorrect = userAnswer === correctAnswer;
+  // Convertir les nombres pour la comparaison
+  const userAnswer = Number(answer);
+  const correctAnswer = Number(expectedAnswer);
+
+  // Vérifier la validité de base
+  if (isNaN(userAnswer)) {
+    return {
+      ruleId,
+      isValid: false,
+      feedback: "La réponse doit être un nombre valide",
+      suggestedStep: "Utilisez la virgule (et non le point) comme séparateur décimal"
+    };
+  }
 
   const { firstNumber = 0, secondNumber = 0 } = details || {};
 
+  // Vérifier si la réponse est correcte (avec tolérance pour les arrondis)
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.001;
   if (isCorrect) {
     return {
       ruleId,
       isValid: true,
-      feedback: "Excellent ! L'opération avec des nombres décimaux est correcte."
+      feedback: "Excellent ! L'opération avec les nombres décimaux est correcte."
     };
   }
 
   // Analyse des erreurs courantes avec les nombres décimaux
-  const hasWrongDecimalPlacement = Math.abs(userAnswer * 10 - correctAnswer) < 1 ||
-    Math.abs(userAnswer - correctAnswer * 10) < 1;
+  const userDecimalPlaces = countDecimalPlaces(userAnswer);
+  const expectedDecimalPlaces = countDecimalPlaces(correctAnswer);
+  const firstDecimalPlaces = countDecimalPlaces(firstNumber);
+  const secondDecimalPlaces = countDecimalPlaces(secondNumber);
 
-  // Vérifier si l'élève a oublié la virgule
-  const hasIgnoredDecimal = Math.abs(Math.round(userAnswer) - correctAnswer) < 0.1 ||
-    Math.abs(userAnswer - Math.round(correctAnswer)) < 0.1;
+  // Erreur d'alignement de la virgule
+  const hasWrongAlignment = Math.abs(userDecimalPlaces - expectedDecimalPlaces) > 0;
 
-  // Feedback spécifique selon l'erreur détectée
-  if (hasWrongDecimalPlacement) {
+  // Erreur de manipulation des zéros (ex: 0,40 considéré différent de 0,4)
+  const isZeroError = Math.abs(userAnswer - correctAnswer) < 0.01 &&
+    userDecimalPlaces !== expectedDecimalPlaces;
+
+  if (hasWrongAlignment) {
     return {
       ruleId,
       isValid: false,
-      feedback: "Attention à la position de la virgule ! Vérifiez votre alignement.",
-      suggestedStep: "Alignez les virgules des nombres avant d'additionner"
+      feedback: "Attention à l'alignement de la virgule ! Vérifiez votre calcul.",
+      suggestedStep: "Alignez les virgules avant de calculer"
     };
-  } else if (hasIgnoredDecimal) {
+  } else if (isZeroError) {
     return {
       ruleId,
       isValid: false,
-      feedback: "N'oubliez pas la partie décimale des nombres !",
-      suggestedStep: "La virgule sépare la partie entière et la partie décimale"
-    };
-  } else {
-    return {
-      ruleId,
-      isValid: false,
-      feedback: "Ce n'est pas la bonne réponse. Vérifiez votre calcul.",
-      suggestedStep: "Additionnez séparément les parties entières et décimales"
+      feedback: "Les zéros à la fin d'un nombre décimal ne changent pas sa valeur",
+      suggestedStep: "0,40 est égal à 0,4"
     };
   }
+
+  // Erreur de calcul standard
+  return {
+    ruleId,
+    isValid: false,
+    feedback: "Ce n'est pas la bonne réponse. Vérifiez votre calcul.",
+    suggestedStep: "Procédez étape par étape en respectant les règles des décimaux"
+  };
+}
+
+// Fonction utilitaire pour compter le nombre de décimales
+function countDecimalPlaces(num: number): number {
+  const str = num.toString();
+  const decimalPart = str.split('.')[1];
+  return decimalPart ? decimalPart.length : 0;
 }
