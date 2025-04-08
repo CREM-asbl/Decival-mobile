@@ -3,7 +3,7 @@ import { type AdditionTest } from '../types/addition';
 import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
-import { updateRuleProgress } from './ruleProgressStore';
+import { updateRuleProgress, updateTypeStreak } from './ruleProgressStore';
 
 type Test = AdditionTest | SubtractionTest | MultiplicationTest;
 
@@ -109,6 +109,11 @@ export function completeTest(test: Test) {
       updateRuleProgress(ruleId, item.isCorrect || false);
     }
   });
+
+  // Mettre à jour la série du type de règle
+  // Considérer le test comme réussi si au moins 60% des réponses sont correctes
+  const isTestSuccessful = (correctAnswers / test.items.length) >= 0.6;
+  updateTypeStreak(test.type, isTestSuccessful);
 
   // Réinitialiser le test en cours
   currentTest.set(null);

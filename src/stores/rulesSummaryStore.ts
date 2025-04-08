@@ -1,6 +1,6 @@
 import { atom } from 'nanostores';
 import type { RuleType } from '../types/rules';
-import { getAllProgress, getRuleProgress } from './ruleProgressStore';
+import { getAllProgress, getRuleProgress, ruleProgress } from './ruleProgressStore';
 import { getRuleById, getRulesByType } from './rulesStore';
 
 export interface RuleTypeStats {
@@ -136,8 +136,14 @@ export function createProgressSnapshot(): ProgressSnapshot {
 // Fonction pour obtenir les données résumées
 export function getRulesSummary(): RulesSummaryState {
   const summary = computeRulesSummary();
-  rulesSummary.set(summary);
-  return summary;
+  // Fusionner avec l'état précédent pour préserver l'historique
+  const currentState = rulesSummary.get();
+  const newState = {
+    ...summary,
+    history: [...currentState.history, createProgressSnapshot()]
+  };
+  rulesSummary.set(newState);
+  return newState;
 }
 
 // Obtenir l'évolution des règles maîtrisées sur une période
@@ -451,4 +457,18 @@ export function generateRecommendations(): Recommendation[] {
 // Obtenir les recommandations actuelles
 export function getRecommendations(): Recommendation[] {
   return rulesSummary.get().recommendations;
+}
+
+// S'abonner aux changements du store de progression des règles
+// pour mettre à jour automatiquement le résumé
+if (typeof window !== 'undefined') {
+  ruleProgress.subscribe(() => {
+    const newSummary = computeRulesSummary();
+    // Fusionner avec l'état précédent pour préserver l'historique
+    const currentState = rulesSummary.get();
+    rulesSummary.set({
+      ...newSummary,
+      history: [...currentState.history, createProgressSnapshot()]
+    });
+  });
 }

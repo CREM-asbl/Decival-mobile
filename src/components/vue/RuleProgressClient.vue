@@ -26,7 +26,9 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from 'vue';
+import { useStore } from '@nanostores/vue';
+import { computed } from 'vue';
+import { ruleProgress } from '../../stores/ruleProgressStore';
 
 export default {
   name: 'RuleProgressClient',
@@ -37,7 +39,11 @@ export default {
     }
   },
   setup(props) {
-    const progress = ref(null);
+    const store = useStore(ruleProgress);
+
+    const progress = computed(() => {
+      return store.value.progress[props.ruleId] || null;
+    });
 
     const successRate = computed(() => {
       if (!progress.value) return 0;
@@ -46,12 +52,6 @@ export default {
       return total > 0
         ? Math.round((progress.value.successCount / total) * 100)
         : 0;
-    });
-
-    onMounted(async () => {
-      // Importer de manière dynamique pour éviter les problèmes avec SSR
-      const { getRuleProgress } = await import('../../stores/ruleProgressStore');
-      progress.value = getRuleProgress(props.ruleId);
     });
 
     return {

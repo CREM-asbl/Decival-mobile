@@ -1,13 +1,7 @@
 ---
-import ProgressChart from "../../components/rules/ProgressChart.astro";
-import Recommendations from "../../components/rules/Recommendations.astro";
-import RuleTypeBlock from "../../components/rules/RuleTypeBlock.astro";
+import RecommendationsClient from "../../components/vue/RecommendationsClient.vue";
+import RuleSummaryClient from "../../components/vue/RuleSummaryClient.vue";
 import Layout from "../../layouts/Layout.astro";
-import { getRulesByType } from "../../stores/rulesStore";
-import { getRulesSummary, ruleTypes } from "../../stores/rulesSummaryStore";
-
-// Récupérer les données résumées depuis le store dédié
-const { typeStats, typeLabels } = getRulesSummary();
 ---
 
 <Layout title="Résumé des règles - Decival" currentPage="rules">
@@ -15,32 +9,9 @@ const { typeStats, typeLabels } = getRulesSummary();
     <h1 class="text-2xl font-bold mb-6">Résumé des règles</h1>
 
     <!-- Section des recommandations personnalisées -->
-    <Recommendations />
+    <RecommendationsClient client:only />
 
-    <div class="grid gap-6 md:grid-cols-2">
-      {
-        ruleTypes.map((type) => (
-          <RuleTypeBlock
-            type={type}
-            typeLabel={typeLabels[type]}
-            stats={typeStats[type]}
-            rules={getRulesByType(type)}
-          />
-        ))
-      }
-    </div>
-
-    <h2 class="text-xl font-bold my-6">Votre progression</h2>
-
-    <div class="grid gap-6">
-      {
-        ruleTypes.map((type) => (
-          <div>
-            <h3 class="text-lg font-semibold mb-2">{typeLabels[type]}</h3>
-            <ProgressChart type={type} days={30} />
-          </div>
-        ))
-      }
-    </div>
+    <!-- Résumé des règles par type -->
+    <RuleSummaryClient client:only />
   </div>
 </Layout>

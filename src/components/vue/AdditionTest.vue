@@ -66,30 +66,13 @@
       </div>
     </div>
 
-    <div v-if="showCompleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl p-6">
-        <div class="text-center py-4">
-          <h3 class="text-xl font-bold mb-4">Félicitations !</h3>
-          <p class="mb-2">Vous avez terminé le test d'addition.</p>
-          <div class="text-lg">
-            Score : <span class="font-bold text-accent">{{ score }}</span>%
-          </div>
-          <p class="mt-4 text-sm text-gray-600">
-            Consultez vos progrès dans l'onglet "Progrès"
-          </p>
-        </div>
-        <div class="flex justify-end gap-3 mt-4">
-          <a href="/tests" class="no-underline">
-            <button class="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-              Fermer
-            </button>
-          </a>
-          <button @click="handleRestart" class="px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover">
-            Recommencer
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Utilisation du composant réutilisable pour la modal de fin de test -->
+    <TestCompleteModal
+      :show="showCompleteModal"
+      :score="score"
+      testType="addition"
+      @restart="handleRestart"
+    />
   </div>
 </template>
 
@@ -98,6 +81,7 @@ import { computed, ref } from 'vue'
 import { analyzeError, createAdditionTest } from '../../logic/additionLogic'
 import { playSound } from '../../stores/soundStore'
 import { completeTest, currentTest } from '../../stores/testStore'
+import TestCompleteModal from '../tests/TestCompleteModal.vue'
 import TestModeSelector from '../tests/TestModeSelector.vue'
 
 // État local

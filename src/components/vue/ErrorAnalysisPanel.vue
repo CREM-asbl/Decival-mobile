@@ -51,7 +51,6 @@ import { getRecentTests } from '../../stores/testStore';
 
 // Nombre de tests récents à afficher
 const recentTestsLimit = 5;
-
 // Récupérer les tests récents avec des erreurs
 const testsWithErrors = computed(() => {
   const recentTests = getRecentTests(recentTestsLimit);
@@ -113,9 +112,3 @@ function formatAnswer(answer, testType) {
   }
 }
 </script>
-
-<style scoped>
-.error-analysis-panel {
-  /* Styles spécifiques au composant */
-}
-</style>
