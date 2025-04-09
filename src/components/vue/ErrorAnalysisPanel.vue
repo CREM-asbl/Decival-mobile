@@ -32,10 +32,14 @@
               <div class="text-sm mb-2">
                 <span class="text-gray-700">Réponse correcte : </span>
                 <span class="font-mono">{{ formatAnswer(item.correctAnswer, test.type) }}</span>
-              </div>
-              <div v-if="item.errorAnalysis" class="mt-2 bg-amber-50 p-2 rounded border border-amber-200">
+              </div>              <div v-if="item.errorAnalysis" class="mt-2 bg-amber-50 p-2 rounded border border-amber-200">
                 <div class="font-medium text-amber-800">Analyse :</div>
-                <div class="text-sm text-amber-700">{{ item.errorAnalysis.feedback }}</div>
+                <div class="text-sm text-amber-700">{{ item.errorAnalysis.feedback }}</div>                <div v-if="item.errorAnalysis.rule" class="mt-2 text-sm">
+                  <span class="font-medium text-amber-800">Règle non maîtrisée : </span>
+                  <a :href="`/rules/${getRuleOperationType(item.errorAnalysis.rule.id)}/#${item.errorAnalysis.rule.id}`" class="text-blue-600 hover:underline">
+                    {{ item.errorAnalysis.rule.name }}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -109,6 +113,24 @@ function formatAnswer(answer, testType) {
   } else {
     // Pour les autres tests, la réponse est un nombre
     return typeof answer === 'number' ? answer.toString() : answer;
+  }
+}
+
+// Déterminer le type d'opération à partir de l'ID de la règle
+function getRuleOperationType(ruleId) {
+  if (ruleId.startsWith('add')) {
+    return 'addition';
+  } else if (ruleId.startsWith('sub')) {
+    return 'subtraction';
+  } else if (ruleId.startsWith('mult')) {
+    return 'multiplication';
+  } else if (ruleId.startsWith('comp')) {
+    return 'comparison';
+  } else if (ruleId.startsWith('dec')) {
+    return 'decimal';
+  } else {
+    // Par défaut, nous retournons la page générale des règles
+    return '';
   }
 }
 </script>

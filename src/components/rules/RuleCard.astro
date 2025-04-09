@@ -9,7 +9,7 @@ interface Props {
 const { rule, showFullDetails = false } = Astro.props;
 ---
 
-<div class="bg-white rounded-lg shadow-lg p-6">
+<div class="bg-white rounded-lg shadow-lg p-6" id={rule.id}>
   <h2 class="text-xl font-bold mb-4">{rule.title}</h2>
   <p class="text-gray-600 mb-6">{rule.description}</p>
 

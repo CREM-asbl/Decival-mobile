@@ -5,13 +5,21 @@ export interface ComparisonItem {
   correctAnswer: string;
   userAnswer?: string;
   isCorrect?: boolean;
-  // Nouveaux champs pour le système d'erreurs proportionnelles
+  // Champs pour le système d'analyse d'erreurs
   type?: number;
   errorTypes?: string[];
-  // Champ pour stocker l'analyse d'erreur
   errorAnalysis?: {
     errorType: string;
     feedback: string;
+    rule?: {
+      id: string;
+      name: string;
+    }
+  };
+  // Règle associée à cet item pour l'analyse d'erreur
+  rule?: {
+    id: string;
+    name: string;
   };
 }
 

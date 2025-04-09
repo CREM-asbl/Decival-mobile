@@ -21,7 +21,7 @@ export function generateAdditionItem(mode: 'integer' | 'decimal' = 'integer'): A
 
 /**
  * Génère un item d'addition avec nombres décimaux selon différents types
- * de cas d'utilisation, similaire à l'ancien Decival
+ * de cas d'utilisation, similaire à l'ancienne version
  */
 function generateDecimalAdditionItem(): AdditionItem {
   // Choisir un type d'item aléatoirement (0-6 comme dans l'ancien code)
@@ -32,6 +32,8 @@ function generateDecimalAdditionItem(): AdditionItem {
   let secondNumber: number;
   let correctAnswer: number;
   let errorTypes: string[] = [];
+  // Variable pour stocker la règle associée à l'item
+  let rule: { id: string; name: string };
 
   switch (type) {
     case 0: // 0,2 + 0,3 (Somme de dizaines sans retenue)
@@ -42,6 +44,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       secondNumber = n2 / 10;
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(1));
       errorTypes = ['powerOfTen', 'decimalSum'];
+      rule = {
+        id: 'add-dec-2',
+        name: 'Addition de dixièmes sans retenue'
+      };
       break;
 
     case 1: // 0,02 + 0,03 (Somme de centièmes sans retenue)
@@ -52,6 +58,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       secondNumber = n2b / 100;
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['powerOfTen', 'zeroPlacement', 'decimalSum'];
+      rule = {
+        id: 'add-dec-3',
+        name: 'Addition de centièmes sans retenue'
+      };
       break;
 
     case 2: // 0,2 + 0,04 (Somme de nombres avec des précisions différentes)
@@ -67,6 +77,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       }
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['decimalAlignment', 'powerOfTen'];
+      rule = {
+        id: 'add-dec-4',
+        name: 'Addition avec précisions différentes'
+      };
       break;
 
     case 3: // 0,5 + 0,8 (Somme avec retenue)
@@ -80,6 +94,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       secondNumber = n2d / 10;
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(1));
       errorTypes = ['carry', 'decimalSum'];
+      rule = {
+        id: 'add-dec-5',
+        name: 'Addition de dixièmes avec retenue'
+      };
       break;
 
     case 4: // 0,05 + 0,08 (Somme de centièmes avec retenue)
@@ -93,6 +111,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       secondNumber = n2e / 100;
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['carry', 'zeroPlacement', 'decimalSum'];
+      rule = {
+        id: 'add-dec-6',
+        name: 'Addition de centièmes avec retenue'
+      };
       break;
 
     case 5: // 0,1 + 0,77 (Addition avec nombre à plusieurs décimales)
@@ -115,6 +137,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       }
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['decimalAlignment', 'multipleDecimals'];
+      rule = {
+        id: 'add-dec-4',
+        name: 'Addition avec précisions différentes'
+      };
       break;
 
     case 6: // 6 + 0,1 (Addition d'entier et décimal)
@@ -130,6 +156,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       }
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(1));
       errorTypes = ['integerDecimalMix', 'decimalAlignment'];
+      rule = {
+        id: 'add-dec-1',
+        name: 'Addition de nombres décimaux - Principes généraux'
+      };
       break;
 
     default:
@@ -138,6 +168,10 @@ function generateDecimalAdditionItem(): AdditionItem {
       secondNumber = 0.3;
       correctAnswer = 0.8;
       errorTypes = ['default'];
+      rule = {
+        id: 'add-dec-1',
+        name: 'Addition de nombres décimaux - Principes généraux'
+      };
   }
 
   return {
@@ -146,7 +180,8 @@ function generateDecimalAdditionItem(): AdditionItem {
     secondNumber,
     correctAnswer,
     type: type,
-    errorTypes // Stocke les types d'erreurs possibles pour ce problème
+    errorTypes, // Stocke les types d'erreurs possibles pour ce problème
+    rule // Associer directement la règle à l'item
   };
 }
 
@@ -220,7 +255,11 @@ export function checkAnswer(item: AdditionItem, answer: number): boolean {
  */
 export function analyzeError(item: AdditionItem, userAnswer: number): {
   errorType: string,
-  feedback: string
+  feedback: string,
+  rule?: {
+    id: string,
+    name: string
+  }
 } {
   // Convertir les nombres pour comparaison
   const correctAnswer = parseFloat((item.correctAnswer as number).toFixed(2));
@@ -233,11 +272,18 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
 
   // Analyser les erreurs possibles selon le type d'exercice
   if (!item.errorTypes) {
-    return { errorType: 'unknown', feedback: 'Vérifiez votre calcul' };
+    return {
+      errorType: 'unknown',
+      feedback: 'Vérifiez votre calcul',
+      rule: item.rule || {
+        id: 'add-1',
+        name: 'Addition simple'
+      }
+    };
   }
 
+  // Détecter les erreurs spécifiques pour fournir un feedback précis
   if (item.errorTypes.includes('powerOfTen')) {
-    // Vérifier si l'erreur vient d'une confusion dans les puissances de dix
     const powerOfTenError =
       formattedUserAnswer === correctAnswer * 10 ||
       formattedUserAnswer === correctAnswer / 10;
@@ -245,25 +291,25 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
     if (powerOfTenError) {
       return {
         errorType: 'powerOfTen',
-        feedback: 'Attention à la position de la virgule dans votre réponse'
+        feedback: 'Attention à la position de la virgule dans votre réponse',
+        rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
   }
 
   if (item.errorTypes.includes('carry')) {
-    // Vérifier si l'élève a oublié la retenue
     const carryError = Math.abs(formattedUserAnswer - correctAnswer) === 1;
 
     if (carryError) {
       return {
         errorType: 'carry',
-        feedback: "N'oubliez pas la retenue lors de l'addition des décimales"
+        feedback: "N'oubliez pas la retenue lors de l'addition des décimales",
+        rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
   }
 
   if (item.errorTypes.includes('decimalAlignment')) {
-    // Vérifier si les nombres n'ont pas été alignés correctement
     const decimal1 = countDecimals(item.firstNumber);
     const decimal2 = countDecimals(item.secondNumber);
 
@@ -277,16 +323,25 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
       if (misalignment) {
         return {
           errorType: 'decimalAlignment',
-          feedback: 'Alignez les virgules des nombres avant d\'additionner'
+          feedback: 'Alignez les virgules des nombres avant d\'additionner',
+          rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
         };
       }
     }
   }
 
-  // Erreur par défaut si aucun pattern spécifique n'est détecté
+  // Pour toutes les autres erreurs, retourner la règle associée à l'item
   return {
     errorType: 'calculation',
-    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.'
+    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.',
+    rule: item.rule || { // Fallback si la règle n'est pas définie pour une raison quelconque
+      id: item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0
+        ? 'add-dec-1'
+        : 'add-1',
+      name: item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0
+        ? 'Addition de nombres décimaux - Principes généraux'
+        : 'Addition simple'
+    }
   };
 }
 
@@ -296,6 +351,28 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
 function countDecimals(num: number): number {
   if (Math.floor(num) === num) return 0;
   return num.toString().split('.')[1].length || 0;
+}
+
+/**
+ * Vérifie si une addition entre deux nombres nécessite une retenue
+ * @param num1 Premier nombre de l'addition
+ * @param num2 Deuxième nombre de l'addition
+ * @returns true s'il y a au moins une retenue dans l'opération, false sinon
+ */
+function checkForCarry(num1: number, num2: number): boolean {
+  // Pour les nombres décimaux, on vérifie la retenue en fonction du nombre de décimales
+  const decimals1 = countDecimals(num1);
+  const decimals2 = countDecimals(num2);
+
+  // Obtenir les parties fractionnaires en tant que nombres entiers
+  const maxDecimals = Math.max(decimals1, decimals2);
+  const factor = Math.pow(10, maxDecimals);
+
+  const fractionalPart1 = Math.round((num1 % 1) * factor);
+  const fractionalPart2 = Math.round((num2 % 1) * factor);
+
+  // Vérifier si l'addition des parties fractionnaires génère une retenue
+  return (fractionalPart1 + fractionalPart2) >= factor;
 }
 
 export function evaluateTest(test: AdditionTest): {

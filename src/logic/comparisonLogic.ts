@@ -37,6 +37,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
   let secondNumber: number;
   let correctAnswer: string;
   let errorTypes: string[] = [];
+  // Variable pour stocker la règle associée à l'item
+  let rule: { id: string; name: string };
 
   switch (type) {
     case 0: // 0,1 vs 0,3 (Comparaison simple de dixièmes)
@@ -54,163 +56,131 @@ function generateDecimalComparisonItem(): ComparisonItem {
         firstNumber < secondNumber ? '<' : '=';
 
       errorTypes = ['simpleComparison', 'decimal'];
+      rule = {
+        id: 'comp-dec-1',
+        name: 'Comparaison de nombres décimaux'
+      };
       break;
 
     case 1: // 0,1 vs 0,20 (Comparaison avec zéros non significatifs)
       let n1b = Math.floor(Math.random() * 9) + 1;
-      let n2b = Math.floor(Math.random() * 9) + 1;
+      let n2b = n1b; // Même chiffre pour vérifier l'égalité malgré les zéros à droite
 
-      // Éviter les nombres identiques
-      while (n2b === n1b) {
-        n2b = Math.floor(Math.random() * 9) + 1;
-      }
+      firstNumber = n1b / 10;
+      secondNumber = n2b / 10 + 0; // Pour forcer l'affichage comme 0,10
+      correctAnswer = '='; // Toujours égaux
 
-      // S'assurer que n2b > n1b
-      if (n2b < n1b) {
-        const tmp = n1b;
-        n1b = n2b;
-        n2b = tmp;
-      }
-
-      if (Math.random() < 0.5) {
-        // 0,n2b0 vs 0,n1b (où n2b0 > n1b)
-        firstNumber = n2b / 10 + 0 / 100; // 0,n2b0
-        secondNumber = n1b / 10; // 0,n1b
-        correctAnswer = '>';
-      } else {
-        // 0,n1b vs 0,n2b0 (où n2b0 > n1b)
-        firstNumber = n1b / 10; // 0,n1b
-        secondNumber = n2b / 10 + 0 / 100; // 0,n2b0
-        correctAnswer = '<';
-      }
-
-      errorTypes = ['zeroComparison', 'decimalLength'];
+      errorTypes = ['zeroComparison', 'zeroAtRight'];
+      rule = {
+        id: 'comp-dec-2',
+        name: 'Comparaison avec zéros non significatifs'
+      };
       break;
 
-    case 2: // 0,1 vs 0,01 (Comparaison entre dixième et centième, même chiffre)
-      const n = Math.floor(Math.random() * 9) + 1;
+    case 2: // 0,1 vs 0,01 (Comparaison dixième vs centième - même chiffre)
+      const n1c = Math.floor(Math.random() * 9) + 1;
+      const n2c = n1c; // Même chiffre
 
-      if (Math.random() < 0.5) {
-        firstNumber = n / 10; // 0,n
-        secondNumber = n / 100; // 0,0n
-        correctAnswer = '>';
-      } else {
-        firstNumber = n / 100; // 0,0n
-        secondNumber = n / 10; // 0,n
-        correctAnswer = '<';
-      }
+      firstNumber = n1c / 10;
+      secondNumber = n2c / 100;
+      correctAnswer = '>'; // Le dixième est toujours plus grand que le centième (pour un même chiffre)
 
       errorTypes = ['placeValue', 'decimalPlacement'];
+      rule = {
+        id: 'dec-1',
+        name: 'Structure des nombres décimaux'
+      };
       break;
 
-    case 3: // 0,2 vs 0,01 (Comparaison entre dixième et centième, différents chiffres)
-      let n1d = Math.floor(Math.random() * 9) + 1;
-      let n2d = Math.floor(Math.random() * 9) + 1;
+    case 3: // 0,2 vs 0,03 (Comparaison dixième vs centième - différents chiffres)
+      const n1d = Math.floor(Math.random() * 8) + 2; // 2-9
+      const n2d = Math.floor(Math.random() * (n1d - 1)) + 1; // 1 à (n1d-1)
 
-      // Éviter les nombres identiques
-      while (n2d === n1d) {
-        n2d = Math.floor(Math.random() * 9) + 1;
-      }
-
-      // S'assurer que n2d < n1d
-      if (n2d > n1d) {
-        const tmp = n1d;
-        n1d = n2d;
-        n2d = tmp;
-      }
-
-      if (Math.random() < 0.5) {
-        firstNumber = n2d / 100; // 0,0n2d
-        secondNumber = n1d / 10; // 0,n1d
-        correctAnswer = '<';
-      } else {
-        firstNumber = n1d / 10; // 0,n1d
-        secondNumber = n2d / 100; // 0,0n2d
-        correctAnswer = '>';
-      }
+      firstNumber = n1d / 10;
+      secondNumber = n2d / 100;
+      correctAnswer = '>'; // Le dixième est toujours plus grand
 
       errorTypes = ['placeValue', 'decimalPlacement', 'differentDigits'];
+      rule = {
+        id: 'dec-1',
+        name: 'Structure des nombres décimaux'
+      };
       break;
 
-    case 4: // 0,1 vs 0,02 (Comparaison entre dixième et centième, confusion possible)
-      let n1e = Math.floor(Math.random() * 9) + 1;
-      let n2e = Math.floor(Math.random() * 9) + 1;
+    case 4: // 0,13 vs 0,3 (Confusion possible)
+      const n1e = Math.floor(Math.random() * 9) + 1; // 1-9
+      const n2e = Math.floor(Math.random() * 9) + 1; // 1-9
+      const n3e = Math.floor(Math.random() * 9) + 1; // 1-9
 
-      // Éviter les nombres identiques
-      while (n2e === n1e) {
-        n2e = Math.floor(Math.random() * 9) + 1;
-      }
+      firstNumber = (n1e / 10) + (n2e / 100);
+      secondNumber = n3e / 10;
 
-      // S'assurer que n2e < n1e
-      if (n2e > n1e) {
-        const tmp = n1e;
-        n1e = n2e;
-        n2e = tmp;
-      }
-
-      if (Math.random() < 0.5) {
-        firstNumber = n1e / 10; // 0,n1e
-        secondNumber = n2e / 100; // 0,0n2e
+      // Déterminer la réponse correcte
+      if (firstNumber > secondNumber) {
         correctAnswer = '>';
-      } else {
-        firstNumber = n2e / 100; // 0,0n2e
-        secondNumber = n1e / 10; // 0,n1e
+      } else if (firstNumber < secondNumber) {
         correctAnswer = '<';
+      } else {
+        correctAnswer = '=';
       }
 
-      errorTypes = ['placeValue', 'decimalPlacement', 'confusionPossible'];
+      errorTypes = ['confusion', 'decimalLength'];
+      rule = {
+        id: 'comp-dec-3',
+        name: 'Comparaison avec confusion possible'
+      };
       break;
 
-    case 5: // 0,2 vs 0,10 (Comparaison avec zéro à droite et différents chiffres)
-      let n1f = Math.floor(Math.random() * 9) + 1;
-      let n2f = Math.floor(Math.random() * 9) + 1;
+    case 5: // 0,10 vs 0,1 (Zéro à droite, même valeur)
+      const n1f = Math.floor(Math.random() * 9) + 1;
 
-      // Éviter les nombres identiques
-      while (n2f === n1f) {
-        n2f = Math.floor(Math.random() * 9) + 1;
-      }
-
-      // S'assurer que n2f < n1f
-      if (n2f > n1f) {
-        const tmp = n1f;
-        n1f = n2f;
-        n2f = tmp;
-      }
-
-      if (Math.random() < 0.5) {
-        firstNumber = n1f / 10; // 0,n1f
-        secondNumber = n2f / 10 + 0 / 100; // 0,n2f0
-        correctAnswer = '>';
-      } else {
-        firstNumber = n2f / 10 + 0 / 100; // 0,n2f0
-        secondNumber = n1f / 10; // 0,n1f
-        correctAnswer = '<';
-      }
-
-      errorTypes = ['zeroAtRight', 'decimalLength', 'differentDigits'];
-      break;
-
-    case 6: // 0,1 vs 0,10 (Comparaison avec zéro à droite, même valeur)
-      const nf = Math.floor(Math.random() * 9) + 1;
-
-      if (Math.random() < 0.5) {
-        firstNumber = nf / 10; // 0,nf
-        secondNumber = nf / 10 + 0 / 100; // 0,nf0
-      } else {
-        firstNumber = nf / 10 + 0 / 100; // 0,nf0
-        secondNumber = nf / 10; // 0,nf
-      }
+      firstNumber = n1f / 10;
+      secondNumber = n1f / 10; // Même valeur
       correctAnswer = '=';
 
-      errorTypes = ['equality', 'zeroAtRight', 'sameValue'];
+      errorTypes = ['zeroAtRight'];
+      rule = {
+        id: 'comp-dec-2',
+        name: 'Comparaison avec zéros non significatifs'
+      };
+      break;
+
+    case 6: // 0,10 vs 0,2 (Zéro à droite, valeurs différentes)
+      const n1g = Math.floor(Math.random() * 9) + 1;
+      let n2g = Math.floor(Math.random() * 9) + 1;
+
+      // Éviter les nombres identiques
+      while (n2g === n1g) {
+        n2g = Math.floor(Math.random() * 9) + 1;
+      }
+
+      if (n1g < n2g) {
+        firstNumber = n1g / 10;
+        secondNumber = n2g / 10;
+        correctAnswer = '<';
+      } else {
+        firstNumber = n2g / 10;
+        secondNumber = n1g / 10;
+        correctAnswer = '>';
+      }
+
+      errorTypes = ['zeroAtRight', 'differentDigits'];
+      rule = {
+        id: 'comp-dec-1',
+        name: 'Comparaison de nombres décimaux'
+      };
       break;
 
     default:
-      // Cas par défaut (ne devrait jamais arriver)
-      firstNumber = 0.5;
-      secondNumber = 0.3;
-      correctAnswer = '>';
+      // Cas par défaut
+      firstNumber = 0.1;
+      secondNumber = 0.2;
+      correctAnswer = '<';
       errorTypes = ['default'];
+      rule = {
+        id: 'comp-dec-1',
+        name: 'Comparaison de nombres décimaux'
+      };
   }
 
   return {
@@ -219,7 +189,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
     secondNumber,
     correctAnswer,
     type: type,
-    errorTypes
+    errorTypes,
+    rule // Associer directement la règle à l'item
   };
 }
 
@@ -287,7 +258,11 @@ export function checkAnswer(item: ComparisonItem, answer: string): boolean {
  */
 export function analyzeError(item: ComparisonItem, userAnswer: string): {
   errorType: string,
-  feedback: string
+  feedback: string,
+  rule?: {
+    id: string,
+    name: string
+  }
 } {
   // Si la réponse est correcte, pas d'erreur à analyser
   if (userAnswer === item.correctAnswer) {
@@ -296,7 +271,14 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
 
   // Analyser les erreurs possibles selon le type d'exercice
   if (!item.errorTypes) {
-    return { errorType: 'unknown', feedback: 'Vérifiez votre comparaison' };
+    return {
+      errorType: 'unknown',
+      feedback: 'Vérifiez votre comparaison',
+      rule: item.rule || {
+        id: 'comp-1',
+        name: 'Comparaison de nombres'
+      }
+    };
   }
 
   // Cas spécial : confusion entre < et >
@@ -304,7 +286,11 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
     (userAnswer === '>' && item.correctAnswer === '<')) {
     return {
       errorType: 'inversedSymbols',
-      feedback: "Attention au sens du symbole : < signifie 'plus petit que' et > signifie 'plus grand que'"
+      feedback: "Attention au sens du symbole : < signifie 'plus petit que' et > signifie 'plus grand que'",
+      rule: item.rule || {
+        id: 'comp-1',
+        name: 'Comparaison de nombres'
+      }
     };
   }
 
@@ -313,7 +299,8 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
     if (userAnswer !== '=') {
       return {
         errorType: 'ignoreZeroAtRight',
-        feedback: "Attention : un zéro à droite après la virgule ne change pas la valeur du nombre"
+        feedback: "Attention : un zéro à droite après la virgule ne change pas la valeur du nombre",
+        rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
   }
@@ -322,7 +309,8 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
   if (item.errorTypes.includes('placeValue') || item.errorTypes.includes('decimalPlacement')) {
     return {
       errorType: 'decimalPosition',
-      feedback: "Attention à la position des chiffres après la virgule : 0,1 est plus grand que 0,01"
+      feedback: "Attention à la position des chiffres après la virgule : 0,1 est plus grand que 0,01",
+      rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
     };
   }
 
@@ -331,16 +319,28 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
     if (userAnswer === '=') {
       return {
         errorType: 'misunderstoodZero',
-        feedback: "Les zéros à la fin d'un nombre décimal ne changent pas sa valeur, mais ceux entre la virgule et les autres chiffres sont importants"
+        feedback: "Les zéros à la fin d'un nombre décimal ne changent pas sa valeur, mais ceux entre la virgule et les autres chiffres sont importants",
+        rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
   }
 
-  // Erreur par défaut si aucun pattern spécifique n'est détecté
+  // Pour toutes les autres erreurs, retourner un message générique avec la règle associée à l'item
   return {
     errorType: 'comparison',
-    feedback: 'Ce n\'est pas la bonne réponse. Comparez attentivement les nombres décimaux.'
+    feedback: 'Ce n\'est pas la bonne réponse. Comparez attentivement les nombres.',
+    rule: item.rule || { // Fallback si la règle n'est pas définie
+      id: (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) ||
+        (typeof item.secondNumber === 'number' && item.secondNumber % 1 !== 0)
+        ? 'comp-dec-1'
+        : 'comp-1',
+      name: (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) ||
+        (typeof item.secondNumber === 'number' && item.secondNumber % 1 !== 0)
+        ? 'Comparaison de nombres décimaux'
+        : 'Comparaison de nombres'
+    }
   };
+}
 }
 
 export function evaluateTest(test: ComparisonTest): {

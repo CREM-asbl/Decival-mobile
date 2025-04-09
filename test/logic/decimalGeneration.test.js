@@ -61,15 +61,21 @@ describe('Génération de nombres décimaux', () => {
       });
     });
   });
-
   describe('Soustraction avec décimaux', () => {
-    test('La création d\'un test de soustraction en mode décimal devrait générer des items décimaux valides', () => {
-      const test = createSubtractionTest(10, 'decimal');
+    test('La création d\'un test de soustraction en mode décimal devrait générer des items décimaux distribués', () => {
+      const test = createSubtractionTest(7, 'decimal');
 
-      expect(test.items.length).toBe(10);
+      // Vérifier que les 7 items couvrent les 7 types de cas d'utilisation
+      const types = new Set(test.items.map(item => item.type));
+
+      expect(types.size).toBe(7); // Devrait avoir 7 types différents (0-6)
+      expect(test.items.length).toBe(7);
       expect(test.mode).toBe('decimal');
 
+      // Vérifier que chaque item possède les propriétés attendues pour les tests décimaux
       test.items.forEach(item => {
+        expect(item).toHaveProperty('type');
+        expect(item).toHaveProperty('errorTypes');
         expect(item).toHaveProperty('firstNumber');
         expect(item).toHaveProperty('secondNumber');
         expect(item).toHaveProperty('correctAnswer');
@@ -78,15 +84,40 @@ describe('Génération de nombres décimaux', () => {
         expect(item.firstNumber).toBeGreaterThanOrEqual(item.secondNumber);
 
         // Vérifier que le résultat est correctement calculé
-        const expectedAnswer = parseFloat((item.firstNumber - item.secondNumber).toFixed(1));
-        expect(item.correctAnswer).toBeCloseTo(expectedAnswer, 1);        // Vérifier que les nombres sont générés avec la précision attendue
-        // Nous vérifions la valeur arrondie plutôt que le nombre de décimales dans la représentation interne
-        const roundedFirst = parseFloat(item.firstNumber.toFixed(1));
-        const roundedSecond = parseFloat(item.secondNumber.toFixed(1));
+        let precision = 1;
+        if (item.type === 1 || item.type === 2 || item.type === 4 || item.type === 5) {
+          precision = 2; // 2 décimales pour certains types
+        }
+        const expectedAnswer = parseFloat((item.firstNumber - item.secondNumber).toFixed(precision));
+        expect(item.correctAnswer).toBeCloseTo(expectedAnswer, precision);
+      });
 
-        // Vérifier que les arrondis sont proches des originaux (ne devraient pas changer significativement)
-        expect(item.firstNumber).toBeCloseTo(roundedFirst, 1);
-        expect(item.secondNumber).toBeCloseTo(roundedSecond, 1);
+      // Tester la distribution des types
+      expect(test.items.filter(item => item.type === 0).length).toBe(1); // Type 0: Soustraction de dixièmes sans emprunt
+      expect(test.items.filter(item => item.type === 1).length).toBe(1); // Type 1: Soustraction de centièmes sans emprunt
+      expect(test.items.filter(item => item.type === 2).length).toBe(1); // Type 2: Soustraction avec précisions différentes      expect(test.items.filter(item => item.type === 3).length).toBe(1); // Type 3: Soustraction de dixièmes avec emprunt
+      expect(test.items.filter(item => item.type === 4).length).toBe(1); // Type 4: Soustraction de centièmes avec emprunt
+      expect(test.items.filter(item => item.type === 5).length).toBe(1); // Type 5: Soustraction de nombres mixtes
+      expect(test.items.filter(item => item.type === 6).length).toBe(1); // Type 6: Soustraction d'un entier et d'un décimal
+    });
+
+    test('Les calculs de soustraction décimale doivent avoir la précision correcte selon le type', () => {
+      const test = createSubtractionTest(21, 'decimal');
+
+      test.items.forEach(item => {
+        let expectedPrecision;
+
+        // Définir la précision attendue selon le type d'exercice
+        if (item.type === 0 || item.type === 3 || item.type === 6) {
+          expectedPrecision = 1; // 1 décimale
+        } else {
+          expectedPrecision = 2; // 2 décimales
+        }
+
+        // Vérifier que la réponse a la précision attendue
+        const decimalStr = item.correctAnswer.toString().split('.')[1] || '';
+        const decimalPlaces = decimalStr.length;
+        expect(decimalPlaces).toBeLessThanOrEqual(expectedPrecision);
       });
     });
   });

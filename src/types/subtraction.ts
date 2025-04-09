@@ -5,12 +5,21 @@ export interface SubtractionItem {
   correctAnswer?: number;
   userAnswer?: number;
   isCorrect?: boolean;
-  // Nouveaux champs pour le système d'analyses d'erreurs
+  // Champs pour le système d'analyse d'erreurs
   type?: number;
   errorTypes?: string[];
   errorAnalysis?: {
     errorType: string;
     feedback: string;
+    rule?: {
+      id: string;
+      name: string;
+    }
+  };
+  // Règle associée à cet item pour l'analyse d'erreur
+  rule?: {
+    id: string;
+    name: string;
   };
 }
 

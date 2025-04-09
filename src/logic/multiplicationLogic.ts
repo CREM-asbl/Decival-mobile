@@ -27,117 +27,93 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
   // Choisir un type d'item aléatoirement (0-4 comme dans l'ancien code)
   const type = Math.floor(Math.random() * 5);
 
-  // Génère aussi aléatoirement l'ordre des nombres (entier × décimal ou décimal × entier)
-  const way = Math.random() < 0.5;
-
   // Variables pour stocker les nombres générés
   let firstNumber: number;
   let secondNumber: number;
   let correctAnswer: number;
   let errorTypes: string[] = [];
+  // Variable pour stocker la règle associée à l'item
+  let rule: { id: string; name: string };
 
   switch (type) {
-    case 0: // 3 * 0,3 (Produit sans changement de position de virgule)
-      const n1 = Math.floor(Math.random() * 3) + 2; // 2-4
-      let n2 = Math.floor(Math.random() * 3) + 2;   // 2-4
-
-      // S'assurer que n1 * n2 < 10 (pas de retenue)
-      while (n1 * n2 >= 10) {
-        n2 = Math.floor(Math.random() * 3) + 2;
-      }
-
-      if (way) {
-        firstNumber = n1;
-        secondNumber = n2 / 10;
-      } else {
-        firstNumber = n1 / 10;
-        secondNumber = n2;
-      }
-
-      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(1));
+    case 0: // Multiplication simple de décimaux (0,5 × 0,2)
+      firstNumber = (Math.floor(Math.random() * 9) + 1) / 10;
+      secondNumber = (Math.floor(Math.random() * 9) + 1) / 10;
+      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
       errorTypes = ['powerOfTen', 'decimalProduct'];
+      rule = {
+        id: 'mult-dec-2',
+        name: 'Multiplication de deux nombres décimaux'
+      };
       break;
 
-    case 1: // 6 * 0,7 (Produit avec changement de position de virgule)
-      const n1b = Math.floor(Math.random() * 8) + 2; // 2-9
-      let n2b = Math.floor(Math.random() * 8) + 2;   // 2-9
+    case 1: // Multiplication par 10, 100 (3,7 × 10)
+      firstNumber = Math.floor(Math.random() * 90 + 10) / 10;
 
-      // S'assurer que n1 * n2 >= 10 (avec retenue)
-      while (n1b * n2b < 10) {
-        n2b = Math.floor(Math.random() * 8) + 2;
-      }
+      const factorChoice = Math.random() < 0.5 ? 10 : 100;
+      secondNumber = factorChoice;
 
-      if (way) {
-        firstNumber = n1b;
-        secondNumber = n2b / 10;
+      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(factorChoice === 10 ? 0 : 0));
+      errorTypes = ['powerOfTen'];
+      rule = {
+        id: 'mult-dec-7',
+        name: 'Multiplication par 10, 100, 1000'
+      };
+      break;
+
+    case 2: // Multiplication d'entier par décimal (3 × 0,7)
+      if (Math.random() < 0.5) {
+        firstNumber = Math.floor(Math.random() * 9) + 1;
+        secondNumber = (Math.floor(Math.random() * 9) + 1) / 10;
       } else {
-        firstNumber = n1b / 10;
-        secondNumber = n2b;
+        secondNumber = Math.floor(Math.random() * 9) + 1;
+        firstNumber = (Math.floor(Math.random() * 9) + 1) / 10;
       }
-
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(1));
-      errorTypes = ['decimalPlacement', 'carry'];
+      errorTypes = ['powerOfTen', 'tableMultiplication'];
+      rule = {
+        id: 'mult-dec-3',
+        name: 'Multiplication d\'un nombre entier par un nombre décimal'
+      };
       break;
 
-    case 2: // 0,2 * 0,3 (Multiplication de deux décimaux)
-      const n1c = Math.floor(Math.random() * 3) + 2; // 2-4
-      let n2c = Math.floor(Math.random() * 3) + 2;   // 2-4
-
-      // S'assurer que n1 * n2 < 10 (pas de retenue)
-      while (n1c * n2c >= 10) {
-        n2c = Math.floor(Math.random() * 3) + 2;
-      }
-
-      firstNumber = n1c / 10;
-      secondNumber = n2c / 10;
-
-      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
-      errorTypes = ['multipleDecimals', 'powerOfTen'];
-      break;
-
-    case 3: // 0,5 * 0,8 (Multiplication de deux décimaux avec retenue)
-      const n1d = Math.floor(Math.random() * 8) + 2; // 2-9
-      let n2d = Math.floor(Math.random() * 8) + 2;   // 2-9
-
-      // S'assurer que n1 * n2 >= 10 (avec retenue)
-      while (n1d * n2d < 10) {
-        n2d = Math.floor(Math.random() * 8) + 2;
-      }
-
-      firstNumber = n1d / 10;
-      secondNumber = n2d / 10;
-
-      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
-      errorTypes = ['multipleDecimals', 'decimalPlacement', 'carry'];
-      break;
-
-    case 4: // 0,5 * 0,03 (Multiplication avec différentes précisions)
-      const n1e = Math.floor(Math.random() * 8) + 2; // 2-9
-      let n2e = Math.floor(Math.random() * 8) + 2;   // 2-9
-
-      // S'assurer que n1 * n2 >= 10 (avec retenue)
-      while (n1e * n2e < 10) {
-        n2e = Math.floor(Math.random() * 8) + 2;
-      }
-
-      if (way) {
-        firstNumber = n1e / 10;
-        secondNumber = n2e / 100;
+    case 3: // Multiplication de décimaux avec des précisions différentes (0,2 × 0,03)
+      if (Math.random() < 0.5) {
+        firstNumber = (Math.floor(Math.random() * 9) + 1) / 10;
+        secondNumber = (Math.floor(Math.random() * 9) + 1) / 100;
       } else {
-        firstNumber = n1e / 100;
-        secondNumber = n2e / 10;
+        secondNumber = (Math.floor(Math.random() * 9) + 1) / 10;
+        firstNumber = (Math.floor(Math.random() * 9) + 1) / 100;
       }
-
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(3));
-      errorTypes = ['differentPrecisions', 'decimalAlignment'];
+      errorTypes = ['powerOfTen', 'decimalProduct', 'placeValue'];
+      rule = {
+        id: 'mult-dec-4',
+        name: 'Multiplication avec précisions différentes'
+      };
+      break;
+
+    case 4: // Multiplication de décimaux nécessitant une retenue (0,6 × 0,9)
+      firstNumber = (Math.floor(Math.random() * 3) + 6) / 10; // 0,6 à 0,9
+      secondNumber = (Math.floor(Math.random() * 3) + 7) / 10; // 0,7 à 0,9
+      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
+      errorTypes = ['powerOfTen', 'carry', 'decimalProduct'];
+      rule = {
+        id: 'mult-dec-5',
+        name: 'Multiplication de décimaux avec retenue'
+      };
       break;
 
     default:
       // Cas par défaut (ne devrait jamais arriver)
       firstNumber = 0.5;
-      secondNumber = 2;
-      correctAnswer = 1.0;
+      secondNumber = 0.2;
+      correctAnswer = 0.1;
       errorTypes = ['default'];
+      rule = {
+        id: 'mult-dec-1',
+        name: 'Multiplication de nombres décimaux - Principes généraux'
+      };
   }
 
   return {
@@ -146,7 +122,8 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
     secondNumber,
     correctAnswer,
     type: type,
-    errorTypes // Stocke les types d'erreurs possibles pour ce problème
+    errorTypes,
+    rule // Associer directement la règle à l'item
   };
 }
 
@@ -226,7 +203,11 @@ export function checkAnswer(item: MultiplicationItem, answer: number): boolean {
  */
 export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   errorType: string,
-  feedback: string
+  feedback: string,
+  rule?: {
+    id: string,
+    name: string
+  }
 } {
   // Si la réponse est correcte, pas d'erreur à analyser
   const precisionDecimal = item.type === 4 ? 3 : item.type === 2 || item.type === 3 ? 2 : 1;
@@ -239,7 +220,14 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
 
   // Analyser les erreurs possibles selon le type d'exercice
   if (!item.errorTypes) {
-    return { errorType: 'unknown', feedback: 'Vérifiez votre calcul' };
+    return {
+      errorType: 'unknown',
+      feedback: 'Vérifiez votre calcul',
+      rule: item.rule || {
+        id: 'mult-1',
+        name: 'Tables de multiplication'
+      }
+    };
   }
 
   if (item.errorTypes.includes('powerOfTen')) {
@@ -253,7 +241,8 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
     if (powerOfTenError) {
       return {
         errorType: 'powerOfTen',
-        feedback: 'Attention à la position de la virgule dans votre réponse. Comptez bien le nombre de décimales.'
+        feedback: 'Attention à la position de la virgule dans votre réponse. Comptez bien le nombre de décimales.',
+        rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
   }
@@ -269,7 +258,8 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
     if (productError) {
       return {
         errorType: 'decimalProduct',
-        feedback: "Attention à la façon dont vous multipliez les décimales ensemble."
+        feedback: "Attention à la façon dont vous multipliez les décimales ensemble.",
+        rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
   }
@@ -281,14 +271,23 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   if (tableError) {
     return {
       errorType: 'multiplicationTable',
-      feedback: 'Révisez votre table de multiplication pour ces nombres.'
+      feedback: 'Révisez votre table de multiplication pour ces nombres.',
+      rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
     };
   }
 
-  // Erreur par défaut si aucun pattern spécifique n'est détecté
+  // Pour toutes les autres erreurs, retourner la règle associée à l'item
   return {
     errorType: 'calculation',
-    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.'
+    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.',
+    rule: item.rule || { // Fallback si la règle n'est pas définie
+      id: item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0
+        ? 'mult-dec-1'
+        : 'mult-1',
+      name: item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0
+        ? 'Multiplication de nombres décimaux - Principes généraux'
+        : 'Tables de multiplication'
+    }
   };
 }
 
