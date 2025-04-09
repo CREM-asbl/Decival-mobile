@@ -1,96 +1,55 @@
 <template>
-  <div v-if="recommendations.length > 0" class="bg-white rounded-lg shadow-lg p-6 mb-6">
-    <div class="flex items-center gap-2 mb-4">
-      <i class="w-5 h-5 text-accent">
-        <!-- Icône chart -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.5 3h-13A2.5 2.5 0 003 5.5v13A2.5 2.5 0 005.5 21h13a2.5 2.5 0 002.5-2.5v-13A2.5 2.5 0 0018.5 3zm-13 2h13a.5.5 0 01.5.5v13a.5.5 0 01-.5.5h-13a.5.5 0 01-.5-.5v-13a.5.5 0 01.5-.5z"></path>
-          <path d="M17 8.5a1 1 0 00-1-1h-3a1 1 0 000 2h3a1 1 0 001-1zm0 4a1 1 0 00-1-1h-3a1 1 0 000 2h3a1 1 0 001-1zm0 4a1 1 0 00-1-1h-3a1 1 0 000 2h3a1 1 0 001-1zm-8-8a1 1 0 00-1-1H7a1 1 0 000 2h1a1 1 0 001-1zm0 4a1 1 0 00-1-1H7a1 1 0 000 2h1a1 1 0 001-1zm0 4a1 1 0 00-1-1H7a1 1 0 000 2h1a1 1 0 001-1z"></path>
-        </svg>
-      </i>
-      <h2 class="text-xl font-semibold">Recommandations personnalisées</h2>
-    </div>
-
-    <div class="space-y-3">
-      <div
-        v-for="(rec, index) in recommendations"
-        :key="index"
-        :class="`p-4 rounded-lg border ${colors[rec.type]} flex items-start gap-3`"
-      >
-        <div :class="`rounded-full p-2 ${colors[rec.type]}`">
-          <i class="w-5 h-5">
-            <!-- Icônes dynamiques selon le type -->
+  <div v-if="recommendations.length > 0" class="mb-8 bg-accent/5 rounded-lg p-6">
+    <h2 class="text-xl font-semibold mb-4 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-accent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v2h-2v-2zm0-10h2v8h-2V7z"></path>
+      </svg>
+      Recommendations personnalisées
+    </h2>
+    <ul class="space-y-3">
+      <li v-for="(rec, index) in recommendations.slice(0, 3)" :key="index"
+          class="p-3 rounded-lg"
+          :class="{
+            'bg-green-50 border border-green-200': rec.type === 'strength',
+            'bg-red-50 border border-red-200': rec.type === 'weakness',
+            'bg-blue-50 border border-blue-200': rec.type === 'opportunity',
+            'bg-amber-50 border border-amber-200': rec.type === 'tip'
+          }">
+        <div class="flex items-start">
+          <span class="w-5 h-5 mt-0.5 mr-2 flex-shrink-0" :class="{
+            'text-green-600': rec.type === 'strength',
+            'text-red-600': rec.type === 'weakness',
+            'text-blue-600': rec.type === 'opportunity',
+            'text-amber-600': rec.type === 'tip'
+          }">
             <svg v-if="rec.type === 'strength'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14.5 5.5A2.5 2.5 0 0012 3a2.5 2.5 0 00-2.5 2.5V4a1 1 0 10-2 0v1.5A4.5 4.5 0 0012 10a1 1 0 100-2 2.5 2.5 0 01-2.5-2.5V4a1 1 0 10-2 0v1.5a4.5 4.5 0 004.5 4.5 2.5 2.5 0 002.5 2.5 2.5 2.5 0 002.5-2.5V8a1 1 0 10-2 0v2a4.5 4.5 0 01-4.5-4.5z"></path>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path>
             </svg>
             <svg v-else-if="rec.type === 'weakness'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z"></path>
-              <path d="M12 6a1 1 0 100 2 4 4 0 014 4 1 1 0 102 0 6 6 0 00-6-6z"></path>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
             </svg>
             <svg v-else-if="rec.type === 'opportunity'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 3a1 1 0 011 1v8a1 1 0 01-2 0V4a1 1 0 011-1zm0 12a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"></path>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm-2-5h4v2h-4zm0-9h4v7h-4z"></path>
             </svg>
             <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z"></path>
-              <path d="M12 7a1 1 0 011 1v4a1 1 0 01-2 0V8a1 1 0 011-1zm0 8a1 1 0 100 2 1 1 0 000-2z"></path>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-.55 0-1-.45-1-1h2c0 .55-.45 1-1 1zm-4-4h8v2H8v-2zm4-8c2.21 0 4 1.79 4 4 0 1.93-1.36 3.56-3.22 3.92-.11.03-.22.06-.33.08-.44.1-.77.5-.77.97v.5H9v-.5c0-.47-.33-.87-.77-.97-.11-.02-.22-.05-.33-.08C6.36 10.56 5 8.93 5 7c0-2.21 1.79-4 4-4z"></path>
             </svg>
-          </i>
-        </div>
-        <div>
-          <div class="font-medium">
-            {{
-              rec.type === 'strength' ? 'Point fort' :
-              rec.type === 'weakness' ? 'Point à améliorer' :
-              rec.type === 'opportunity' ? 'Opportunité' : 'Conseil'
-            }}
+          </span>
+          <div>
+            <p class="text-gray-800">{{ rec.message }}</p>
+            <a v-if="rec.ruleId" :href="`/rule/${rec.ruleId}`" class="text-accent text-sm mt-1 inline-block">
+              Voir la règle
+            </a>
           </div>
-          <p class="text-sm mt-1">{{ rec.message }}</p>
-          <a
-            v-if="rec.ruleId"
-            :href="`/rules/detail/${rec.ruleId}`"
-            class="inline-flex items-center text-sm mt-2 text-accent hover:underline"
-          >
-            Voir la règle
-            <svg class="w-4 h-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fill-rule="evenodd"
-                d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </a>
         </div>
-      </div>
-    </div>
+      </li>
+    </ul>
   </div>
 </template>
 
-<script>
-import { useStore } from '@nanostores/vue';
-import { rulesSummary } from '../../stores/rulesSummaryStore';
+<script setup>
+import { computed } from 'vue';
+import { getRecommendations } from '../../stores/rulesSummaryStore';
 
-export default {
-  name: 'RecommendationsClient',
-  setup() {
-    // Définir les couleurs selon le type de recommandation
-    const colors = {
-      strength: 'text-emerald-600 bg-emerald-50 border-emerald-200',
-      weakness: 'text-red-600 bg-red-50 border-red-200',
-      opportunity: 'text-blue-600 bg-blue-50 border-blue-200',
-      tip: 'text-amber-600 bg-amber-50 border-amber-200'
-    };
-
-    // Utiliser le store avec le hook useStore pour le rendre réactif
-    const summary = useStore(rulesSummary);
-
-    return {
-      summary,
-      colors,
-      // Accéder aux recommandations depuis le store
-      get recommendations() {
-        return summary.value.recommendations || [];
-      }
-    };
-  }
-}
+const recommendations = computed(() => getRecommendations());
 </script>
