@@ -53,11 +53,9 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="space-y-4">
+        </div>        <div class="space-y-4">
           <div
-            v-for="rule in getRulesByType(type).slice(0, 3)"
+            v-for="rule in getRulesByType(type).slice(0, visibleRules[type] || 3)"
             :key="rule.id"
             class="border rounded-lg p-4"
           >
@@ -69,6 +67,27 @@
         </div>
 
         <div class="mt-4 text-center">
+          <div v-if="getRulesByType(type).length > (visibleRules[type] || 3)" class="mb-2">
+            <button
+              @click="showMoreRules(type)"
+              class="inline-flex items-center text-accent hover:text-accent/80"
+            >
+              Voir plus de règles
+              <svg
+                class="w-5 h-5 ml-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          </div>
           <a
             :href="`/rules/${type}`"
             class="inline-flex items-center text-accent hover:text-accent/80"
@@ -96,16 +115,30 @@
 
 <script setup>
 import { useStore } from '@nanostores/vue';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { getRulesByType } from '../../stores/rulesStore';
 import { getMasteredRulesTrend, getRecommendations, getRulesSummary, rulesSummary, ruleTypes } from '../../stores/rulesSummaryStore';
 import RuleProgressClient from './RuleProgressClient.vue';
 
 const summary = useStore(rulesSummary);
+const visibleRules = ref({});
 
 onMounted(() => {
   getRulesSummary();
+
+  // Initialiser avec 3 règles visibles par type
+  ruleTypes.forEach(type => {
+    visibleRules.value[type] = 3;
+  });
 });
+
+const showMoreRules = (type) => {
+  const currentCount = visibleRules.value[type] || 3;
+  const totalRules = getRulesByType(type).length;
+
+  // Augmenter de 3 règles à chaque clic, ou montrer toutes les règles
+  visibleRules.value[type] = Math.min(currentCount + 3, totalRules);
+};
 
 const typeStats = computed(() => summary.value.typeStats || {});
 const typeLabels = computed(() => summary.value.typeLabels || {});
