@@ -63,19 +63,29 @@ function initializeStore() {
   }
 }
 
+// Créer le store avec un état vide initialement
 export const ruleProgress = atom<RuleProgressState>(defaultState);
 
-// S'assurer que les changements sont persistés
-ruleProgress.subscribe((state) => {
-  if (typeof window !== 'undefined') {
-    saveToStorage(STORAGE_KEYS.RULE_PROGRESS, state);
-  }
-});
-
-// Initialiser le store
+// Initialiser le store d'abord
 if (typeof window !== 'undefined') {
   initializeStore();
 }
+
+// Ensuite, s'assurer que les changements futurs sont persistés
+// en excluant l'événement initial de chargement
+let isInitialLoad = true;
+ruleProgress.subscribe((state) => {
+  if (typeof window !== 'undefined') {
+    // Ne sauvegarde pas lors du chargement initial pour éviter les écrasements accidentels
+    if (!isInitialLoad) {
+      console.log("Sauvegarde des changements de progression:", state);
+      saveToStorage(STORAGE_KEYS.RULE_PROGRESS, state);
+    } else {
+      console.log("Chargement initial, pas de sauvegarde");
+      isInitialLoad = false;
+    }
+  }
+});
 
 export function resetProgress() {
   ruleProgress.set(defaultState);

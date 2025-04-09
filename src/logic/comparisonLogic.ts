@@ -341,7 +341,6 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
     }
   };
 }
-}
 
 export function evaluateTest(test: ComparisonTest): {
   totalQuestions: number;

@@ -70,9 +70,9 @@ export default {
     }
   },
   setup(props) {
-    const store = useStore(ruleProgress);
-
-    const progress = computed(() => {
+    const store = useStore(ruleProgress);    const progress = computed(() => {
+      console.log(`Récupération de la progression pour règle ${props.ruleId}:`, store.value.progress[props.ruleId]);
+      console.log(`Toutes les progressions disponibles:`, store.value.progress);
       return store.value.progress[props.ruleId] || null;
     });
 
