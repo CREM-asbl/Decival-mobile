@@ -11,7 +11,12 @@ export function generateMultiplicationItem(mode: 'integer' | 'decimal' = 'intege
       id: nanoid(),
       firstNumber,
       secondNumber,
-      correctAnswer: firstNumber * secondNumber
+      correctAnswer: firstNumber * secondNumber,
+      // Ajout de la règle pour les entiers
+      rule: {
+        id: 'mult-1',
+        name: 'Multiplication simple'
+      }
     };
   } else {
     // Pour les nombres décimaux, on utilise des types spécifiques comme dans l'ancienne version

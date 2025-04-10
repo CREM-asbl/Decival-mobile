@@ -97,17 +97,9 @@ export function completeTest(test: Test) {
   // Ajouter à l'historique
   const history = testHistory.get();
   testHistory.set([test, ...history]);
-
   // Mettre à jour la progression des règles
   test.items.forEach(item => {
-    if (item.rule.id) {
-      // Utiliser l'ID de règle spécifique s'il existe
-      updateRuleProgress(item.rule.id, item.isCorrect || false);
-    } else {
-      // Fallback sur le type de test pour la compatibilité
-      const ruleId = `${test.type}-1`;
-      updateRuleProgress(ruleId, item.isCorrect || false);
-    }
+    updateRuleProgress(item.rule.id, item.isCorrect || false);
   });
 
   // Mettre à jour la série du type de règle

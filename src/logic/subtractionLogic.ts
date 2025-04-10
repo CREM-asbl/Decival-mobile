@@ -11,7 +11,12 @@ export function generateSubtractionItem(mode: 'integer' | 'decimal' = 'integer')
       id: nanoid(),
       firstNumber,
       secondNumber,
-      correctAnswer: firstNumber - secondNumber
+      correctAnswer: firstNumber - secondNumber,
+      // Ajout de la règle pour les entiers
+      rule: {
+        id: 'sub-1',
+        name: 'Soustraction simple'
+      }
     };
   } else {
     // Pour les nombres décimaux, on utilise des types spécifiques comme dans l'ancienne version

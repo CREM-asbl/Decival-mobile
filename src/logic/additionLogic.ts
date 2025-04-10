@@ -11,7 +11,12 @@ export function generateAdditionItem(mode: 'integer' | 'decimal' = 'integer'): A
       id: nanoid(),
       firstNumber,
       secondNumber,
-      correctAnswer: firstNumber + secondNumber
+      correctAnswer: firstNumber + secondNumber,
+      // Ajout de la règle pour les entiers
+      rule: {
+        id: 'add-1',
+        name: 'Addition simple'
+      }
     };
   } else {
     // Pour les nombres décimaux, on utilise des types spécifiques comme dans l'ancienne version
