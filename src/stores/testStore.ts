@@ -76,10 +76,25 @@ export function startNewTest(test: Test) {
   currentTest.set(test);
 }
 
-export function completeTest(test: Test) {
-  // Calculer le score
+/**
+ * Calcule les statistiques d'un test complété
+ * @param test Test à analyser
+ * @returns Statistiques du test (nombre de réponses correctes, score, succès du test)
+ */
+function calculateTestStatistics(test: Test) {
   const correctAnswers = test.items.filter(item => item.isCorrect).length;
-  const score = (correctAnswers / test.items.length) * 100;
+  const totalItems = test.items.length;
+  // Protection contre la division par zéro
+  const score = totalItems > 0 ? (correctAnswers / totalItems) * 100 : 0;
+  // Un test est considéré comme réussi si au moins 60% des réponses sont correctes
+  const isSuccessful = totalItems > 0 ? (correctAnswers / totalItems) >= 0.6 : false;
+
+  return { correctAnswers, totalItems, score, isSuccessful };
+}
+
+export function completeTest(test: Test) {
+  // Calculer les statistiques du test
+  const { correctAnswers, score, isSuccessful } = calculateTestStatistics(test);
 
   // Mettre à jour les stats
   const currentStats = stats.get();
@@ -103,9 +118,7 @@ export function completeTest(test: Test) {
   });
 
   // Mettre à jour la série du type de règle
-  // Considérer le test comme réussi si au moins 60% des réponses sont correctes
-  const isTestSuccessful = (correctAnswers / test.items.length) >= 0.6;
-  updateTypeStreak(test.type, isTestSuccessful);
+  updateTypeStreak(test.type, isSuccessful);
 
   // Réinitialiser le test en cours
   currentTest.set(null);
