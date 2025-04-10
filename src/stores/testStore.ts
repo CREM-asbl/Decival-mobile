@@ -100,9 +100,9 @@ export function completeTest(test: Test) {
 
   // Mettre à jour la progression des règles
   test.items.forEach(item => {
-    if (item.ruleId) {
+    if (item.rule.id) {
       // Utiliser l'ID de règle spécifique s'il existe
-      updateRuleProgress(item.ruleId, item.isCorrect || false);
+      updateRuleProgress(item.rule.id, item.isCorrect || false);
     } else {
       // Fallback sur le type de test pour la compatibilité
       const ruleId = `${test.type}-1`;

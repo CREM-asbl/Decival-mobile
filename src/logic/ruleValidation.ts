@@ -1,3 +1,4 @@
+import { updateRuleProgress } from '../stores/ruleProgressStore';
 import { getRuleById } from '../stores/rulesStore';
 import { RuleValidation } from '../types/rules';
 
@@ -9,6 +10,10 @@ interface ValidationContext {
     firstNumber?: number;
     secondNumber?: number;
     operation?: string;
+    rule?: {
+      id: string;
+      name: string;
+    };
   };
 }
 
@@ -21,26 +26,39 @@ export function validateRule({ ruleId, answer, expectedAnswer, details }: Valida
       feedback: "Règle non trouvée"
     };
   }
+  // Vérifier si un identifiant de règle spécifique est fourni dans les détails
+  const specificRuleId = details?.rule?.id || ruleId;
 
   // Validation spécifique selon le type de règle
+  let result;
   switch (rule.type) {
     case 'addition':
-      return validateAddition({ ruleId, answer, expectedAnswer, details });
+      result = validateAddition({ ruleId, answer, expectedAnswer, details });
+      break;
     case 'subtraction':
-      return validateSubtraction({ ruleId, answer, expectedAnswer, details });
+      result = validateSubtraction({ ruleId, answer, expectedAnswer, details });
+      break;
     case 'multiplication':
-      return validateMultiplication({ ruleId, answer, expectedAnswer, details });
+      result = validateMultiplication({ ruleId, answer, expectedAnswer, details });
+      break;
     case 'comparison':
-      return validateComparison({ ruleId, answer, expectedAnswer, details });
+      result = validateComparison({ ruleId, answer, expectedAnswer, details });
+      break;
     case 'decimal':
-      return validateDecimal({ ruleId, answer, expectedAnswer, details });
+      result = validateDecimal({ ruleId, answer, expectedAnswer, details });
+      break;
     default:
-      return {
+      result = {
         ruleId,
         isValid: false,
         feedback: "Type de règle non supporté"
       };
   }
+
+  // Mettre à jour la progression de la règle spécifique si disponible
+  updateRuleProgress(specificRuleId, result.isValid);
+
+  return result;
 }
 
 function validateAddition({ ruleId, answer, expectedAnswer, details }: ValidationContext): RuleValidation {

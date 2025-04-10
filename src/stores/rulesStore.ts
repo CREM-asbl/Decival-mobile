@@ -695,16 +695,14 @@ const defaultRules: Record<RuleType, Rule[]> = {
           solution: '45 > 32',
           explanation: 'En comparant les dizaines : 4 > 3, donc 45 > 32'
         }
-      ],
-      tips: [
+      ], tips: [
         'Le symbole < ressemble à un L pour "Less than"',
         'Le symbole > pointe vers le plus grand nombre'
       ]
-    },
-    {
+    }, {
       id: 'comp-dec-1',
       type: 'decimal',
-      title: 'Comparaison de nombres décimaux',
+      title: 'Comparaison de nombres décimaux - Principes généraux',
       description: 'Comment comparer des nombres décimaux',
       steps: [
         'Si besoin, ajouter des zéros après la virgule pour avoir le même nombre de décimales',
@@ -722,6 +720,144 @@ const defaultRules: Record<RuleType, Rule[]> = {
         'On peut ajouter des zéros après la virgule sans changer la valeur',
         '0,20 est égal à 0,2',
         'Comparer les nombres de gauche à droite'
+      ]
+    },
+    {
+      id: 'comp-dec-8',
+      type: 'decimal',
+      title: 'Comparaison simple de dixièmes',
+      description: 'Comment comparer des nombres décimaux qui n\'ont qu\'un chiffre après la virgule',
+      steps: [
+        'Vérifier que les parties entières sont égales (généralement 0)',
+        'Comparer directement les chiffres des dixièmes',
+        'Le nombre avec le plus grand chiffre des dixièmes est le plus grand'
+      ],
+      examples: [
+        {
+          problem: '0,7 ? 0,3',
+          solution: '0,7 > 0,3',
+          explanation: 'Comme les parties entières sont égales (0), on compare les dixièmes : 7 > 3, donc 0,7 > 0,3'
+        }
+      ],
+      tips: [
+        'Cette comparaison est la plus simple car elle ne nécessite que de comparer un seul chiffre',
+        'Plus le chiffre des dixièmes est grand, plus le nombre est grand',
+        'Cette situation correspond au type 0 dans la génération de tests'
+      ]
+    },
+    {
+      id: 'comp-dec-9',
+      type: 'decimal',
+      title: 'Comparaison avec zéros non significatifs',
+      description: 'Comment comparer des nombres décimaux quand l\'un a des zéros non significatifs à droite',
+      steps: [
+        'Identifier les zéros non significatifs (ceux situés à l\'extrême droite du nombre)',
+        'Supprimer mentalement ces zéros non significatifs',
+        'Comparer les nombres obtenus'
+      ],
+      examples: [
+        {
+          problem: '0,3 ? 0,30',
+          solution: '0,3 = 0,30',
+          explanation: 'Le zéro à droite dans 0,30 est non significatif, donc 0,30 = 0,3'
+        }
+      ],
+      tips: [
+        'Ajouter ou supprimer des zéros à droite du dernier chiffre significatif ne change pas la valeur',
+        '0,5 = 0,50 = 0,500 = 0,5000, etc.',
+        'Cette situation correspond aux types 1 et 5 dans la génération de tests'
+      ]
+    },
+    {
+      id: 'comp-dec-10',
+      type: 'decimal',
+      title: 'Comparaison dixième vs centième (même chiffre)',
+      description: 'Comment comparer un nombre avec un chiffre aux dixièmes et le même chiffre aux centièmes',
+      steps: [
+        'Reconnaître que les chiffres sont les mêmes mais à des positions différentes',
+        'Identifier la valeur positionnelle de chaque chiffre (dixièmes vs centièmes)',
+        'Se rappeler que les dixièmes sont 10 fois plus grands que les centièmes'
+      ],
+      examples: [
+        {
+          problem: '0,3 ? 0,03',
+          solution: '0,3 > 0,03',
+          explanation: 'Même si le chiffre est le même (3), sa valeur est différente : 3 dixièmes (0,3) > 3 centièmes (0,03)'
+        }
+      ],
+      tips: [
+        'Un chiffre en position des dixièmes a une valeur 10 fois supérieure au même chiffre en position des centièmes',
+        'Attention à la position des virgules : 0,3 signifie 3/10 alors que 0,03 signifie 3/100',
+        'Cette situation correspond au type 2 dans la génération de tests'
+      ]
+    },
+    {
+      id: 'comp-dec-11',
+      type: 'decimal',
+      title: 'Comparaison dixième vs centième (différents chiffres)',
+      description: 'Comment comparer un nombre avec un chiffre aux dixièmes et un chiffre différent aux centièmes',
+      steps: [
+        'Reconnaître la différence de position décimale (dixièmes vs centièmes)',
+        'Se rappeler qu\'un dixième est égal à dix centièmes',
+        'Comparer le dixième avec dix fois la valeur du centième'
+      ],
+      examples: [
+        {
+          problem: '0,2 ? 0,03',
+          solution: '0,2 > 0,03',
+          explanation: '0,2 = 0,20 soit 20 centièmes, alors que 0,03 représente 3 centièmes. 20 centièmes > 3 centièmes'
+        }
+      ],
+      tips: [
+        'Convertir les deux nombres à la même position décimale facilite la comparaison',
+        'Un dixième correspond à 10 centièmes (0,1 = 0,10)',
+        'Cette situation correspond au type 3 dans la génération de tests'
+      ]
+    },
+    {
+      id: 'comp-dec-12',
+      type: 'decimal',
+      title: 'Comparaison avec confusion possible',
+      description: 'Comment comparer des nombres décimaux qui peuvent prêter à confusion',
+      steps: [
+        'Identifier si les nombres ont le même nombre de décimales',
+        'Si nécessaire, ajouter des zéros pour avoir le même nombre de décimales',
+        'Comparer d\'abord les dixièmes, puis les centièmes si nécessaire'
+      ],
+      examples: [
+        {
+          problem: '0,13 ? 0,3',
+          solution: '0,13 < 0,30',
+          explanation: 'En ajoutant un zéro : 0,13 < 0,30 car 1 dixième < 3 dixièmes'
+        }
+      ],
+      tips: [
+        'Attention à ne pas comparer 13 et 3 directement, ce qui serait incorrect',
+        'Les dixièmes sont plus significatifs que les centièmes',
+        'Cette situation correspond au type 4 dans la génération de tests'
+      ]
+    },
+    {
+      id: 'comp-dec-13',
+      type: 'decimal',
+      title: 'Comparaison avec zéros à droite et valeurs différentes',
+      description: 'Comment comparer des nombres décimaux avec des zéros non significatifs mais de valeurs différentes',
+      steps: [
+        'Supprimer mentalement les zéros non significatifs',
+        'Comparer les chiffres significatifs de même rang',
+        'Déterminer lequel est plus grand'
+      ],
+      examples: [
+        {
+          problem: '0,10 ? 0,2',
+          solution: '0,10 < 0,2',
+          explanation: '0,10 = 0,1 et 0,1 < 0,2 car 1 dixième < 2 dixièmes'
+        }
+      ],
+      tips: [
+        'Ne pas se laisser tromper par le nombre de chiffres (0,10 a deux chiffres mais est plus petit que 0,2)',
+        'Après suppression des zéros non significatifs, comparer les valeurs normalement',
+        'Cette situation correspond au type 6 dans la génération de tests'
       ]
     }
   ],

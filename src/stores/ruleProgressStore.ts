@@ -92,10 +92,19 @@ export function resetProgress() {
   console.log("Progression réinitialisée");
 }
 
-export function updateRuleProgress(ruleId: string, isSuccess: boolean) {
+export function updateRuleProgress(ruleId: string, isSuccess: boolean, details?: {
+  firstNumber?: number;
+  secondNumber?: number;
+  operation?: string;
+}) {
+  // Créer un identifiant spécifique si des détails sont fournis
+  const specificRuleId = details ?
+    `${ruleId}-${details.firstNumber || ''}-${details.secondNumber || ''}-${details.operation || ''}` :
+    ruleId;
+
   const state = ruleProgress.get();
-  const currentProgress = state.progress[ruleId] || {
-    ruleId,
+  const currentProgress = state.progress[specificRuleId] || {
+    ruleId: specificRuleId,
     successCount: 0,
     failureCount: 0,
     lastAttemptDate: new Date(),
