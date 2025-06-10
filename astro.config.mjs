@@ -2,9 +2,13 @@ import tailwind from '@astrojs/tailwind';
 import vue from '@astrojs/vue';
 import { defineConfig } from 'astro/config';
 import serviceWorker from 'astrojs-service-worker';
+import node from '@apphosting/astro-adapter';
 
 export default defineConfig({
   output: 'static',
+  adapter: node({ 
+    mode: "standalone"
+  }),
   integrations: [
     tailwind(),
     vue(),
