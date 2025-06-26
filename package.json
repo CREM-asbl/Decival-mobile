@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev --port ${PORT:4321}",
-    "build": "astro build",
-    "start": "astro preview --port ${PORT:8080}",
+    "build": "rimraf .apphosting && astro build",
+    "start": "astro preview --host 0.0.0.0 --port ${PORT:8080}",
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -29,6 +29,7 @@
     "@testing-library/jest-dom": "^6.4.2",
     "astrojs-service-worker": "^2.0.0",
     "jsdom": "^26.0.0",
+    "rimraf": "^5.0.10",
     "vitest": "^3.0.8"
   }
 }
