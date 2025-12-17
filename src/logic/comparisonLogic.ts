@@ -16,7 +16,11 @@ export function generateComparisonItem(mode: 'integer' | 'decimal' = 'integer'):
       firstNumber,
       secondNumber,
       correctAnswer: firstNumber > secondNumber ? '>' :
-        firstNumber < secondNumber ? '<' : '='
+        firstNumber < secondNumber ? '<' : '=',
+      rule: {
+        id: 'comp-int-1',
+        name: 'Comparaison de nombres entiers'
+      }
     };
   } else {
     // Pour les nombres décimaux, on utilise des types spécifiques comme dans l'ancienne version
