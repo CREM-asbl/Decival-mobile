@@ -31,40 +31,41 @@
             <div class="flex flex-col gap-1">
               <input v-model="answer" type="text" required
                 :step="inputStep"
-                class="w-full px-4 py-2 rounded-md border border-gray-300 text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                :disabled="showResultModal"
+                class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300"
+                :class="[
+                  showResultModal
+                    ? isCorrect
+                      ? 'border-green-500 bg-green-50 text-green-700'
+                      : 'border-red-500 bg-red-50 text-red-700'
+                    : 'border-gray-300'
+                ]"
                 :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" />
-              <small v-if="test.mode === 'decimal'" class="text-gray-500 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
+              <small v-if="test.mode === 'decimal' && !showResultModal" class="text-gray-500 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
+              
+              <!-- Inline Feedback -->
+              <div v-if="showResultModal" class="mt-2 text-center animate-fade-in">
+                <p v-if="!isCorrect" class="text-red-600 font-medium">
+                  La bonne réponse était : <span class="font-bold underline">{{ formatNumber(currentItem.correctAnswer) }}</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="flex justify-end gap-4">
-          <button type="submit"
+        <div class="flex flex-col items-center gap-4">
+          <button v-if="!showResultModal" type="submit"
             class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
             Suivant
+          </button>
+          <button v-else ref="continueBtn" @click="handleContinue" type="submit"
+            class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
+            Continuer
           </button>
         </div>
       </div>
     </form>
 
-    <div v-if="showResultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl p-6">
-        <div class="text-center py-4">
-          <p class="text-xl mb-2">
-            Votre réponse est <span :class="isCorrect ? 'text-green-600' : 'text-red-600'">{{ isCorrect ? 'correcte !' :
-              'incorrecte' }}</span>
-          </p>
-          <p class="text-gray-600 mb-2">
-            La bonne réponse était : <span class="font-semibold">{{ formatNumber(currentItem.correctAnswer) }}</span>
-          </p>
-        </div>
-        <div class="flex justify-end gap-3 mt-4">
-          <button @click="handleContinue" class="px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover">
-            Continuer
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!-- Utilisation du composant réutilisable pour la modal de fin de test -->
     <TestCompleteModal
@@ -77,7 +78,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { analyzeError, createAdditionTest } from '../../logic/additionLogic'
 import { playSound } from '../../stores/soundStore'
 import { completeTest, currentTest } from '../../stores/testStore'
@@ -94,6 +95,7 @@ const isCorrect = ref(false)
 const score = ref(0)
 const testMode = ref('integer')
 const errorAnalysis = ref(null) // Pour stocker l'analyse de l'erreur
+const continueBtn = ref(null) // Référence pour le bouton continuer
 
 // Récupérer ou créer un test
 const test = ref(null)
@@ -125,6 +127,12 @@ const inputStep = computed(() => {
 
 // Gérer la soumission du formulaire
 function handleSubmit() {
+  // Si le résultat est déjà affiché, le Enter doit continuer
+  if (showResultModal.value) {
+    handleContinue();
+    return;
+  }
+
   // Vérifier que la réponse n'est pas vide
   if (answer.value === null || answer.value === undefined || answer.value === '') {
     return; // Ne rien faire si le champ est vide
@@ -194,8 +202,13 @@ function handleSubmit() {
   // Jouer le son approprié
   playSound(isCorrect.value ? 'correct' : 'incorrect');
 
-  // Afficher la modal de résultat
+  // Afficher le résultat
   showResultModal.value = true;
+  
+  // Donner le focus au bouton continuer pour permettre de valider avec Enter
+  nextTick(() => {
+    continueBtn.value?.focus();
+  });
 }
 
 // Formater un nombre pour l'affichage (afficher les décimaux de manière adaptée)
