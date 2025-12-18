@@ -24,7 +24,7 @@
       >
         <div class="flex flex-col items-center">
           <span class="text-xl font-semibold mb-2">Nombres décimaux</span>
-          <span class="text-sm">Ex: 3.5, 2.7, 8.9...</span>
+          <span class="text-sm">Ex: 3,5; 2,7; 8,9...</span>
         </div>
       </button>
     </div>
