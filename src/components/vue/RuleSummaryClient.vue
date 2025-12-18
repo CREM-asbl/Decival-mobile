@@ -2,7 +2,7 @@
   <!-- Tableau de bord principal -->
   <div class="grid gap-6 md:grid-cols-2">
     <template v-for="(type, index) in ruleTypes" :key="index">
-      <div v-if="typeStats[type]" class="bg-white rounded-lg shadow-lg p-6">
+      <div v-if="typeStats[type]" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-none p-6 border border-transparent dark:border-gray-700">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <i class="w-6 h-6 text-accent">
@@ -23,44 +23,45 @@
                 <path d="M11 7h2v6h-2V7zm0 8h2v2h-2v-2z"></path>
               </svg>
             </i>
-            <h2 class="text-xl font-semibold">{{ typeLabels[type] }}</h2>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{{ typeLabels[type] }}</h2>
           </div>
-          <div class="text-sm text-gray-600">
+          <div class="text-sm text-gray-600 dark:text-gray-400">
             {{ typeStats[type].masteredRules }}/{{ typeStats[type].totalRules }} maîtrisées
           </div>
         </div>
 
-        <div class="bg-accent/10 rounded-lg p-4 mb-4">
+        <div class="bg-accent/10 dark:bg-accent/20 rounded-lg p-4 mb-4">
           <div class="flex items-center gap-2">
             <i class="w-5 h-5 text-accent">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 16H5V5h14v14zM7 10h2v7H7v-7zm4-3h2v10h-2V7zm4 6h2v4h-2v-4z"></path>
               </svg>
             </i>
-            <span class="font-medium">
+            <span class="font-medium text-gray-900 dark:text-gray-100">
               Série actuelle : {{ typeStats[type].currentStreak }}
             </span>
           </div>
 
           <!-- Mini tendance d'apprentissage -->
           <div v-if="learningTrends[type] && learningTrends[type].length > 1" class="mt-3 flex items-center text-sm">
-            <span class="mr-2">Progression : </span>
+            <span class="mr-2 text-gray-700 dark:text-gray-300">Progression : </span>
             <div class="flex items-center h-4">
               <div v-for="(item, i) in learningTrends[type].slice(-5)" :key="i"
                    class="w-2 mx-0.5 rounded-sm"
-                   :class="{'bg-green-500': item.value > 0, 'bg-gray-300': item.value === 0}"
+                   :class="{'bg-green-500': item.value > 0, 'bg-gray-300 dark:bg-gray-700': item.value === 0}"
                    :style="`height: ${Math.max(4, item.value * 4)}px`">
               </div>
             </div>
           </div>
-        </div>        <div class="space-y-4">
+        </div>
+        <div class="space-y-4">
           <div
             v-for="rule in getRulesByType(type).slice(0, visibleRules[type] || 3)"
             :key="rule.id"
-            class="border rounded-lg p-4"
+            class="border dark:border-gray-700 rounded-lg p-4"
           >
             <div class="flex items-center justify-between mb-2">
-              <h3 class="font-medium">{{ rule.title }}</h3>
+              <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ rule.title }}</h3>
             </div>
             <RuleProgressClient :ruleId="rule.id" />
           </div>
@@ -70,7 +71,7 @@
           <div v-if="getRulesByType(type).length > (visibleRules[type] || 3)" class="mb-2">
             <button
               @click="showMoreRules(type)"
-              class="inline-flex items-center text-accent hover:text-accent/80"
+              class="inline-flex items-center text-accent hover:text-accent/80 dark:text-accent-hover dark:hover:text-accent"
             >
               Voir plus de règles
               <svg
@@ -90,7 +91,7 @@
           </div>
           <a
             :href="`/rules/${type}`"
-            class="inline-flex items-center text-accent hover:text-accent/80"
+            class="inline-flex items-center text-accent hover:text-accent/80 dark:text-accent-hover dark:hover:text-accent"
           >
             Voir toutes les règles
             <svg
