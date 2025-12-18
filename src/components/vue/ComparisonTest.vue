@@ -56,7 +56,7 @@
               'incorrecte' }}</span>
           </p>
           <p class="text-gray-600 mb-2">
-            La bonne réponse était : <span class="font-semibold">{{ currentItem.firstNumber }} {{ currentItem.correctAnswer }} {{ currentItem.secondNumber }}</span>
+            La bonne réponse était : <span class="font-semibold">{{ formatNumber(currentItem.firstNumber) }} {{ currentItem.correctAnswer }} {{ formatNumber(currentItem.secondNumber) }}</span>
           </p>
         </div>
         <div class="flex justify-end gap-3 mt-4">
@@ -128,16 +128,16 @@ function formatNumber(number) {
       const precision = (type === 0 || type === 6) ? 1 :
                        ((type >= 1 && type <= 5) ? 2 : 1);
 
-      return number.toFixed(precision);
+      return number.toFixed(precision).replace('.', ',');
     }
     // Si pas de type spécifique mais le nombre a des décimales significatives
     else if (decimalPart && decimalPart.length > 1 && parseFloat('0.' + decimalPart) !== 0) {
       // Conserver les décimales significatives (jusqu'à 2 maximum)
-      return number.toFixed(Math.min(decimalPart.length, 2));
+      return number.toFixed(Math.min(decimalPart.length, 2)).replace('.', ',');
     }
     // Par défaut, afficher au moins une décimale pour les nombres décimaux
     else {
-      return number.toFixed(1);
+      return number.toFixed(1).replace('.', ',');
     }
   }
   return number;

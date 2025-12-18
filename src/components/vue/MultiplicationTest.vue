@@ -29,11 +29,11 @@
 
           <div class="w-full max-w-xs mx-auto">
             <div class="flex flex-col gap-1">
-              <input v-model="answer" :type="test.mode === 'decimal' ? 'number' : 'number'" required min="0" max="999"
+              <input v-model="answer" type="text" required
                 :step="inputStep"
                 class="w-full px-4 py-2 rounded-md border border-gray-300 text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" pattern="[0-9]*" />
-              <small v-if="test.mode === 'decimal'" class="text-gray-500 text-center">Utilisez un point (.) comme séparateur décimal</small>
+                :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" />
+              <small v-if="test.mode === 'decimal'" class="text-gray-500 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
             </div>
           </div>
         </div>
@@ -135,7 +135,8 @@ function handleSubmit() {
 
   if (test.value.mode === 'decimal') {
     // Convertir en string pour la validation du format si ce n'est pas déjà une string
-    const answerStr = String(answer.value);
+    // On remplace la virgule par un point pour le traitement interne
+    const answerStr = String(answer.value).replace(',', '.');
 
     // Vérifier que c'est un nombre décimal valide
     if (!/^-?\d+(\.\d+)?$/.test(answerStr)) {
@@ -220,16 +221,16 @@ function formatNumber(number) {
       } else if (type === 4) {
         precision = 3;
       }
-      return number.toFixed(precision);
+      return number.toFixed(precision).replace('.', ',');
     }
     // Si pas de type spécifique mais le nombre a des décimales significatives
     else if (decimalPart && decimalPart.length > 1 && parseFloat('0.' + decimalPart) !== 0) {
       // Préserver jusqu'à 2 décimales significatives sans arrondir à 1 décimale par défaut
-      return number.toFixed(Math.min(decimalPart.length, 2));
+      return number.toFixed(Math.min(decimalPart.length, 2)).replace('.', ',');
     }
     // Par défaut, afficher au moins une décimale pour les nombres décimaux
     else {
-      return number.toFixed(1);
+      return number.toFixed(1).replace('.', ',');
     }
   }
   return number;
