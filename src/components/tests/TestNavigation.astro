@@ -7,13 +7,15 @@ interface Props {
 const { title, showBack = true } = Astro.props;
 ---
 
-<nav class="bg-white shadow-sm fixed top-16 left-0 right-0 z-40">
+<nav
+  class="bg-white dark:bg-gray-800 shadow-sm dark:shadow-none border-b border-transparent dark:border-gray-700 fixed top-16 left-0 right-0 z-40"
+>
   <div class="container mx-auto px-4 py-3 flex items-center gap-4">
     {
       showBack && (
         <a
           href="/tests"
-          class="text-gray-600 hover:text-gray-900 transition-colors"
+          class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
           aria-label="Retour à la liste des tests"
         >
           <svg
@@ -32,6 +34,6 @@ const { title, showBack = true } = Astro.props;
         </a>
       )
     }
-    <h1 class="text-lg font-semibold text-gray-900">{title}</h1>
+    <h1 class="text-lg font-semibold text-gray-900 dark:text-white">{title}</h1>
   </div>
 </nav>

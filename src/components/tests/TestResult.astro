@@ -46,7 +46,7 @@ if (progress?.mastered) {
 <div class="transform-gpu relative">
   <MasteryEffect show={justMastered} />
   <div
-    class={`bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto transition-all duration-500 ease-out ${
+    class={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto border border-transparent dark:border-gray-700 transition-all duration-500 ease-out ${
       validation.isValid ? "scale-100" : "scale-95"
     } ${justMastered ? "mastery-glow" : ""}`}
     data-result="true"
@@ -74,26 +74,28 @@ if (progress?.mastered) {
         }
       </h3>
       <p>{validation.feedback}</p>
-      <p class="text-base mt-4">
-        Votre réponse : <span class="font-mono">{answer}</span>
+      <p class="text-base mt-4 dark:text-gray-200">
+        Votre réponse : <span class="font-mono dark:text-white">{answer}</span>
         <br />
-        La bonne réponse : <span class="font-mono">{expectedAnswer}</span>
+        La bonne réponse : <span class="font-mono dark:text-white"
+          >{expectedAnswer}</span
+        >
       </p>
     </div>
 
     {
       progress && (
-        <div class="mt-6 p-4 bg-gray-50 rounded-lg transform transition-all duration-500 hover:scale-102">
+        <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-transparent dark:border-gray-600 transform transition-all duration-500 hover:scale-102">
           <div class="flex justify-between items-center mb-2">
-            <span class="text-sm font-medium">
+            <span class="text-sm font-medium dark:text-gray-200">
               Progression sur cette règle :
             </span>
-            <span class="text-sm">
+            <span class="text-sm dark:text-gray-300">
               {progress.successCount}/
               {progress.successCount + progress.failureCount} réussis
             </span>
           </div>
-          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+          <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
             <div
               class="bg-accent h-2 rounded-full transition-all duration-1000 ease-out"
               style={`width: ${Math.round(
@@ -103,7 +105,9 @@ if (progress?.mastered) {
               )}%`}
             />
           </div>
-          <p class="text-sm mt-2 text-gray-600">{encouragement}</p>
+          <p class="text-sm mt-2 text-gray-600 dark:text-gray-400">
+            {encouragement}
+          </p>
           {justMastered && (
             <div class="mt-4 text-center font-bold text-accent animate-pulse">
               Félicitations ! Tu as maîtrisé cette règle ! 🎉
@@ -115,9 +119,9 @@ if (progress?.mastered) {
 
     {
       !validation.isValid && validation.suggestedStep && (
-        <div class="bg-blue-50 p-4 rounded-lg mt-4 transform transition-all duration-500 hover:scale-102">
-          <p class="text-blue-800">
-            <span class="font-semibold">Conseil :</span>{" "}
+        <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mt-4 border border-transparent dark:border-blue-800/50 transform transition-all duration-500 hover:scale-102">
+          <p class="text-blue-800 dark:text-blue-300">
+            <span class="font-semibold dark:text-blue-200">Conseil :</span>{" "}
             {validation.suggestedStep}
           </p>
           {operationType && (
@@ -145,9 +149,9 @@ if (progress?.mastered) {
 
     // Jouer un son en fonction du résultat
     if (justMastered) {
-      playSound("correct", 0.7);
+      playSound("correct");
       setTimeout(() => {
-        playSound("correct", 0.5);
+        playSound("correct");
       }, 300);
     } else {
       playSound(isValid ? "correct" : "incorrect");
