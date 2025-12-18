@@ -1,5 +1,8 @@
 export const STORAGE_KEYS = {
   RULE_PROGRESS: 'decival_rule_progress',
+  UNLOCKED_BADGES: 'decival_unlocked_badges',
+  CURRENT_LEVEL: 'decival_level',
+  TOTAL_XP: 'decival_xp',
   TEST_HISTORY: 'decival_test_history',
   TEST_STATS: 'testStats'
 };

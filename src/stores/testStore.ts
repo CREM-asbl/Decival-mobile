@@ -4,6 +4,7 @@ import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
 import { updateRuleProgress, updateTypeStreak } from './ruleProgressStore';
+import { unlockBadge } from './badgeStore';
 
 type Test = AdditionTest | SubtractionTest | MultiplicationTest;
 
@@ -11,6 +12,8 @@ interface TestStats {
   totalTests: number;
   averageScore: number;
   bestScore: number;
+  xp: number;
+  level: number;
 }
 
 // Store pour le test en cours
@@ -23,7 +26,9 @@ export const testHistory = atom<Test[]>([]);
 export const stats = atom<TestStats>({
   totalTests: 0,
   averageScore: 0,
-  bestScore: 0
+  bestScore: 0,
+  xp: 0,
+  level: 1
 });
 
 // Charger les données sauvegardées
@@ -98,10 +103,19 @@ export function completeTest(test: Test) {
 
   // Mettre à jour les stats
   const currentStats = stats.get();
+
+  // Calculer l'XP gagnée (10 pts par réponse correcte + 20 bonus pour un sans-faute)
+  const xpGained = (correctAnswers * 10) + (score === 100 ? 20 : 0);
+  const newTotalXp = (currentStats.xp || 0) + xpGained;
+  const newLevel = Math.floor(newTotalXp / 100) + 1;
+  const leveledUp = newLevel > (currentStats.level || 1);
+
   const newStats = {
     totalTests: currentStats.totalTests + 1,
     averageScore: (currentStats.averageScore * currentStats.totalTests + score) / (currentStats.totalTests + 1),
-    bestScore: Math.max(currentStats.bestScore, score)
+    bestScore: Math.max(currentStats.bestScore, score),
+    xp: newTotalXp,
+    level: newLevel
   };
   stats.set(newStats);
 
@@ -112,6 +126,7 @@ export function completeTest(test: Test) {
   // Ajouter à l'historique
   const history = testHistory.get();
   testHistory.set([test, ...history]);
+
   // Mettre à jour la progression des règles
   test.items.forEach(item => {
     updateRuleProgress(item.rule.id, item.isCorrect || false);
@@ -120,10 +135,22 @@ export function completeTest(test: Test) {
   // Mettre à jour la série du type de règle
   updateTypeStreak(test.type, isSuccessful);
 
+  // Badges
+  const newlyUnlockedBadges = [];
+  if (currentStats.totalTests === 0) {
+    if (unlockBadge('FIRST_TEST')) newlyUnlockedBadges.push('FIRST_TEST');
+  }
+  if (score === 100) {
+    if (unlockBadge('PERFECT_SCORE')) newlyUnlockedBadges.push('PERFECT_SCORE');
+  }
+  if (newLevel >= 5) {
+    if (unlockBadge('LEVEL_5')) newlyUnlockedBadges.push('LEVEL_5');
+  }
+
   // Réinitialiser le test en cours
   currentTest.set(null);
 
-  return score;
+  return { score, xpGained, leveledUp, newLevel, newlyUnlockedBadges };
 }
 
 export function getTestStats(): TestStats {
@@ -141,7 +168,9 @@ export function resetTestData() {
   stats.set({
     totalTests: 0,
     averageScore: 0,
-    bestScore: 0
+    bestScore: 0,
+    xp: 0,
+    level: 1
   });
   currentTest.set(null);
 }

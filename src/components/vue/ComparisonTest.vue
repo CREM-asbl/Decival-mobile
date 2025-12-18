@@ -94,6 +94,7 @@
     <TestCompleteModal
       :show="showCompleteModal"
       :score="score"
+      :gamificationResults="gamificationResults"
       testType="comparaison"
       @restart="handleRestart"
     />
@@ -116,6 +117,7 @@ const showResultModal = ref(false)
 const showCompleteModal = ref(false)
 const isCorrect = ref(false)
 const score = ref(0)
+const gamificationResults = ref(null)
 const testMode = ref('integer')
 const errorAnalysis = ref(null) // Pour stocker l'analyse de l'erreur
 const continueBtn = ref(null) // Référence pour le bouton continuer
@@ -226,7 +228,8 @@ function handleContinue() {
     score.value = Math.round((correctAnswers / test.value.items.length) * 100)
 
     // Terminer le test
-    completeTest(test.value)
+    const results = completeTest(test.value)
+    gamificationResults.value = results
 
     // Afficher la modal de fin
     showCompleteModal.value = true
