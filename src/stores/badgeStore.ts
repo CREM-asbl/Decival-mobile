@@ -1,7 +1,7 @@
 import { atom } from 'nanostores';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
 
-export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'LEVEL_5';
+export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'MASTERY_5' | 'MASTERY_10' | 'MASTERY_ADDITION' | 'MASTERY_SUBTRACTION' | 'MASTERY_MULTIPLICATION' | 'MASTERY_COMPARISON' | 'LEVEL_5';
 
 export interface Badge {
     id: BadgeId;
@@ -35,6 +35,42 @@ export const BADGES: Record<BadgeId, Badge> = {
         title: 'Maître',
         description: 'Maîtrise ta première règle',
         icon: '👑'
+    },
+    MASTERY_5: {
+        id: 'MASTERY_5',
+        title: 'Petit Génie',
+        description: 'Maîtrise 5 règles différentes',
+        icon: '🎓'
+    },
+    MASTERY_10: {
+        id: 'MASTERY_10',
+        title: 'Savant',
+        description: 'Maîtrise 10 règles différentes',
+        icon: '💡'
+    },
+    MASTERY_ADDITION: {
+        id: 'MASTERY_ADDITION',
+        title: 'As de l\'Addition',
+        description: 'Maîtrise toutes les règles d\'addition de base',
+        icon: '➕'
+    },
+    MASTERY_SUBTRACTION: {
+        id: 'MASTERY_SUBTRACTION',
+        title: 'Pro de la Soustraction',
+        description: 'Maîtrise toutes les règles de soustraction de base',
+        icon: '➖'
+    },
+    MASTERY_MULTIPLICATION: {
+        id: 'MASTERY_MULTIPLICATION',
+        title: 'Crack de la Multiplication',
+        description: 'Maîtrise toutes les règles de multiplication de base',
+        icon: '✖️'
+    },
+    MASTERY_COMPARISON: {
+        id: 'MASTERY_COMPARISON',
+        title: 'Expert des Grandeurs',
+        description: 'Maîtrise toutes les règles de comparaison',
+        icon: '⚖️'
     },
     LEVEL_5: {
         id: 'LEVEL_5',

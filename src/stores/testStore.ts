@@ -3,8 +3,9 @@ import { type AdditionTest } from '../types/addition';
 import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
-import { updateRuleProgress, updateTypeStreak } from './ruleProgressStore';
+import { updateRuleProgress, updateTypeStreak, ruleProgress } from './ruleProgressStore';
 import { unlockBadge } from './badgeStore';
+import { rules } from './rulesStore';
 
 type Test = AdditionTest | SubtractionTest | MultiplicationTest;
 
@@ -145,6 +146,48 @@ export function completeTest(test: Test) {
   }
   if (newLevel >= 5) {
     if (unlockBadge('LEVEL_5')) newlyUnlockedBadges.push('LEVEL_5');
+  }
+
+  // Logique de maîtrise des règles
+  const progressState = ruleProgress.get();
+  const allMasteredRules = Object.values(progressState.progress).filter(p => p.mastered);
+  const masteredCount = allMasteredRules.length;
+
+  if (masteredCount >= 1) {
+    if (unlockBadge('MASTERY_REACHED')) newlyUnlockedBadges.push('MASTERY_REACHED');
+  }
+  if (masteredCount >= 5) {
+    if (unlockBadge('MASTERY_5')) newlyUnlockedBadges.push('MASTERY_5');
+  }
+  if (masteredCount >= 10) {
+    if (unlockBadge('MASTERY_10')) newlyUnlockedBadges.push('MASTERY_10');
+  }
+
+  // Vérifier la maîtrise des catégories
+  const allRulesData = rules.get();
+
+  // Addition
+  const additionRules = allRulesData.addition || [];
+  if (additionRules.length > 0 && additionRules.every(r => progressState.progress[r.id]?.mastered)) {
+    if (unlockBadge('MASTERY_ADDITION')) newlyUnlockedBadges.push('MASTERY_ADDITION');
+  }
+
+  // Soustraction
+  const subtractionRules = allRulesData.subtraction || [];
+  if (subtractionRules.length > 0 && subtractionRules.every(r => progressState.progress[r.id]?.mastered)) {
+    if (unlockBadge('MASTERY_SUBTRACTION')) newlyUnlockedBadges.push('MASTERY_SUBTRACTION');
+  }
+
+  // Multiplication
+  const multiplicationRules = allRulesData.multiplication || [];
+  if (multiplicationRules.length > 0 && multiplicationRules.every(r => progressState.progress[r.id]?.mastered)) {
+    if (unlockBadge('MASTERY_MULTIPLICATION')) newlyUnlockedBadges.push('MASTERY_MULTIPLICATION');
+  }
+
+  // Comparaison
+  const comparisonRules = allRulesData.comparison || [];
+  if (comparisonRules.length > 0 && comparisonRules.every(r => progressState.progress[r.id]?.mastered)) {
+    if (unlockBadge('MASTERY_COMPARISON')) newlyUnlockedBadges.push('MASTERY_COMPARISON');
   }
 
   // Réinitialiser le test en cours
