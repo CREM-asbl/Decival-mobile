@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[100]">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md mx-auto shadow-xl p-6 border border-transparent dark:border-gray-700 animate-bounce-in">
       <div class="text-center py-4">
         <div class="text-6xl mb-4">🎉</div>
