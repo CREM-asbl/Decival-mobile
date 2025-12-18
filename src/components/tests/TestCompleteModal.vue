@@ -11,20 +11,20 @@
           Consultez vos progrès dans l'onglet "Progrès"
         </p>
       </div>
-      <div class="flex justify-end gap-3 mt-4">
-        <a href="/tests" class="no-underline">
-          <button class="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-            Fermer
-          </button>
-        </a>
-        <a href="/progress" class="no-underline">
-          <button class="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+      <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 mt-6">
+        <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium">
+          Recommencer
+        </button>
+        <a href="/progress" class="no-underline w-full sm:w-auto">
+          <button class="w-full px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 font-medium">
             Voir progrès
           </button>
         </a>
-        <button @click="onRestart" class="px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover">
-          Recommencer
-        </button>
+        <a href="/tests" class="no-underline w-full sm:w-auto">
+          <button class="w-full px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium">
+            Fermer
+          </button>
+        </a>
       </div>
     </div>
   </div>
