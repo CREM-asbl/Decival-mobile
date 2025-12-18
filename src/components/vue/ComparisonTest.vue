@@ -9,22 +9,22 @@
 
     <div v-if="testStarted" class="mb-6">
       <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-600">
+        <div class="text-sm text-gray-600 dark:text-gray-400">
           Question {{ currentQuestionIndex + 1 }}/{{ test.items.length }}
         </div>
       </div>
-      <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
         <div class="bg-accent h-2 rounded-full" :style="{ width: `${progress}%` }"></div>
       </div>
     </div>
 
     <form v-if="testStarted" @submit.prevent class="mt-8">
-      <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto border border-transparent dark:border-gray-700">
         <div class="text-center mb-8">
-          <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4">
+          <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 dark:text-white">
             <span class="transition-all duration-300 hover:scale-110">{{ formatNumber(currentItem.firstNumber) }}</span>
-            <span class="text-3xl transition-all duration-300" 
-              :class="showResultModal ? (isCorrect ? 'text-green-600' : 'text-red-600') : 'text-accent'">
+            <span class="text-3xl transition-all duration-300 font-mono" 
+              :class="showResultModal ? (isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') : 'text-accent'">
               {{ showResultModal ? currentItem.userAnswer : '?' }}
             </span>
             <span class="transition-all duration-300 hover:scale-110">{{ formatNumber(currentItem.secondNumber) }}</span>
@@ -40,7 +40,7 @@
                 showResultModal
                   ? (currentItem.userAnswer === '<'
                     ? (isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white')
-                    : (currentItem.correctAnswer === '<' ? 'border-2 border-green-500 text-green-600' : 'bg-gray-100 text-gray-400'))
+                    : (currentItem.correctAnswer === '<' ? 'border-2 border-green-500 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'))
                   : 'bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95'
               ]"
               aria-label="Plus petit que">
@@ -53,7 +53,7 @@
                 showResultModal
                   ? (currentItem.userAnswer === '='
                     ? (isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white')
-                    : (currentItem.correctAnswer === '=' ? 'border-2 border-green-500 text-green-600' : 'bg-gray-100 text-gray-400'))
+                    : (currentItem.correctAnswer === '=' ? 'border-2 border-green-500 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'))
                   : 'bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95'
               ]"
               aria-label="Égal à">
@@ -66,7 +66,7 @@
                 showResultModal
                   ? (currentItem.userAnswer === '>'
                     ? (isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white')
-                    : (currentItem.correctAnswer === '>' ? 'border-2 border-green-500 text-green-600' : 'bg-gray-100 text-gray-400'))
+                    : (currentItem.correctAnswer === '>' ? 'border-2 border-green-500 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'))
                   : 'bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95'
               ]"
               aria-label="Plus grand que">
@@ -76,8 +76,8 @@
 
           <!-- Inline Feedback & Continue Button -->
           <div v-if="showResultModal" class="flex flex-col items-center gap-4 w-full animate-fade-in">
-            <p v-if="!isCorrect" class="text-red-600 font-medium text-center">
-              La bonne réponse était : <span class="font-bold">{{ currentItem.firstNumber }} <span class="underline">{{ currentItem.correctAnswer }}</span> {{ currentItem.secondNumber }}</span>
+            <p v-if="!isCorrect" class="text-red-600 dark:text-red-400 font-medium text-center">
+              La bonne réponse était : <span class="font-bold underline">{{ currentItem.firstNumber }} {{ currentItem.correctAnswer }} {{ currentItem.secondNumber }}</span>
             </p>
             <button ref="continueBtn" @click="handleContinue" type="button"
               class="inline-flex items-center justify-center px-8 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent w-full max-w-xs transition-colors">

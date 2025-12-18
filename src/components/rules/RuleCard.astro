@@ -1,5 +1,5 @@
 ---
-import { Rule } from "../../types/rules";
+import type { Rule } from "../../types/rules";
 
 interface Props {
   rule: Rule;
@@ -9,16 +9,21 @@ interface Props {
 const { rule, showFullDetails = false } = Astro.props;
 ---
 
-<div class="bg-white rounded-lg shadow-lg p-6" id={rule.id}>
-  <h2 class="text-xl font-bold mb-4">{rule.title}</h2>
-  <p class="text-gray-600 mb-6">{rule.description}</p>
-
+<div
+  class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-transparent dark:border-gray-700"
+  id={rule.id}
+>
+  <h2 class="text-xl font-bold mb-4 dark:text-white">{rule.title}</h2>
+  <p class="text-gray-600 dark:text-gray-400 mb-6">{rule.description}</p>
   {
     showFullDetails && (
       <>
         <div class="mb-6">
-          <h3 class="text-lg font-semibold mb-3">Étapes à suivre</h3>
-          <ol class="list-decimal list-inside space-y-2 text-gray-700">
+          <h3 class="text-lg font-semibold mb-3 dark:text-white">
+            Étapes à suivre
+          </h3>
+          <ol class="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
+            {" "}
             {rule.steps.map((step) => (
               <li>{step}</li>
             ))}
@@ -26,23 +31,28 @@ const { rule, showFullDetails = false } = Astro.props;
         </div>
 
         <div class="mb-6">
-          <h3 class="text-lg font-semibold mb-3">Exemples</h3>
+          <h3 class="text-lg font-semibold mb-3 dark:text-white">Exemples</h3>{" "}
           <div class="space-y-4">
             {rule.examples.map((example) => (
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <div class="font-mono text-lg mb-2">
+              <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div class="font-mono text-lg mb-2 dark:text-gray-100">
                   {example.problem} = {example.solution}
                 </div>
-                <p class="text-gray-600 text-sm">{example.explanation}</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                  {example.explanation}
+                </p>
               </div>
-            ))}
+            ))}{" "}
           </div>
         </div>
 
         {rule.tips.length > 0 && (
-          <div class="bg-blue-50 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold mb-2 text-blue-800">Astuces</h3>
-            <ul class="list-disc list-inside space-y-1 text-blue-700">
+          <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-transparent dark:border-blue-800">
+            <h3 class="text-lg font-semibold mb-2 text-blue-800 dark:text-blue-300">
+              Astuces
+            </h3>
+            <ul class="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-400">
+              {" "}
               {rule.tips.map((tip) => (
                 <li>{tip}</li>
               ))}

@@ -1,13 +1,13 @@
 <template>
-  <div class="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
-    <h2 class="text-xl font-bold mb-4 text-center">Choisissez un mode</h2>
+  <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border border-transparent dark:border-gray-700">
+    <h2 class="text-xl font-bold mb-4 text-center dark:text-white">Choisissez un mode</h2>
     <div class="flex flex-col md:flex-row gap-4 justify-center">
       <button
         @click="selectMode('integer')"
         class="px-6 py-4 rounded-lg transition-all flex-1"
         :class="selectedMode === 'integer'
           ? 'bg-accent text-white shadow-lg scale-105'
-          : 'bg-gray-100 hover:bg-gray-200'"
+          : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200'"
       >
         <div class="flex flex-col items-center">
           <span class="text-xl font-semibold mb-2">Nombres entiers</span>
@@ -20,7 +20,7 @@
         class="px-6 py-4 rounded-lg transition-all flex-1"
         :class="selectedMode === 'decimal'
           ? 'bg-accent text-white shadow-lg scale-105'
-          : 'bg-gray-100 hover:bg-gray-200'"
+          : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200'"
       >
         <div class="flex flex-col items-center">
           <span class="text-xl font-semibold mb-2">Nombres décimaux</span>

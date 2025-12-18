@@ -1,47 +1,44 @@
 <template>
   <div class="error-analysis-panel">
-    <h3 class="text-lg font-semibold mb-4">Analyses des erreurs</h3>
-
-    <div v-if="!hasErrorAnalysis" class="text-gray-500 text-center py-4">
+    <h3 class="text-lg font-semibold mb-4 dark:text-white">Analyses des erreurs</h3>
+    <div v-if="!hasErrorAnalysis" class="text-gray-500 dark:text-gray-400 text-center py-4">
       Aucune analyse d'erreur disponible
     </div>
-
     <div v-else class="space-y-4">
-      <div v-for="(test, testIndex) in testsWithErrors" :key="testIndex" class="border rounded-lg p-4">
-        <div class="font-semibold mb-2">
+      <div v-for="(test, testIndex) in testsWithErrors" :key="testIndex" class="border dark:border-gray-700 rounded-lg p-4 mb-4">
+        <div class="font-semibold mb-2 dark:text-white">
           Test {{ testIndex + 1 }} - {{ formatTestType(test.type) }} ({{ formatDate(test.startTime) }})
         </div>
-
         <div v-for="(item, itemIndex) in getItemsWithErrors(test)" :key="`${testIndex}-${itemIndex}`"
-             class="bg-red-50 p-3 mb-2 rounded-md">
+             class="bg-red-50 dark:bg-red-900/30 p-3 mb-2 rounded-md">
           <div class="flex items-start gap-2">
-            <div class="text-red-600 mt-1">
+            <div class="text-red-600 dark:text-red-400 mt-1">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
             </div>
-            <div class="flex-1">
-              <div class="font-medium">Exercice {{ itemIndex + 1 }}</div>
-              <div class="text-sm mb-2">
+ drum            <div class="flex-1">
+              <div class="font-medium dark:text-gray-200">Exercice {{ itemIndex + 1 }}</div>
+              <div class="text-sm mb-2 dark:text-gray-300">
                 {{ formatQuestion(item, test.type) }}
               </div>
-              <div class="text-sm mb-1">
-                <span class="text-gray-700">Votre réponse : </span>
-                <span class="font-mono">{{ formatAnswer(item.userAnswer, test.type) }}</span>
+ drum              <div class="text-sm mb-1">
+                <span class="text-gray-700 dark:text-gray-300">Votre réponse : </span>
+                <span class="font-mono dark:text-white">{{ formatAnswer(item.userAnswer, test.type) }}</span>
               </div>
               <div class="text-sm mb-2">
-                <span class="text-gray-700">Réponse correcte : </span>
-                <span class="font-mono">{{ formatAnswer(item.correctAnswer, test.type) }}</span>
-              </div>              <div v-if="item.errorAnalysis" class="mt-2 bg-amber-50 p-2 rounded border border-amber-200">
-                <div class="font-medium text-amber-800">Analyse :</div>
-                <div class="text-sm text-amber-700">{{ item.errorAnalysis.feedback }}</div>                <div v-if="item.errorAnalysis.rule" class="mt-2 text-sm">
-                  <span class="font-medium text-amber-800">Règle non maîtrisée : </span>
-                  <a :href="`/rules/${getRuleOperationType(item.errorAnalysis.rule.id)}/#${item.errorAnalysis.rule.id}`" class="text-blue-600 hover:underline">
+                <span class="text-gray-700 dark:text-gray-300">Réponse correcte : </span>
+                <span class="font-mono dark:text-white">{{ formatAnswer(item.correctAnswer, test.type) }}</span>
+              </div>              <div v-if="item.errorAnalysis" class="mt-2 bg-amber-50 dark:bg-amber-900/30 p-2 rounded border border-amber-200 dark:border-amber-800">
+                <div class="font-medium text-amber-800 dark:text-amber-400">Analyse :</div>
+                <div class="text-sm text-amber-700 dark:text-amber-300">{{ item.errorAnalysis.feedback }}</div>                <div v-if="item.errorAnalysis.rule" class="mt-2 text-sm">
+                  <span class="font-medium text-amber-800 dark:text-white">Règle non maîtrisée : </span>
+                  <a :href="`/rules/${getRuleOperationType(item.errorAnalysis.rule.id)}/#${item.errorAnalysis.rule.id}`" class="text-blue-600 dark:text-blue-400 hover:underline">
                     {{ item.errorAnalysis.rule.name }}
                   </a>
                 </div>
               </div>
-            </div>
+ drum            </div>
           </div>
         </div>
       </div>

@@ -9,19 +9,19 @@
 
     <div v-if="testStarted" class="mb-6">
       <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-600">
+        <div class="text-sm text-gray-600 dark:text-gray-400">
           Question {{ currentQuestionIndex + 1 }}/{{ test.items.length }}
         </div>
       </div>
-      <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
         <div class="bg-accent h-2 rounded-full" :style="{ width: `${progress}%` }"></div>
       </div>
     </div>
 
     <form v-if="testStarted" @submit.prevent="handleSubmit" class="mt-8">
-      <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto border border-transparent dark:border-gray-700">
         <div class="text-center mb-8">
-          <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4">
+          <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 dark:text-white">
             <span>{{ formatNumber(currentItem.firstNumber) }}</span>
             <span class="text-accent">−</span>
             <span>{{ formatNumber(currentItem.secondNumber) }}</span>
@@ -32,20 +32,20 @@
               <input ref="answerInput" v-model="answer" type="text" required
                 :step="inputStep"
                 :disabled="showResultModal"
-                class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300"
+                class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300 bg-white dark:bg-gray-700 dark:text-white"
                 :class="[
                   showResultModal
                     ? isCorrect
-                      ? 'border-green-500 bg-green-50 text-green-700'
-                      : 'border-red-500 bg-red-50 text-red-700'
-                    : 'border-gray-300'
+                      ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                      : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    : 'border-gray-300 dark:border-gray-600'
                 ]"
                 :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" />
-              <small v-if="test.mode === 'decimal' && !showResultModal" class="text-gray-500 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
+              <small v-if="test.mode === 'decimal' && !showResultModal" class="text-gray-500 dark:text-gray-400 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
               
               <!-- Inline Feedback -->
               <div v-if="showResultModal" class="mt-2 text-center animate-fade-in">
-                <p v-if="!isCorrect" class="text-red-600 font-medium">
+                <p v-if="!isCorrect" class="text-red-600 dark:text-red-400 font-medium">
                   La bonne réponse était : <span class="font-bold underline">{{ formatNumber(currentItem.correctAnswer) }}</span>
                 </p>
               </div>

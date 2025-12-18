@@ -36,7 +36,7 @@ const descriptions = {
     <div class="mb-8">
       <a
         href="/rules"
-        class="inline-flex items-center text-gray-600 hover:text-accent"
+        class="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-accent"
       >
         <svg
           class="w-5 h-5 mr-1"
@@ -54,8 +54,12 @@ const descriptions = {
       </a>
     </div>
 
-    <h1 class="text-2xl font-bold mb-2">{titles[type as RuleType]}</h1>
-    <p class="text-gray-600 mb-6">{descriptions[type as RuleType]}</p>
+    <h1 class="text-2xl font-bold mb-2 dark:text-white">
+      {titles[type as RuleType]}
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">
+      {descriptions[type as RuleType]}
+    </p>
 
     <div class="space-y-6">
       {rules.map((rule) => <RuleCard rule={rule} showFullDetails />)}
