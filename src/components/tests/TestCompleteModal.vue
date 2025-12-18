@@ -42,6 +42,11 @@
             Voir progrès
           </button>
         </a>
+        <a href="/tests" class="no-underline w-full sm:w-auto">
+          <button class="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95">
+            Fermer
+          </button>
+        </a>
       </div>
     </div>
   </div>
