@@ -30,6 +30,25 @@ const { title, currentPage = "home" } = Astro.props;
     <!-- PWA manifest -->
     <link rel="manifest" href="/manifest.webmanifest" />
 
+    <!-- Blocking script to prevent FOUC and handle theme persistence -->
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('darkMode')) {
+          return JSON.parse(localStorage.getItem('darkMode')) ? 'dark' : 'light';
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+    
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+
     <!-- Variables CSS globales -->
     <style is:global>
       :root {

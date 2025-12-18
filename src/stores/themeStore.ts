@@ -6,12 +6,15 @@ export function initializeTheme() {
   if (typeof window === 'undefined') return;
 
   const stored = localStorage.getItem('darkMode');
+  let isDarkValue = false;
   if (stored !== null) {
-    isDarkMode.set(JSON.parse(stored));
+    isDarkValue = JSON.parse(stored);
   } else {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    isDarkMode.set(prefersDark);
+    isDarkValue = window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
+
+  isDarkMode.set(isDarkValue);
+  document.documentElement.classList.toggle('dark', isDarkValue);
 
   // Listen for system theme changes
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

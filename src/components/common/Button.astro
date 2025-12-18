@@ -1,7 +1,7 @@
 ---
 export interface Props {
   variant?: "primary" | "secondary";
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
   type?: "button" | "submit" | "link";
   class?: string;
   id?: string;
@@ -24,7 +24,7 @@ const variantClasses = {
   primary:
     "text-white bg-accent hover:bg-accent-hover focus:ring-accent active:bg-accent-active hover:opacity-90 active:translate-y-px",
   secondary:
-    "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300 hover:opacity-90 active:translate-y-px",
+    "text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 hover:opacity-90 active:translate-y-px",
 };
 
 const sizeClasses = {
@@ -105,7 +105,7 @@ const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} 
     }
 
     rippleContainer.appendChild(circle);
-    playSound("click", 0.3);
+    playSound("click");
   }
 
   // Ajouter l'effet de ripple et le son sur tous les boutons
@@ -115,7 +115,7 @@ const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} 
       buttons.forEach((button) => {
         button.addEventListener("click", createRipple);
         button.addEventListener("mouseenter", () => {
-          playSound("hover", 0.1);
+          playSound("hover");
         });
       });
     });
