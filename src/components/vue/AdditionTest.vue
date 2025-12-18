@@ -29,7 +29,7 @@
 
           <div class="w-full max-w-xs mx-auto">
             <div class="flex flex-col gap-1">
-              <input v-model="answer" type="text" required
+              <input ref="answerInput" v-model="answer" type="text" required
                 :step="inputStep"
                 :disabled="showResultModal"
                 class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300"
@@ -96,9 +96,17 @@ const score = ref(0)
 const testMode = ref('integer')
 const errorAnalysis = ref(null) // Pour stocker l'analyse de l'erreur
 const continueBtn = ref(null) // Référence pour le bouton continuer
+const answerInput = ref(null) // Référence pour le champ de saisie
 
 // Récupérer ou créer un test
 const test = ref(null)
+
+// Helper pour donner le focus au champ de saisie
+function focusInput() {
+  nextTick(() => {
+    answerInput.value?.focus();
+  });
+}
 
 // Démarrer un test avec le mode sélectionné
 function startTestWithMode(mode) {
@@ -106,6 +114,7 @@ function startTestWithMode(mode) {
   test.value = createAdditionTest(5, mode)
   currentTest.set(test.value)
   testStarted.value = true
+  focusInput()
 }
 
 // Calculer la progression
@@ -258,6 +267,7 @@ function handleContinue() {
   } else {
     // Passer à la question suivante
     currentQuestionIndex.value++
+    focusInput()
   }
 }
 
@@ -273,5 +283,6 @@ function handleRestart() {
   answer.value = ''
   showCompleteModal.value = false
   score.value = 0
+  focusInput()
 }
 </script>
