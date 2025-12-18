@@ -2,6 +2,7 @@
 import Button from "../components/common/Button.astro";
 import Icon from "../components/common/Icon.astro";
 import Layout from "../layouts/Layout.astro";
+import MrComma from "../components/vue/MrComma.vue";
 
 const features = [
   {
@@ -29,7 +30,15 @@ const features = [
       <p class="text-gray-600 mb-6">
         Apprenez et pratiquez les mathématiques de manière interactive
       </p>
-      <div class="flex justify-center">
+      <div class="flex flex-col items-center justify-center">
+        <div class="mb-4">
+          <MrComma
+            variant="pointing"
+            animate={true}
+            altText="Monsieur Virgule vous souhaite la bienvenue"
+            client:load
+          />
+        </div>
         <a href="/tests" class="no-underline">
           <Button variant="primary" size="lg"> Commencer les exercices </Button>
         </a>

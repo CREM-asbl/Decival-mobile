@@ -76,6 +76,7 @@
 
           <!-- Inline Feedback & Continue Button -->
           <div v-if="showResultModal" class="flex flex-col items-center gap-4 w-full animate-fade-in">
+            <MrComma :variant="isCorrect ? 'happy' : 'confused'" animate />
             <p v-if="!isCorrect" class="text-red-600 dark:text-red-400 font-medium text-center">
               La bonne réponse était : <span class="font-bold underline">{{ currentItem.firstNumber }} {{ currentItem.correctAnswer }} {{ currentItem.secondNumber }}</span>
             </p>
@@ -106,6 +107,7 @@ import { playSound } from '../../stores/soundStore'
 import { completeTest, currentTest } from '../../stores/testStore'
 import TestCompleteModal from '../tests/TestCompleteModal.vue'
 import TestModeSelector from '../tests/TestModeSelector.vue'
+import MrComma from './MrComma.vue'
 
 // État local
 const testStarted = ref(false)

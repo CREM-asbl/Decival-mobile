@@ -43,7 +43,8 @@
               <small v-if="test.mode === 'decimal' && !showResultModal" class="text-gray-500 dark:text-gray-400 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
               
               <!-- Inline Feedback -->
-              <div v-if="showResultModal" class="mt-2 text-center animate-fade-in">
+              <div v-if="showResultModal" class="mt-2 text-center animate-fade-in flex flex-col items-center gap-2">
+                <MrComma :variant="isCorrect ? 'happy' : 'confused'" animate />
                 <p v-if="!isCorrect" class="text-red-600 dark:text-red-400 font-medium">
                   La bonne réponse était : <span class="font-bold underline">{{ formatNumber(currentItem.correctAnswer) }}</span>
                 </p>
@@ -83,6 +84,7 @@ import { playSound } from '../../stores/soundStore'
 import { completeTest, currentTest } from '../../stores/testStore'
 import TestCompleteModal from '../tests/TestCompleteModal.vue'
 import TestModeSelector from '../tests/TestModeSelector.vue'
+import MrComma from './MrComma.vue'
 
 // État local
 const testStarted = ref(false)

@@ -1,7 +1,7 @@
 <template>
   <div class="mr-comma-container" :class="{ 'animate-bounce': animate }">
     <img
-      :src="`/images/mrcomma/${variant}.svg`"
+      :src="`/images/mrcomma_v2/${variant}.png`"
       :alt="altText"
       class="w-full h-full object-contain"
     />
@@ -21,7 +21,8 @@ const props = defineProps({
   },
   altText: {
     type: String,
-    default: 'Monsieur Virgule'
+    default: 'Monsieur Virgule',
+    required: false
   }
 })
 

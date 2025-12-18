@@ -1,5 +1,18 @@
 <template>
-  <div>
+  <div class="flex flex-col gap-6">
+    <!-- Encouragement section with Mr Comma -->
+    <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-indigo-100 dark:border-indigo-800/50">
+      <MrComma :variant="encouragementVariant" animate class="w-16 h-16 sm:w-24 sm:h-24" />
+      <div>
+        <h2 class="text-xl font-bold text-indigo-900 dark:text-indigo-100 mb-2">
+          {{ encouragementTitle }}
+        </h2>
+        <p class="text-indigo-700 dark:text-indigo-300">
+          {{ encouragementMessage }}
+        </p>
+      </div>
+    </div>
+
     <!-- Statistiques globales -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
@@ -114,6 +127,7 @@ import { resetProgress, ruleProgress } from '../../stores/ruleProgressStore'
 import { getRuleById } from '../../stores/rulesStore'
 import { resetTestData, stats, testHistory } from '../../stores/testStore'
 import ErrorAnalysisPanel from './ErrorAnalysisPanel.vue'
+import MrComma from './MrComma.vue'
 
 // Composant qui accède uniquement aux stores et expose des données réactives
 // sans manipuler directement le localStorage
@@ -182,6 +196,30 @@ function resetData() {
     alert("Données réinitialisées avec succès")
   }
 }
+
+// Logique d'encouragement dynamique
+const encouragementVariant = computed(() => {
+  if (testStats.value.averageScore >= 80) return 'happy'
+  if (testStats.value.totalTests === 0) return 'pointing'
+  if (testStats.value.averageScore < 50) return 'pointing'
+  return 'default'
+})
+
+const encouragementTitle = computed(() => {
+  if (testStats.value.totalTests === 0) return "C'est parti !"
+  if (testStats.value.averageScore >= 90) return "Excellent travail !"
+  if (testStats.value.averageScore >= 70) return "Tu progresses bien !"
+  if (testStats.value.averageScore >= 50) return "Continue tes efforts !"
+  return "N'abandonne pas !"
+})
+
+const encouragementMessage = computed(() => {
+  if (testStats.value.totalTests === 0) return "Commence ton premier exercice pour voir ta progression s'afficher ici."
+  if (testStats.value.averageScore >= 90) return "Tes résultats sont impressionnants. Tu maîtrises vraiment bien les concepts !"
+  if (testStats.value.averageScore >= 70) return "Tes efforts portent leurs fruits. Continue comme ça pour atteindre le sommet !"
+  if (testStats.value.averageScore >= 50) return "Tu es sur la bonne voie. Pratique encore un peu pour gagner en assurance."
+  return "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !"
+})
 
 // Initialisation - s'assurer que les stores sont bien initialisés
 onMounted(() => {
