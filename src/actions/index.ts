@@ -1,16 +1,13 @@
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
-import * as admin from 'firebase-admin';
+import { initializeApp } from 'firebase-admin/app';
+import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
 import nodemailer from 'nodemailer';
 
-// Initialiser Firebase Admin si nécessaire
-try {
-  if (!admin.apps.length) {
-    admin.initializeApp();
-  }
-} catch (e) {
-  console.warn('Firebase Admin non initialisé (dev/local).', e);
-}
+const app = initializeApp({
+  projectId: import.meta.env.FIREBASE_PROJECT_ID,
+})
+const db = getFirestore()
 
 // Schéma de validation pour le feedback
 const feedbackSchema = z.object({
@@ -40,13 +37,11 @@ export const server = {
     accept: 'json',
     input: feedbackSchema,
     handler: async (data) => {
-      console.log(data)
       try {
         // 1️⃣ Enregistrer dans Firestore (si disponible)
         let feedbackId = 'dev-local';
-        if (admin.apps.length > 0) {
+        if (app) {
           try {
-            const db = admin.firestore();
             const feedbackRef = await db.collection('feedback').add({
               category: data.category,
               rating: data.rating,
@@ -54,8 +49,8 @@ export const server = {
               email: data.email || 'anonymous@feedback.local',
               page: data.page,
               userAgent: data.userAgent,
-              timestamp: admin.firestore.Timestamp.fromDate(new Date(data.timestamp)),
-              createdAt: admin.firestore.FieldValue.serverTimestamp(),
+              timestamp: Timestamp.fromDate(new Date(data.timestamp)),
+              createdAt: FieldValue.serverTimestamp(),
             });
             feedbackId = feedbackRef.id;
           } catch (dbErr) {
