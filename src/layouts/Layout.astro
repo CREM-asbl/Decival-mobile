@@ -2,6 +2,7 @@
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import InstallPWA from "../components/InstallPWA.astro";
+import FeedbackButton from "../components/vue/FeedbackButton.vue";
 
 interface Props {
   title: string;
@@ -33,19 +34,24 @@ const { title, currentPage = "home" } = Astro.props;
     <!-- Blocking script to prevent FOUC and handle theme persistence -->
     <script is:inline>
       const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('darkMode')) {
-          return JSON.parse(localStorage.getItem('darkMode')) ? 'dark' : 'light';
+        if (
+          typeof localStorage !== "undefined" &&
+          localStorage.getItem("darkMode")
+        ) {
+          return JSON.parse(localStorage.getItem("darkMode"))
+            ? "dark"
+            : "light";
         }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          return "dark";
         }
-        return 'light';
+        return "light";
       })();
-    
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
+
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
       } else {
-        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.remove("dark");
       }
     </script>
 
@@ -75,6 +81,7 @@ const { title, currentPage = "home" } = Astro.props;
 
     <Footer currentPage={currentPage} />
     <InstallPWA />
+    <FeedbackButton client:load />
 
     <script>
       import { isDarkMode } from "../stores/themeStore";

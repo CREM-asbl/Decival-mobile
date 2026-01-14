@@ -1,13 +1,13 @@
-import node from '@apphosting/astro-adapter';
+import apphosting from '@apphosting/astro-adapter';
 import tailwind from '@astrojs/tailwind';
 import vue from '@astrojs/vue';
 import { defineConfig } from 'astro/config';
 import serviceWorker from 'astrojs-service-worker';
-import apphosting from '@apphosting/astro-adapter';
 
 export default defineConfig({
-  output: 'static',
-  adapter: apphosting({ 
+  // Les server actions nécessitent un rendu serveur (server/hybrid)
+  output: 'server',
+  adapter: apphosting({
     mode: "standalone"
   }),
   integrations: [
