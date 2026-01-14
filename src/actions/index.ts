@@ -1,7 +1,7 @@
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
 import { initializeApp } from 'firebase-admin/app';
-import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
 import nodemailer from 'nodemailer';
 
 const app = initializeApp({
@@ -21,13 +21,15 @@ const feedbackSchema = z.object({
 });
 
 // Initialiser le transporteur Nodemailer
-const hasEmailCreds = !!process.env.FEEDBACK_EMAIL_PASSWORD;
+const hasEmailCreds = !!import.meta.env.EMAIL_PASSWORD;
 const transporter = hasEmailCreds
   ? nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.office365.com',
+    port: 587,
+    secure: false,
     auth: {
-      user: process.env.FEEDBACK_EMAIL_USER || 'info@crem.be',
-      pass: process.env.FEEDBACK_EMAIL_PASSWORD,
+      user: import.meta.env.EMAIL_USER,
+      pass: import.meta.env.EMAIL_PASSWORD,
     },
   })
   : null;
@@ -59,14 +61,14 @@ export const server = {
         } else {
           console.info('Firebase Admin non initialisé, mode dev local sans persistance.');
         }
-
         // 2️⃣ Envoyer email de confirmation (si config présente)
         if (transporter) {
-          await transporter.sendMail({
-            from: process.env.FEEDBACK_EMAIL_USER || 'pliezgeoffrey@gmail.com',
-            to: 'pliezgeoffrey@gmail.com',
-            subject: `[Feedback Décimal] ${data.category} - ${data.rating}/5 ⭐`,
-            html: `
+          try {
+            await transporter.sendMail({
+              from: import.meta.env.EMAIL_USER || 'pliezgeoffrey@gmail.com',
+              to: 'pliezgeoffrey@gmail.com',
+              subject: `[Feedback Décimal] ${data.category} - ${data.rating}/5 ⭐`,
+              html: `
 <html>
   <head>
     <meta charset="UTF-8">
@@ -118,8 +120,12 @@ export const server = {
     </div>
   </body>
 </html>
-          `,
-          });
+              `,
+            });
+            console.log(`📧 Email envoyé pour le feedback ${feedbackId}`);
+          } catch (emailErr) {
+            console.warn('⚠️ Erreur lors de l\'envoi du mail, mais le feedback est enregistré:', emailErr instanceof Error ? emailErr.message : emailErr);
+          }
         }
 
         return {
