@@ -1,8 +1,8 @@
 ---
 import Button from "../components/common/Button.astro";
 import Icon from "../components/common/Icon.astro";
-import Layout from "../layouts/Layout.astro";
 import MrComma from "../components/vue/MrComma.vue";
+import Layout from "../layouts/Layout.astro";
 
 const features = [
   {
@@ -25,6 +25,30 @@ const features = [
 
 <Layout title="Decival - Exercices de mathématiques" currentPage="home">
   <main class="max-w-lg mx-auto px-4 py-8">
+    <section
+      class="mb-8 rounded-2xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 shadow-sm dark:border-indigo-900 dark:bg-indigo-900/40"
+    >
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <span
+          class="inline-flex w-fit items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700 shadow-sm ring-1 ring-indigo-100 dark:bg-indigo-800/70 dark:text-indigo-100 dark:ring-indigo-700/60"
+        >
+          <span
+            class="h-2 w-2 rounded-full bg-green-500 animate-pulse"
+            aria-hidden="true"></span>
+          Beta
+        </span>
+        <div class="flex-1 space-y-1">
+          <p class="text-sm font-semibold text-indigo-900 dark:text-indigo-50">
+            Decival évolue encore.
+          </p>
+          <p class="text-sm text-indigo-900/80 dark:text-indigo-100/80">
+            Certaines fonctionnalités peuvent changer. Vos retours nous aident à
+            prioriser les améliorations.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold mb-4">Bienvenue sur Decival</h1>
       <p class="text-gray-600 mb-6">
