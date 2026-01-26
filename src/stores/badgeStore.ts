@@ -68,7 +68,7 @@ export const BADGES: Record<BadgeId, Badge> = {
     },
     MASTERY_COMPARISON: {
         id: 'MASTERY_COMPARISON',
-        title: 'Expert des Grandeurs',
+        title: 'Expert des Comparaisons',
         description: 'Maîtrise toutes les règles de comparaison',
         icon: '⚖️'
     },
