@@ -58,8 +58,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
         n2 = Math.floor(Math.random() * 9) + 1;
       }
 
-      firstNumber = n1 / 10;
-      secondNumber = n2 / 10;
+      firstNumber = parseFloat((n1 / 10).toFixed(1));
+      secondNumber = parseFloat((n2 / 10).toFixed(1));
       firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
       secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
 
@@ -77,8 +77,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
       let n1b = Math.floor(Math.random() * 9) + 1;
       let n2b = n1b; // Même chiffre pour vérifier l'égalité malgré les zéros à droite
 
-      firstNumber = n1b / 10;
-      secondNumber = n2b / 10 + 0; // Pour forcer l'affichage comme 0,10
+      firstNumber = parseFloat((n1b / 10).toFixed(1));
+      secondNumber = parseFloat((n2b / 10).toFixed(1)); // Pour forcer l'affichage comme 0,10
 
       firstNumberDisplay = (n1b / 10).toLocaleString('fr-FR');
       secondNumberDisplay = (n2b / 10).toLocaleString('fr-FR') + '0'; // Force le zéro à la fin
@@ -96,8 +96,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
       const n1c = Math.floor(Math.random() * 9) + 1;
       const n2c = n1c; // Même chiffre
 
-      firstNumber = n1c / 10;
-      secondNumber = n2c / 100;
+      firstNumber = parseFloat((n1c / 10).toFixed(1));
+      secondNumber = parseFloat((n2c / 100).toFixed(2));
       firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
       secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
 
@@ -114,8 +114,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
       const n1d = Math.floor(Math.random() * 8) + 2; // 2-9
       const n2d = Math.floor(Math.random() * (n1d - 1)) + 1; // 1 à (n1d-1)
 
-      firstNumber = n1d / 10;
-      secondNumber = n2d / 100;
+      firstNumber = parseFloat((n1d / 10).toFixed(1));
+      secondNumber = parseFloat((n2d / 100).toFixed(2));
 
       firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
       secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
@@ -134,8 +134,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
       const n2e = Math.floor(Math.random() * 9) + 1; // 1-9
       const n3e = Math.floor(Math.random() * 9) + 1; // 1-9
 
-      firstNumber = (n1e / 10) + (n2e / 100);
-      secondNumber = n3e / 10;
+      firstNumber = parseFloat(((n1e / 10) + (n2e / 100)).toFixed(2));
+      secondNumber = parseFloat((n3e / 10).toFixed(1));
 
       // Assurer un affichage propre (max 2 décimales)
       firstNumber = parseFloat(firstNumber.toFixed(2));
@@ -161,8 +161,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
     case 5: // 0,10 vs 0,1 (Zéro à droite, même valeur)
       const n1f = Math.floor(Math.random() * 9) + 1;
 
-      firstNumber = n1f / 10;
-      secondNumber = n1f / 10; // Même valeur
+      firstNumber = parseFloat((n1f / 10).toFixed(1));
+      secondNumber = parseFloat((n1f / 10).toFixed(1)); // Même valeur
 
       firstNumberDisplay = (n1f / 10).toLocaleString('fr-FR') + '0';
       secondNumberDisplay = (n1f / 10).toLocaleString('fr-FR');
@@ -189,8 +189,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
       if (Math.random() < 0.5) {
         // Premier nombre avec 0 à la fin, plus petit
         // Ex: 0.80 < 0.9
-        firstNumber = n1g / 10;
-        secondNumber = n2g / 10;
+        firstNumber = parseFloat((n1g / 10).toFixed(1));
+        secondNumber = parseFloat((n2g / 10).toFixed(1));
 
         firstNumberDisplay = firstNumber.toLocaleString('fr-FR') + '0';
         secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
@@ -199,8 +199,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
       } else {
         // Premier nombre normal, Deuxième avec 0 à la fin
         // Ex: 0.9 > 0.80
-        firstNumber = n1g / 10;
-        secondNumber = n2g / 10;
+        firstNumber = parseFloat((n1g / 10).toFixed(1));
+        secondNumber = parseFloat((n2g / 10).toFixed(1));
 
         firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
         secondNumberDisplay = secondNumber.toLocaleString('fr-FR') + '0';

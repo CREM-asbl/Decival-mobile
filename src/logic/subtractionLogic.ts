@@ -42,8 +42,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
 
   switch (type) {
     case 0: // Soustraction de dixièmes sans emprunt
-      secondNumber = (Math.floor(Math.random() * 8) + 1) / 10; // 0,1 à 0,8
-      firstNumber = ((Math.floor(Math.random() * (9 - Math.floor(secondNumber * 10))) + Math.floor(secondNumber * 10) + 1) / 10) + Math.floor(secondNumber);
+      secondNumber = parseFloat(((Math.floor(Math.random() * 8) + 1) / 10).toFixed(1)); // 0,1 à 0,8
+      firstNumber = parseFloat((((Math.floor(Math.random() * (9 - Math.floor(secondNumber * 10))) + Math.floor(secondNumber * 10) + 1) / 10) + Math.floor(secondNumber)).toFixed(1));
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(1));
       errorTypes = ['decimalAlignment', 'simpleSubtraction'];
       rule = {
@@ -53,8 +53,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
       break;
 
     case 1: // Soustraction de centièmes sans emprunt
-      secondNumber = (Math.floor(Math.random() * 8) + 1) / 100; // 0,01 à 0,08
-      firstNumber = ((Math.floor(Math.random() * (9 - Math.floor(secondNumber * 100))) + Math.floor(secondNumber * 100) + 1) / 100) + Math.floor(secondNumber);
+      secondNumber = parseFloat(((Math.floor(Math.random() * 8) + 1) / 100).toFixed(2)); // 0,01 à 0,08
+      firstNumber = parseFloat((((Math.floor(Math.random() * (9 - Math.floor(secondNumber * 100))) + Math.floor(secondNumber * 100) + 1) / 100) + Math.floor(secondNumber)).toFixed(2));
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(2));
       errorTypes = ['decimalAlignment', 'zeroPlacement'];
       rule = {
@@ -64,8 +64,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
       break;
 
     case 2: // Soustraction avec précisions différentes
-      secondNumber = (Math.floor(Math.random() * 9) + 1) / 100; // 0,01 à 0,09
-      firstNumber = (Math.floor(Math.random() * 9) + 1) / 10; // 0,1 à 0,9
+      secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 100).toFixed(2)); // 0,01 à 0,09
+      firstNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1)); // 0,1 à 0,9
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(2));
       errorTypes = ['decimalAlignment', 'differentPrecisions'];
       rule = {
@@ -75,8 +75,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
       break;
 
     case 3: // Soustraction de dixièmes avec emprunt
-      secondNumber = (Math.floor(Math.random() * 9) + 1) / 10; // 0,1 à 0,9
-      firstNumber = ((Math.floor(Math.random() * Math.floor(secondNumber * 10))) / 10) + Math.ceil(secondNumber);
+      secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1)); // 0,1 à 0,9
+      firstNumber = parseFloat((((Math.floor(Math.random() * Math.floor(secondNumber * 10))) / 10) + Math.ceil(secondNumber)).toFixed(1));
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(1));
       errorTypes = ['borrowing', 'decimalSubtraction'];
       rule = {
@@ -86,8 +86,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
       break;
 
     case 4: // Soustraction de centièmes avec emprunt
-      secondNumber = (Math.floor(Math.random() * 9) + 1) / 100; // 0,01 à 0,09
-      firstNumber = ((Math.floor(Math.random() * Math.floor(secondNumber * 100)) / 100) + Math.ceil(secondNumber * 10) / 10);
+      secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 100).toFixed(2)); // 0,01 à 0,09
+      firstNumber = parseFloat((((Math.floor(Math.random() * Math.floor(secondNumber * 100)) / 100) + Math.ceil(secondNumber * 10) / 10)).toFixed(2));
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(2));
       errorTypes = ['borrowing', 'zeroPlacement'];
       rule = {
@@ -97,8 +97,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
       break;
 
     case 5: // Soustraction de nombres mixtes (0,27 - 0,09)
-      firstNumber = (Math.floor(Math.random() * 9) + 1) / 10 + (Math.floor(Math.random() * 9) + 1) / 100; // 0,11 à 0,99
-      secondNumber = (Math.floor(Math.random() * Math.floor(firstNumber * 100)) / 100);
+      firstNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10 + (Math.floor(Math.random() * 9) + 1) / 100).toFixed(2)); // 0,11 à 0,99
+      secondNumber = parseFloat(((Math.floor(Math.random() * Math.floor(firstNumber * 100)) / 100)).toFixed(2));
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(2));
       errorTypes = ['borrowing', 'zeroPlacement', 'differentPrecisions'];
       rule = {
@@ -109,7 +109,7 @@ function generateDecimalSubtractionItem(): SubtractionItem {
 
     case 6: // Soustraction d'entier et décimal (5 - 0,7)
       firstNumber = Math.floor(Math.random() * 9) + 1; // 1 à 9
-      secondNumber = (Math.floor(Math.random() * 9) + 1) / 10; // 0,1 à 0,9
+      secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1)); // 0,1 à 0,9
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(1));
       errorTypes = ['integerDecimalMix', 'borrowing'];
       rule = {

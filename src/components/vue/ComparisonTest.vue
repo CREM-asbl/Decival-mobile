@@ -157,8 +157,11 @@ const currentItem = computed(() => test.value?.items[currentQuestionIndex.value]
 // Formater un nombre pour l'affichage (afficher les décimaux de manière adaptée)
 function formatNumber(number) {
   if (test.value?.mode === 'decimal') {
-    // Déterminer le nombre de décimales nécessaires
-    const numberStr = number.toString();
+    if (typeof number !== 'number') return number;
+
+    // Nettoyer les imprécisions de calcul
+    const cleanNumber = Number(number.toPrecision(12));
+    const numberStr = cleanNumber.toString();
     const decimalPart = numberStr.includes('.') ? numberStr.split('.')[1] : '';
 
     // Si le nombre a un type spécifique (pour les exercices proportionnels)
@@ -170,16 +173,16 @@ function formatNumber(number) {
       const precision = (type === 0 || type === 6) ? 1 :
                        ((type >= 1 && type <= 5) ? 2 : 1);
 
-      return number.toFixed(precision).replace('.', ',');
+      return cleanNumber.toFixed(precision).replace('.', ',');
     }
     // Si pas de type spécifique mais le nombre a des décimales significatives
     else if (decimalPart && decimalPart.length > 1 && parseFloat('0.' + decimalPart) !== 0) {
       // Conserver les décimales significatives (jusqu'à 2 maximum)
-      return number.toFixed(Math.min(decimalPart.length, 2)).replace('.', ',');
+      return cleanNumber.toFixed(Math.min(decimalPart.length, 2)).replace('.', ',');
     }
     // Par défaut, afficher au moins une décimale pour les nombres décimaux
     else {
-      return number.toFixed(1).replace('.', ',');
+      return cleanNumber.toFixed(1).replace('.', ',');
     }
   }
   return number;

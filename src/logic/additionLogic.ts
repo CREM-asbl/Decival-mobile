@@ -45,8 +45,8 @@ function generateDecimalAdditionItem(): AdditionItem {
       const n1 = Math.floor(Math.random() * 8) + 1;
       const n2 = Math.floor(Math.random() * (9 - n1)) + 1; // Éviter les retenues
 
-      firstNumber = n1 / 10;
-      secondNumber = n2 / 10;
+      firstNumber = parseFloat((n1 / 10).toFixed(1));
+      secondNumber = parseFloat((n2 / 10).toFixed(1));
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(1));
       errorTypes = ['powerOfTen', 'decimalSum'];
       rule = {
@@ -59,8 +59,8 @@ function generateDecimalAdditionItem(): AdditionItem {
       const n1b = Math.floor(Math.random() * 8) + 1;
       const n2b = Math.floor(Math.random() * (9 - n1b)) + 1;
 
-      firstNumber = n1b / 100;
-      secondNumber = n2b / 100;
+      firstNumber = parseFloat((n1b / 100).toFixed(2));
+      secondNumber = parseFloat((n2b / 100).toFixed(2));
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['powerOfTen', 'zeroPlacement', 'decimalSum'];
       rule = {
@@ -74,11 +74,11 @@ function generateDecimalAdditionItem(): AdditionItem {
       const n2c = Math.floor(Math.random() * (9 - n1c)) + 1;
 
       if (Math.random() < 0.5) {
-        firstNumber = n1c / 10;
-        secondNumber = n2c / 100;
+        firstNumber = parseFloat((n1c / 10).toFixed(1));
+        secondNumber = parseFloat((n2c / 100).toFixed(2));
       } else {
-        firstNumber = n1c / 100;
-        secondNumber = n2c / 10;
+        firstNumber = parseFloat((n1c / 100).toFixed(2));
+        secondNumber = parseFloat((n2c / 10).toFixed(1));
       }
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['decimalAlignment', 'powerOfTen'];
@@ -95,8 +95,8 @@ function generateDecimalAdditionItem(): AdditionItem {
         n2d = Math.floor(Math.random() * 9) + 1;
       } while (n1d + n2d < 10);
 
-      firstNumber = n1d / 10;
-      secondNumber = n2d / 10;
+      firstNumber = parseFloat((n1d / 10).toFixed(1));
+      secondNumber = parseFloat((n2d / 10).toFixed(1));
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(1));
       errorTypes = ['carry', 'decimalSum'];
       rule = {
@@ -112,8 +112,8 @@ function generateDecimalAdditionItem(): AdditionItem {
         n2e = Math.floor(Math.random() * 9) + 1;
       } while (n1e + n2e < 10);
 
-      firstNumber = n1e / 100;
-      secondNumber = n2e / 100;
+      firstNumber = parseFloat((n1e / 100).toFixed(2));
+      secondNumber = parseFloat((n2e / 100).toFixed(2));
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['carry', 'zeroPlacement', 'decimalSum'];
       rule = {
@@ -134,11 +134,11 @@ function generateDecimalAdditionItem(): AdditionItem {
       }
 
       if (Math.random() < 0.5) {
-        firstNumber = n1f / 10;
-        secondNumber = n2f / 100;
+        firstNumber = parseFloat((n1f / 10).toFixed(1));
+        secondNumber = parseFloat((n2f / 100).toFixed(2));
       } else {
-        firstNumber = n2f / 100;
-        secondNumber = n1f / 10;
+        firstNumber = parseFloat((n2f / 100).toFixed(2));
+        secondNumber = parseFloat((n1f / 10).toFixed(1));
       }
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['decimalAlignment', 'multipleDecimals'];
@@ -154,9 +154,9 @@ function generateDecimalAdditionItem(): AdditionItem {
 
       if (Math.random() < 0.5) {
         firstNumber = n1g;
-        secondNumber = n2g / 10;
+        secondNumber = parseFloat((n2g / 10).toFixed(1));
       } else {
-        firstNumber = n2g / 10;
+        firstNumber = parseFloat((n2g / 10).toFixed(1));
         secondNumber = n1g;
       }
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(1));

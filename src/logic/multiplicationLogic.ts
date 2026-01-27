@@ -42,8 +42,8 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
 
   switch (type) {
     case 0: // Multiplication simple de décimaux (0,5 × 0,2)
-      firstNumber = (Math.floor(Math.random() * 9) + 1) / 10;
-      secondNumber = (Math.floor(Math.random() * 9) + 1) / 10;
+      firstNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1));
+      secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1));
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
       errorTypes = ['powerOfTen', 'decimalProduct'];
       rule = {
@@ -53,12 +53,12 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       break;
 
     case 1: // Multiplication par 10, 100 (3,7 × 10)
-      firstNumber = Math.floor(Math.random() * 90 + 10) / 10;
+      firstNumber = parseFloat((Math.floor(Math.random() * 90 + 10) / 10).toFixed(1));
 
       const factorChoice = Math.random() < 0.5 ? 10 : 100;
       secondNumber = factorChoice;
 
-      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(factorChoice === 10 ? 0 : 0));
+      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(0));
       errorTypes = ['powerOfTen'];
       rule = {
         id: 'mult-dec-7',
@@ -69,10 +69,10 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
     case 2: // Multiplication d'entier par décimal (3 × 0,7)
       if (Math.random() < 0.5) {
         firstNumber = Math.floor(Math.random() * 9) + 1;
-        secondNumber = (Math.floor(Math.random() * 9) + 1) / 10;
+        secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1));
       } else {
         secondNumber = Math.floor(Math.random() * 9) + 1;
-        firstNumber = (Math.floor(Math.random() * 9) + 1) / 10;
+        firstNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1));
       }
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(1));
       errorTypes = ['powerOfTen', 'tableMultiplication'];
@@ -84,11 +84,11 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
 
     case 3: // Multiplication de décimaux avec des précisions différentes (0,2 × 0,03)
       if (Math.random() < 0.5) {
-        firstNumber = (Math.floor(Math.random() * 9) + 1) / 10;
-        secondNumber = (Math.floor(Math.random() * 9) + 1) / 100;
+        firstNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1));
+        secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 100).toFixed(2));
       } else {
-        secondNumber = (Math.floor(Math.random() * 9) + 1) / 10;
-        firstNumber = (Math.floor(Math.random() * 9) + 1) / 100;
+        secondNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1));
+        firstNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 100).toFixed(2));
       }
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(3));
       errorTypes = ['powerOfTen', 'decimalProduct', 'placeValue'];
@@ -99,8 +99,8 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       break;
 
     case 4: // Multiplication de décimaux nécessitant une retenue (0,6 × 0,9)
-      firstNumber = (Math.floor(Math.random() * 3) + 6) / 10; // 0,6 à 0,9
-      secondNumber = (Math.floor(Math.random() * 3) + 7) / 10; // 0,7 à 0,9
+      firstNumber = parseFloat(((Math.floor(Math.random() * 3) + 6) / 10).toFixed(1)); // 0,6 à 0,9
+      secondNumber = parseFloat(((Math.floor(Math.random() * 3) + 7) / 10).toFixed(1)); // 0,7 à 0,9
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
       errorTypes = ['powerOfTen', 'carry', 'decimalProduct'];
       rule = {
@@ -110,7 +110,7 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       break;
 
     case 5: // Multiplication par 0,1, 0,01
-      firstNumber = (Math.floor(Math.random() * 90) + 10) / 10; // 1.0 à 9.9
+      firstNumber = parseFloat(((Math.floor(Math.random() * 90) + 10) / 10).toFixed(1)); // 1.0 à 9.9
       const smallFactor = Math.random() < 0.5 ? 0.1 : 0.01;
       secondNumber = smallFactor;
 
@@ -125,11 +125,11 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
     case 6: // Multiplication par un nombre à deux chiffres (versions plus simples pour le calcul mental)
       if (Math.random() < 0.5) {
         // Multiplier un décimal simple (0,x) par un entier modeste (2-25)
-        firstNumber = (Math.floor(Math.random() * 9) + 1) / 10; // 0,1 à 0,9
+        firstNumber = parseFloat(((Math.floor(Math.random() * 9) + 1) / 10).toFixed(1)); // 0,1 à 0,9
         secondNumber = Math.floor(Math.random() * 24) + 2; // 2 à 25
       } else {
         // Multiplier un décimal à deux chiffres (0,xx) par un multiple de 10 simple
-        firstNumber = (Math.floor(Math.random() * 90) + 10) / 100; // 0,10 à 0,99
+        firstNumber = parseFloat(((Math.floor(Math.random() * 90) + 10) / 100).toFixed(2)); // 0,10 à 0,99
         secondNumber = (Math.floor(Math.random() * 5) + 1) * 10; // 10, 20, 30, 40, 50
       }
 

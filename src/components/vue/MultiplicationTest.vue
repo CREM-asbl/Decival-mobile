@@ -222,15 +222,15 @@ function formatNumber(number) {
   if (test.value?.mode === 'decimal') {
     if (typeof number !== 'number') return number;
     
-    // Obtenir le nombre de décimales du nombre lui-même
-    const numberStr = number.toString();
+    // Nettoyer les imprécisions de calcul (ex: 0.15000000000000002 -> 0.15)
+    const cleanNumber = Number(number.toPrecision(12));
+    const numberStr = cleanNumber.toString();
     const decimalPart = numberStr.includes('.') ? numberStr.split('.')[1] : '';
     
-    // On veut au moins une décimale pour les nombres décimaux (ex: 8 -> 8,0)
-    // Mais on veut préserver toutes les décimales significatives générées
+    // On veut au moins une décimale pour les nombres décimaux
     const precision = Math.max(1, decimalPart.length);
     
-    return number.toFixed(precision).replace('.', ',');
+    return cleanNumber.toFixed(precision).replace('.', ',');
   }
   return number;
 }
