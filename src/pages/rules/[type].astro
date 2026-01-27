@@ -10,28 +10,39 @@ export function getStaticPaths() {
     { params: { type: "subtraction" } },
     { params: { type: "multiplication" } },
     { params: { type: "comparison" } },
+    { params: { type: "decimal" } },
   ];
 }
 
 const { type } = Astro.params;
-const rules = getRulesByType(type as RuleType);
+const rules = getRulesByType(type as RuleType) || [];
 
-const titles = {
+const titles: Record<RuleType, string> = {
   addition: "Règles d'addition",
   subtraction: "Règles de soustraction",
   multiplication: "Tables de multiplication",
   comparison: "Règles de comparaison",
+  decimal: "Nombres décimaux",
 };
 
-const descriptions = {
+const descriptions: Record<RuleType, string> = {
   addition: "Apprenez à additionner correctement les nombres",
   subtraction: "Maîtrisez les techniques de soustraction",
   multiplication: "Découvrez et pratiquez les tables de multiplication",
   comparison: "Comparez efficacement les nombres",
+  decimal: "Comprendre et manipuler les nombres décimaux",
 };
+
+// Si le type n'existe pas dans nos titres ou n'a pas de règles, on redirige ou on affiche une erreur
+if (!titles[type as RuleType] && type !== undefined) {
+  return Astro.redirect("/rules");
+}
 ---
 
-<Layout title={`${titles[type as RuleType]} - Decival`} currentPage="rules">
+<Layout
+  title={`${titles[type as RuleType] || "Règles"} - Decival`}
+  currentPage="rules"
+>
   <div class="container mx-auto px-4 py-8">
     <div class="mb-8">
       <a
@@ -62,7 +73,15 @@ const descriptions = {
     </p>
 
     <div class="space-y-6">
-      {rules.map((rule) => <RuleCard rule={rule} showFullDetails />)}
+      {
+        rules.length > 0 ? (
+          rules.map((rule) => <RuleCard rule={rule} showFullDetails />)
+        ) : (
+          <p class="text-gray-500 dark:text-gray-400">
+            Aucune règle trouvée pour ce type.
+          </p>
+        )
+      }
     </div>
   </div>
 </Layout>
