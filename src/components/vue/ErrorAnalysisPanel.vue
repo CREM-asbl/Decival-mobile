@@ -17,12 +17,12 @@
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
             </div>
- drum            <div class="flex-1">
+            <div class="flex-1">
               <div class="font-medium dark:text-gray-200">Exercice {{ itemIndex + 1 }}</div>
               <div class="text-sm mb-2 dark:text-gray-300">
                 {{ formatQuestion(item, test.type) }}
               </div>
- drum              <div class="text-sm mb-1">
+              <div class="text-sm mb-1">
                 <span class="text-gray-700 dark:text-gray-300">Votre réponse : </span>
                 <span class="font-mono dark:text-white">{{ formatAnswer(item.userAnswer, test.type) }}</span>
               </div>
@@ -38,7 +38,7 @@
                   </a>
                 </div>
               </div>
- drum            </div>
+            </div>
           </div>
         </div>
       </div>
