@@ -18,8 +18,8 @@ export function generateComparisonItem(mode: 'integer' | 'decimal' = 'integer'):
       correctAnswer: firstNumber > secondNumber ? '>' :
         firstNumber < secondNumber ? '<' : '=',
       rule: {
-        id: 'comp-int-1',
-        name: 'Comparaison de nombres entiers'
+        id: 'comp-1',
+        name: 'Comparaison de nombres'
       }
     };
   } else {
