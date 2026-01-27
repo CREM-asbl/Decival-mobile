@@ -22,7 +22,8 @@ const defaultState: RuleProgressState = {
     addition: 0,
     subtraction: 0,
     multiplication: 0,
-    comparison: 0
+    comparison: 0,
+    decimal: 0
   }
 };
 
@@ -135,6 +136,26 @@ export function updateRuleProgress(ruleId: string, isSuccess: boolean, details?:
   };
 
   ruleProgress.set(newState);
+
+  // LOGIQUE DE REMPLISSAGE PROGRESSIF DES PRINCIPES GÉNÉRAUX
+  // Si on vient de réussir une règle décimale spécifique, on fait aussi progresser la règle générale
+  if (isSuccess && ruleId.includes('-dec-') && !ruleId.endsWith('-dec-1')) {
+    // Identifier la règle parente
+    let parentRuleId: string | null = null;
+
+    if (ruleId.startsWith('add-dec-')) parentRuleId = 'add-dec-1';
+    else if (ruleId.startsWith('sub-dec-')) parentRuleId = 'sub-dec-1';
+    else if (ruleId.startsWith('mult-dec-')) parentRuleId = 'mult-dec-1';
+    else if (ruleId.startsWith('comp-dec-')) parentRuleId = 'comp-dec-1';
+
+    // Si une règle parente est identifiée et ce n'est pas la règle elle-même
+    if (parentRuleId && parentRuleId !== ruleId) {
+      console.log(`Progression en cascade vers la règle générale: ${parentRuleId}`);
+      // Appel récursif pour la règle générale (sans détails pour éviter une boucle infinie d'IDs)
+      updateRuleProgress(parentRuleId, true);
+    }
+  }
+
   return updatedProgress;
 }
 

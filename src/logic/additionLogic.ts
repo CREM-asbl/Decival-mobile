@@ -143,8 +143,8 @@ function generateDecimalAdditionItem(): AdditionItem {
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(2));
       errorTypes = ['decimalAlignment', 'multipleDecimals'];
       rule = {
-        id: 'add-dec-4',
-        name: 'Addition avec précisions différentes'
+        id: 'add-dec-7',
+        name: 'Addition avec nombre à plusieurs décimales'
       };
       break;
 
@@ -162,8 +162,8 @@ function generateDecimalAdditionItem(): AdditionItem {
       correctAnswer = parseFloat((firstNumber + secondNumber).toFixed(1));
       errorTypes = ['integerDecimalMix', 'decimalAlignment'];
       rule = {
-        id: 'add-dec-1',
-        name: 'Addition de nombres décimaux - Principes généraux'
+        id: 'add-dec-8',
+        name: 'Addition d\'entier et décimal'
       };
       break;
 
@@ -174,8 +174,8 @@ function generateDecimalAdditionItem(): AdditionItem {
       correctAnswer = 0.8;
       errorTypes = ['default'];
       rule = {
-        id: 'add-dec-1',
-        name: 'Addition de nombres décimaux - Principes généraux'
+        id: 'add-dec-2',
+        name: 'Addition de dixièmes sans retenue'
       };
   }
 
@@ -222,15 +222,24 @@ export function createAdditionTest(numberOfItems: number = 10, mode: 'integer' |
  */
 function generateDistributedItems(count: number): AdditionItem[] {
   const items: AdditionItem[] = [];
+  const types = [0, 1, 2, 3, 4, 5, 6];
 
-  // Distribuer les types équitablement
+  // Mélanger les types pour éviter que ce soit toujours les mêmes (0-4) pour un test de 5 questions
+  for (let i = types.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [types[i], types[j]] = [types[j], types[i]];
+  }
+
+  // Distribuer les items selon l'ordre aléatoire des types
   for (let i = 0; i < count; i++) {
-    // Assure une répartition proportionnelle des 7 types
-    const type = i % 7;
+    // Utiliser le type mélangé (si count > 7, on recommence le cycle mélangé)
+    const type = types[i % types.length];
 
     // Force la génération d'un item du type spécifique
     let item = generateDecimalAdditionItem();
     // On regénère jusqu'à obtenir le bon type
+    // Note: Idéalement, generateDecimalAdditionItem devrait accepter le type en paramètre
+    // pour éviter cette boucle while, mais pour l'instant on garde la compatibilité
     while (item.type !== type) {
       item = generateDecimalAdditionItem();
     }

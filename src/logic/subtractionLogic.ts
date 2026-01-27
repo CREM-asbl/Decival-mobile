@@ -113,8 +113,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
       correctAnswer = parseFloat((firstNumber - secondNumber).toFixed(1));
       errorTypes = ['integerDecimalMix', 'borrowing'];
       rule = {
-        id: 'sub-dec-1',
-        name: 'Soustraction de nombres décimaux - Principes généraux'
+        id: 'sub-dec-8',
+        name: 'Soustraction d\'un entier et d\'un décimal'
       };
       break;
 
@@ -124,8 +124,8 @@ function generateDecimalSubtractionItem(): SubtractionItem {
       correctAnswer = 0.5;
       errorTypes = ['default'];
       rule = {
-        id: 'sub-dec-1',
-        name: 'Soustraction de nombres décimaux - Principes généraux'
+        id: 'sub-dec-2',
+        name: 'Soustraction de dixièmes sans emprunt'
       };
   }
 
@@ -172,15 +172,20 @@ export function createSubtractionTest(numberOfItems: number = 10, mode: 'integer
  */
 function generateDistributedItems(count: number): SubtractionItem[] {
   const items: SubtractionItem[] = [];
+  const types = [0, 1, 2, 3, 4, 5, 6];
 
-  // Distribuer les types équitablement
+  // Mélanger les types
+  for (let i = types.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [types[i], types[j]] = [types[j], types[i]];
+  }
+
+  // Distribuer les items selon l'ordre aléatoire des types
   for (let i = 0; i < count; i++) {
-    // Assure une répartition proportionnelle des 7 types
-    const type = i % 7;
+    const type = types[i % types.length];
 
     // Force la génération d'un item du type spécifique
     let item = generateDecimalSubtractionItem();
-    // On regénère jusqu'à obtenir le bon type
     while (item.type !== type) {
       item = generateDecimalSubtractionItem();
     }

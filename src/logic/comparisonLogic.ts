@@ -44,6 +44,10 @@ function generateDecimalComparisonItem(): ComparisonItem {
   // Variable pour stocker la règle associée à l'item
   let rule: { id: string; name: string };
 
+  // Nouveaux champs pour les chaînes d'affichage
+  let firstNumberDisplay: string | undefined;
+  let secondNumberDisplay: string | undefined;
+
   switch (type) {
     case 0: // 0,1 vs 0,3 (Comparaison simple de dixièmes)
       const n1 = Math.floor(Math.random() * 9) + 1;
@@ -56,13 +60,16 @@ function generateDecimalComparisonItem(): ComparisonItem {
 
       firstNumber = n1 / 10;
       secondNumber = n2 / 10;
+      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
+      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+
       correctAnswer = firstNumber > secondNumber ? '>' :
         firstNumber < secondNumber ? '<' : '=';
 
       errorTypes = ['simpleComparison', 'decimal'];
       rule = {
-        id: 'comp-dec-1',
-        name: 'Comparaison de nombres décimaux'
+        id: 'comp-dec-8',
+        name: 'Comparaison simple de dixièmes'
       };
       break;
 
@@ -72,11 +79,15 @@ function generateDecimalComparisonItem(): ComparisonItem {
 
       firstNumber = n1b / 10;
       secondNumber = n2b / 10 + 0; // Pour forcer l'affichage comme 0,10
+
+      firstNumberDisplay = (n1b / 10).toLocaleString('fr-FR');
+      secondNumberDisplay = (n2b / 10).toLocaleString('fr-FR') + '0'; // Force le zéro à la fin
+
       correctAnswer = '='; // Toujours égaux
 
       errorTypes = ['zeroComparison', 'zeroAtRight'];
       rule = {
-        id: 'comp-dec-2',
+        id: 'comp-dec-9',
         name: 'Comparaison avec zéros non significatifs'
       };
       break;
@@ -87,12 +98,15 @@ function generateDecimalComparisonItem(): ComparisonItem {
 
       firstNumber = n1c / 10;
       secondNumber = n2c / 100;
+      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
+      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+
       correctAnswer = '>'; // Le dixième est toujours plus grand que le centième (pour un même chiffre)
 
       errorTypes = ['placeValue', 'decimalPlacement'];
       rule = {
-        id: 'dec-1',
-        name: 'Structure des nombres décimaux'
+        id: 'comp-dec-10',
+        name: 'Comparaison dixième vs centième (même chiffre)'
       };
       break;
 
@@ -102,12 +116,16 @@ function generateDecimalComparisonItem(): ComparisonItem {
 
       firstNumber = n1d / 10;
       secondNumber = n2d / 100;
+
+      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
+      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+
       correctAnswer = '>'; // Le dixième est toujours plus grand
 
       errorTypes = ['placeValue', 'decimalPlacement', 'differentDigits'];
       rule = {
-        id: 'dec-1',
-        name: 'Structure des nombres décimaux'
+        id: 'comp-dec-11',
+        name: 'Comparaison dixième vs centième (différents chiffres)'
       };
       break;
 
@@ -118,6 +136,11 @@ function generateDecimalComparisonItem(): ComparisonItem {
 
       firstNumber = (n1e / 10) + (n2e / 100);
       secondNumber = n3e / 10;
+
+      // Assurer un affichage propre (max 2 décimales)
+      firstNumber = parseFloat(firstNumber.toFixed(2));
+      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
+      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
 
       // Déterminer la réponse correcte
       if (firstNumber > secondNumber) {
@@ -130,7 +153,7 @@ function generateDecimalComparisonItem(): ComparisonItem {
 
       errorTypes = ['confusion', 'decimalLength'];
       rule = {
-        id: 'comp-dec-3',
+        id: 'comp-dec-12',
         name: 'Comparaison avec confusion possible'
       };
       break;
@@ -140,11 +163,15 @@ function generateDecimalComparisonItem(): ComparisonItem {
 
       firstNumber = n1f / 10;
       secondNumber = n1f / 10; // Même valeur
+
+      firstNumberDisplay = (n1f / 10).toLocaleString('fr-FR') + '0';
+      secondNumberDisplay = (n1f / 10).toLocaleString('fr-FR');
+
       correctAnswer = '=';
 
       errorTypes = ['zeroAtRight'];
       rule = {
-        id: 'comp-dec-2',
+        id: 'comp-dec-9',
         name: 'Comparaison avec zéros non significatifs'
       };
       break;
@@ -158,20 +185,33 @@ function generateDecimalComparisonItem(): ComparisonItem {
         n2g = Math.floor(Math.random() * 9) + 1;
       }
 
-      if (n1g < n2g) {
+      // Correction de la logique inverse et ajout de l'affichage
+      if (Math.random() < 0.5) {
+        // Premier nombre avec 0 à la fin, plus petit
+        // Ex: 0.80 < 0.9
         firstNumber = n1g / 10;
         secondNumber = n2g / 10;
-        correctAnswer = '<';
+
+        firstNumberDisplay = firstNumber.toLocaleString('fr-FR') + '0';
+        secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+
+        correctAnswer = firstNumber < secondNumber ? '<' : '>';
       } else {
-        firstNumber = n2g / 10;
-        secondNumber = n1g / 10;
-        correctAnswer = '>';
+        // Premier nombre normal, Deuxième avec 0 à la fin
+        // Ex: 0.9 > 0.80
+        firstNumber = n1g / 10;
+        secondNumber = n2g / 10;
+
+        firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
+        secondNumberDisplay = secondNumber.toLocaleString('fr-FR') + '0';
+
+        correctAnswer = firstNumber < secondNumber ? '<' : '>';
       }
 
       errorTypes = ['zeroAtRight', 'differentDigits'];
       rule = {
-        id: 'comp-dec-1',
-        name: 'Comparaison de nombres décimaux'
+        id: 'comp-dec-13',
+        name: 'Comparaison avec zéros à droite et valeurs différentes'
       };
       break;
 
@@ -179,6 +219,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
       // Cas par défaut
       firstNumber = 0.1;
       secondNumber = 0.2;
+      firstNumberDisplay = '0,1';
+      secondNumberDisplay = '0,2';
       correctAnswer = '<';
       errorTypes = ['default'];
       rule = {
@@ -191,6 +233,8 @@ function generateDecimalComparisonItem(): ComparisonItem {
     id: nanoid(),
     firstNumber,
     secondNumber,
+    firstNumberDisplay,
+    secondNumberDisplay,
     correctAnswer,
     type: type,
     errorTypes,
@@ -230,15 +274,20 @@ export function createComparisonTest(numberOfItems: number = 10, mode: 'integer'
  */
 function generateDistributedItems(count: number): ComparisonItem[] {
   const items: ComparisonItem[] = [];
+  const types = [0, 1, 2, 3, 4, 5, 6];
 
-  // Distribuer les types équitablement
+  // Mélanger les types
+  for (let i = types.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [types[i], types[j]] = [types[j], types[i]];
+  }
+
+  // Distribuer les items selon l'ordre aléatoire des types
   for (let i = 0; i < count; i++) {
-    // Assure une répartition proportionnelle des 7 types
-    const type = i % 7;
+    const type = types[i % types.length];
 
     // Force la génération d'un item du type spécifique
     let item = generateDecimalComparisonItem();
-    // On regénère jusqu'à obtenir le bon type
     while (item.type !== type) {
       item = generateDecimalComparisonItem();
     }

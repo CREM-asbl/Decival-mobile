@@ -29,8 +29,8 @@ export function generateMultiplicationItem(mode: 'integer' | 'decimal' = 'intege
  * de cas d'utilisation, similaire à l'ancien Decival
  */
 function generateDecimalMultiplicationItem(): MultiplicationItem {
-  // Choisir un type d'item aléatoirement (0-4 comme dans l'ancien code)
-  const type = Math.floor(Math.random() * 5);
+  // Choisir un type d'item aléatoirement (0-6 comme dans l'ancien code)
+  const type = Math.floor(Math.random() * 7);
 
   // Variables pour stocker les nombres générés
   let firstNumber: number;
@@ -93,8 +93,8 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(3));
       errorTypes = ['powerOfTen', 'decimalProduct', 'placeValue'];
       rule = {
-        id: 'mult-dec-4',
-        name: 'Multiplication avec précisions différentes'
+        id: 'mult-dec-6',
+        name: 'Multiplication avec différentes précisions'
       };
       break;
 
@@ -109,6 +109,31 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       };
       break;
 
+    case 5: // Multiplication par 0,1, 0,01
+      firstNumber = (Math.floor(Math.random() * 90) + 10) / 10; // 1.0 à 9.9
+      const smallFactor = Math.random() < 0.5 ? 0.1 : 0.01;
+      secondNumber = smallFactor;
+
+      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(smallFactor === 0.1 ? 2 : 3));
+      errorTypes = ['powerOfTen', 'decimalPointShift'];
+      rule = {
+        id: 'mult-dec-8',
+        name: 'Multiplication par 0,1, 0,01, 0,001'
+      };
+      break;
+
+    case 6: // Multiplication par un nombre à deux chiffres
+      firstNumber = (Math.floor(Math.random() * 90) + 10) / 100; // 0.10 à 0.99
+      secondNumber = Math.floor(Math.random() * 80) + 10; // 10 à 90
+
+      correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
+      errorTypes = ['decimalProduct', 'multiDigitMultiplication'];
+      rule = {
+        id: 'mult-dec-9',
+        name: 'Multiplication à deux chiffres avec décimales'
+      };
+      break;
+
     default:
       // Cas par défaut (ne devrait jamais arriver)
       firstNumber = 0.5;
@@ -116,8 +141,8 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       correctAnswer = 0.1;
       errorTypes = ['default'];
       rule = {
-        id: 'mult-dec-1',
-        name: 'Multiplication de nombres décimaux - Principes généraux'
+        id: 'mult-dec-2',
+        name: 'Multiplication de deux nombres décimaux'
       };
   }
 
@@ -164,15 +189,20 @@ export function createMultiplicationTest(numberOfItems: number = 10, mode: 'inte
  */
 function generateDistributedItems(count: number): MultiplicationItem[] {
   const items: MultiplicationItem[] = [];
+  const types = [0, 1, 2, 3, 4, 5, 6];
 
-  // Distribuer les types équitablement
+  // Mélanger les types
+  for (let i = types.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [types[i], types[j]] = [types[j], types[i]];
+  }
+
+  // Distribuer les items selon l'ordre aléatoire des types
   for (let i = 0; i < count; i++) {
-    // Assure une répartition proportionnelle des 5 types
-    const type = i % 5;
+    const type = types[i % types.length];
 
     // Force la génération d'un item du type spécifique
     let item = generateDecimalMultiplicationItem();
-    // On regénère jusqu'à obtenir le bon type
     while (item.type !== type) {
       item = generateDecimalMultiplicationItem();
     }
