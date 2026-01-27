@@ -32,11 +32,12 @@ export interface RulesSummaryState {
 }
 
 // Labels pour les différents types de règles
-const typeLabels = {
+const typeLabels: Record<RuleType, string> = {
   addition: "Additions",
   subtraction: "Soustractions",
   multiplication: "Multiplications",
   comparison: "Comparaisons",
+  decimal: "Nombres décimaux",
 };
 
 // Store pour les données résumées
@@ -46,6 +47,7 @@ export const rulesSummary = atom<RulesSummaryState>({
     subtraction: { totalRules: 0, masteredRules: 0, currentStreak: 0 },
     multiplication: { totalRules: 0, masteredRules: 0, currentStreak: 0 },
     comparison: { totalRules: 0, masteredRules: 0, currentStreak: 0 },
+    decimal: { totalRules: 0, masteredRules: 0, currentStreak: 0 },
   },
   typeLabels,
   history: [],
@@ -92,7 +94,7 @@ export function computeRulesSummary(): RulesSummaryState {
   return {
     typeStats,
     typeLabels,
-    history: [...currentState.history, snapshot],
+    history: [...currentState.history], // Ne pas ajouter de snapshot ici pour éviter les doublons lors du subscribe
     recommendations
   };
 }

@@ -56,7 +56,7 @@
         </div>
         <div class="space-y-4">
           <div
-            v-for="rule in getRulesByType(type).slice(0, visibleRules[type] || 3)"
+            v-for="rule in getSortedRules(type).slice(0, visibleRules[type] || 3)"
             :key="rule.id"
             class="border dark:border-gray-700 rounded-lg p-4"
           >
@@ -118,10 +118,12 @@
 import { useStore } from '@nanostores/vue';
 import { computed, onMounted, ref } from 'vue';
 import { getRulesByType } from '../../stores/rulesStore';
+import { ruleProgress } from '../../stores/ruleProgressStore';
 import { getMasteredRulesTrend, getRecommendations, getRulesSummary, rulesSummary, ruleTypes } from '../../stores/rulesSummaryStore';
 import RuleProgressClient from './RuleProgressClient.vue';
 
 const summary = useStore(rulesSummary);
+const progressStore = useStore(ruleProgress);
 const visibleRules = ref({});
 
 onMounted(() => {
@@ -132,6 +134,26 @@ onMounted(() => {
     visibleRules.value[type] = 3;
   });
 });
+
+const getSortedRules = (type) => {
+  const rules = getRulesByType(type);
+  const progress = progressStore.value.progress;
+  
+  return [...rules].sort((a, b) => {
+    const progA = progress[a.id];
+    const progB = progress[b.id];
+    
+    // Si l'un a de la progression et pas l'autre, celui avec progression passe devant
+    const hasProgA = progA && (progA.successCount > 0 || progA.failureCount > 0);
+    const hasProgB = progB && (progB.successCount > 0 || progB.failureCount > 0);
+    
+    if (hasProgA && !hasProgB) return -1;
+    if (!hasProgA && hasProgB) return 1;
+    
+    // Sinon, garder l'ordre d'origine
+    return 0;
+  });
+};
 
 const showMoreRules = (type) => {
   const currentCount = visibleRules.value[type] || 3;
