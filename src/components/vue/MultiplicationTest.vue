@@ -171,20 +171,9 @@ function handleSubmit() {
       return;
     }
 
-    // Pour les décimaux, adapter la précision selon le type d'exercice
-    let precision = 1;
-    if (currentItem.value && currentItem.value.type !== undefined) {
-      // Logique de précision basée sur le type de multiplication
-      if (currentItem.value.type === 2 || currentItem.value.type === 3) {
-        precision = 2;
-      } else if (currentItem.value.type === 4) {
-        precision = 3;
-      }
-    }
-
-    const expectedAnswer = parseFloat(currentItem.value.correctAnswer.toFixed(precision));
-    const normalizedUserAnswer = parseFloat(userAnswer.toFixed(precision));
-    isCorrect.value = normalizedUserAnswer === expectedAnswer;
+    // Pour les décimaux, on compare les valeurs avec une tolérance pour éviter les imprécisions de calcul
+    const expectedAnswer = currentItem.value.correctAnswer;
+    isCorrect.value = Math.abs(userAnswer - expectedAnswer) < 0.0001;
   } else {
     // Convertir en string pour la validation du format si ce n'est pas déjà une string
     const answerStr = String(answer.value);
@@ -231,33 +220,17 @@ function handleSubmit() {
 // Formater un nombre pour l'affichage (afficher les décimaux de manière adaptée)
 function formatNumber(number) {
   if (test.value?.mode === 'decimal') {
-    // Déterminer le nombre de décimales nécessaires
-    // On analyse la valeur pour voir combien de décimales significatives elle a réellement
+    if (typeof number !== 'number') return number;
+    
+    // Obtenir le nombre de décimales du nombre lui-même
     const numberStr = number.toString();
     const decimalPart = numberStr.includes('.') ? numberStr.split('.')[1] : '';
-
-    // Si le nombre a un type spécifique (pour les exercices proportionnels)
-    if (currentItem.value && currentItem.value.type !== undefined) {
-      // Utiliser la précision selon le type d'exercice
-      const type = currentItem.value.type;
-      // Types 2-3 = 2 décimales, type 4 = 3 décimales, autres types = 1 décimale
-      let precision = 1;
-      if (type === 2 || type === 3) {
-        precision = 2;
-      } else if (type === 4) {
-        precision = 3;
-      }
-      return number.toFixed(precision).replace('.', ',');
-    }
-    // Si pas de type spécifique mais le nombre a des décimales significatives
-    else if (decimalPart && decimalPart.length > 1 && parseFloat('0.' + decimalPart) !== 0) {
-      // Préserver jusqu'à 2 décimales significatives sans arrondir à 1 décimale par défaut
-      return number.toFixed(Math.min(decimalPart.length, 2)).replace('.', ',');
-    }
-    // Par défaut, afficher au moins une décimale pour les nombres décimaux
-    else {
-      return number.toFixed(1).replace('.', ',');
-    }
+    
+    // On veut au moins une décimale pour les nombres décimaux (ex: 8 -> 8,0)
+    // Mais on veut préserver toutes les décimales significatives générées
+    const precision = Math.max(1, decimalPart.length);
+    
+    return number.toFixed(precision).replace('.', ',');
   }
   return number;
 }

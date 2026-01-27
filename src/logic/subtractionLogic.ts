@@ -197,11 +197,9 @@ function generateDistributedItems(count: number): SubtractionItem[] {
 }
 
 export function checkAnswer(item: SubtractionItem, answer: number): boolean {
-  // Pour les nombres décimaux, comparer avec une précision d'un chiffre après la virgule
   if (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) {
-    const expectedAnswer = parseFloat((item.correctAnswer as number).toFixed(1));
-    const userAnswer = parseFloat(answer.toFixed(1));
-    return userAnswer === expectedAnswer;
+    const expectedAnswer = item.correctAnswer as number;
+    return Math.abs(answer - expectedAnswer) < 0.0001;
   }
 
   // Pour les nombres entiers, comparaison simple
@@ -236,15 +234,10 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
   }
 } {
   // Si la réponse est correcte, pas d'erreur à analyser
-  const correctAnswer = typeof item.correctAnswer === 'number' && item.correctAnswer % 1 !== 0
-    ? parseFloat((item.correctAnswer).toFixed(1))
-    : item.correctAnswer;
+  const correctAnswer = item.correctAnswer as number;
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.0001;
 
-  const formattedUserAnswer = typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0
-    ? parseFloat(userAnswer.toFixed(1))
-    : userAnswer;
-
-  if (formattedUserAnswer === correctAnswer) {
+  if (isCorrect) {
     return { errorType: 'none', feedback: 'Réponse correcte' };
   }
 
@@ -252,7 +245,7 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
 
   // Vérifier si l'élève a inversé l'ordre des nombres
   const invertedResult = item.secondNumber - item.firstNumber;
-  const hasInvertedOrder = Math.abs(formattedUserAnswer - invertedResult) < 0.1;
+  const hasInvertedOrder = Math.abs(userAnswer - invertedResult) < 0.1;
   if (hasInvertedOrder) {
     return {
       errorType: 'invertedOrder',
@@ -266,8 +259,8 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
 
   // Vérifier si l'erreur est liée à la gestion des emprunts
   const hasBorrowingError =
-    Math.abs(formattedUserAnswer - correctAnswer) === 10 ||
-    Math.abs(formattedUserAnswer - correctAnswer) === 1;
+    Math.abs(userAnswer - correctAnswer) === 10 ||
+    Math.abs(userAnswer - correctAnswer) === 1;
   if (hasBorrowingError) {
     return {
       errorType: 'borrowing',
@@ -282,8 +275,8 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
   // Vérifier si l'erreur est liée à l'alignement décimal (pour les nombres décimaux)
   if (typeof item.firstNumber === 'number' && (item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0)) {
     const decimalAlignmentError =
-      Math.abs(formattedUserAnswer - parseFloat((item.firstNumber - Math.floor(item.secondNumber)).toFixed(1))) < 0.1 ||
-      Math.abs(formattedUserAnswer - parseFloat((Math.floor(item.firstNumber) - item.secondNumber).toFixed(1))) < 0.1;
+      Math.abs(userAnswer - parseFloat((item.firstNumber - Math.floor(item.secondNumber)).toFixed(1))) < 0.1 ||
+      Math.abs(userAnswer - parseFloat((Math.floor(item.firstNumber) - item.secondNumber).toFixed(1))) < 0.1;
 
     if (decimalAlignmentError) {
       return {

@@ -253,11 +253,8 @@ function generateDistributedItems(count: number): AdditionItem[] {
 export function checkAnswer(item: AdditionItem, answer: number): boolean {
   // Pour les nombres décimaux, comparer avec une précision appropriée
   if (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) {
-    // Déterminer la précision nécessaire (1 ou 2 décimales selon le type)
-    const precision = item.type === 0 || item.type === 3 || item.type === 6 ? 1 : 2;
-    const expectedAnswer = parseFloat((item.correctAnswer as number).toFixed(precision));
-    const userAnswer = parseFloat(answer.toFixed(precision));
-    return userAnswer === expectedAnswer;
+    const expectedAnswer = item.correctAnswer as number;
+    return Math.abs(answer - expectedAnswer) < 0.0001;
   }
 
   // Pour les nombres entiers, comparaison simple
@@ -275,12 +272,11 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
     name: string
   }
 } {
-  // Convertir les nombres pour comparaison
-  const correctAnswer = parseFloat((item.correctAnswer as number).toFixed(2));
-  const formattedUserAnswer = parseFloat(userAnswer.toFixed(2));
-
   // Si la réponse est correcte, pas d'erreur à analyser
-  if (formattedUserAnswer === correctAnswer) {
+  const correctAnswer = item.correctAnswer as number;
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.0001;
+
+  if (isCorrect) {
     return { errorType: 'none', feedback: 'Réponse correcte' };
   }
 
@@ -299,8 +295,8 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
   // Détecter les erreurs spécifiques pour fournir un feedback précis
   if (item.errorTypes.includes('powerOfTen')) {
     const powerOfTenError =
-      formattedUserAnswer === correctAnswer * 10 ||
-      formattedUserAnswer === correctAnswer / 10;
+      Math.abs(userAnswer - correctAnswer * 10) < 0.0001 ||
+      Math.abs(userAnswer - correctAnswer / 10) < 0.0001;
 
     if (powerOfTenError) {
       return {
@@ -312,7 +308,7 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
   }
 
   if (item.errorTypes.includes('carry')) {
-    const carryError = Math.abs(formattedUserAnswer - correctAnswer) === 1;
+    const carryError = Math.abs(userAnswer - correctAnswer) === 1;
 
     if (carryError) {
       return {
@@ -329,8 +325,8 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
 
     if (decimal1 !== decimal2) {
       const misalignment = Math.abs(
-        formattedUserAnswer - (
-          parseFloat((item.firstNumber + item.secondNumber).toFixed(Math.max(decimal1, decimal2)))
+        userAnswer - (
+          parseFloat((item.firstNumber + item.secondNumber).toFixed(Math.max(countDecimals(item.firstNumber), countDecimals(item.secondNumber))))
         )
       ) < 0.1;
 

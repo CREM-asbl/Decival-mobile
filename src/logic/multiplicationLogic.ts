@@ -122,9 +122,16 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       };
       break;
 
-    case 6: // Multiplication par un nombre à deux chiffres
-      firstNumber = (Math.floor(Math.random() * 90) + 10) / 100; // 0.10 à 0.99
-      secondNumber = Math.floor(Math.random() * 80) + 10; // 10 à 90
+    case 6: // Multiplication par un nombre à deux chiffres (versions plus simples pour le calcul mental)
+      if (Math.random() < 0.5) {
+        // Multiplier un décimal simple (0,x) par un entier modeste (2-25)
+        firstNumber = (Math.floor(Math.random() * 9) + 1) / 10; // 0,1 à 0,9
+        secondNumber = Math.floor(Math.random() * 24) + 2; // 2 à 25
+      } else {
+        // Multiplier un décimal à deux chiffres (0,xx) par un multiple de 10 simple
+        firstNumber = (Math.floor(Math.random() * 90) + 10) / 100; // 0,10 à 0,99
+        secondNumber = (Math.floor(Math.random() * 5) + 1) * 10; // 10, 20, 30, 40, 50
+      }
 
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
       errorTypes = ['decimalProduct', 'multiDigitMultiplication'];
@@ -216,17 +223,8 @@ function generateDistributedItems(count: number): MultiplicationItem[] {
 export function checkAnswer(item: MultiplicationItem, answer: number): boolean {
   // Pour les nombres décimaux, comparer avec une précision appropriée
   if (typeof item.firstNumber === 'number' && (item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0)) {
-    // Déterminer la précision nécessaire selon le type
-    let precision = 1;
-    if (item.type === 2 || item.type === 3) {
-      precision = 2;
-    } else if (item.type === 4) {
-      precision = 3;
-    }
-
-    const expectedAnswer = parseFloat((item.correctAnswer as number).toFixed(precision));
-    const userAnswer = parseFloat(answer.toFixed(precision));
-    return userAnswer === expectedAnswer;
+    const expectedAnswer = item.correctAnswer as number;
+    return Math.abs(answer - expectedAnswer) < 0.0001;
   }
 
   // Pour les nombres entiers, comparaison simple
@@ -245,11 +243,10 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   }
 } {
   // Si la réponse est correcte, pas d'erreur à analyser
-  const precisionDecimal = item.type === 4 ? 3 : item.type === 2 || item.type === 3 ? 2 : 1;
-  const correctAnswer = parseFloat((item.correctAnswer as number).toFixed(precisionDecimal));
-  const formattedUserAnswer = parseFloat(userAnswer.toFixed(precisionDecimal));
+  const correctAnswer = item.correctAnswer as number;
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.0001;
 
-  if (formattedUserAnswer === correctAnswer) {
+  if (isCorrect) {
     return { errorType: 'none', feedback: 'Réponse correcte' };
   }
 
@@ -268,10 +265,10 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   if (item.errorTypes.includes('powerOfTen')) {
     // Vérifier si l'erreur vient d'une confusion dans les puissances de dix
     const powerOfTenError =
-      formattedUserAnswer === correctAnswer * 10 ||
-      formattedUserAnswer === correctAnswer / 10 ||
-      formattedUserAnswer === correctAnswer * 100 ||
-      formattedUserAnswer === correctAnswer / 100;
+      Math.abs(userAnswer - correctAnswer * 10) < 0.0001 ||
+      Math.abs(userAnswer - correctAnswer / 10) < 0.0001 ||
+      Math.abs(userAnswer - correctAnswer * 100) < 0.0001 ||
+      Math.abs(userAnswer - correctAnswer / 100) < 0.0001;
 
     if (powerOfTenError) {
       return {
@@ -285,7 +282,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   if (item.errorTypes.includes('decimalProduct')) {
     // Vérifier si l'erreur est due à une mauvaise multiplication des nombres
     const productError = Math.abs(
-      formattedUserAnswer -
+      userAnswer -
       (Math.floor(item.firstNumber) * Math.floor(item.secondNumber) +
         (item.firstNumber % 1) * (item.secondNumber % 1))
     ) < 0.1;
@@ -301,7 +298,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
 
   // Vérifier si l'erreur provient d'une confusion dans les tables de multiplication
   const product = Math.round(item.firstNumber * 10) * Math.round(item.secondNumber * 10);
-  const tableError = Math.abs(formattedUserAnswer * 100 - product) <= 10;
+  const tableError = Math.abs(userAnswer * 100 - product) <= 10;
 
   if (tableError) {
     return {
