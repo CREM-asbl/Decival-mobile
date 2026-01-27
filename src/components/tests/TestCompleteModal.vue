@@ -56,6 +56,7 @@
 import { watch } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
+import { playSound } from '../../stores/soundStore';
 
 const props = defineProps({
   show: {
@@ -92,6 +93,9 @@ function getBadgeIcon(id) {
 // Déclencher les confettis quand la modal s'affiche
 watch(() => props.show, (newVal) => {
   if (newVal) {
+    // Jouer le son d'applaudissements
+    playSound('complete');
+
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };

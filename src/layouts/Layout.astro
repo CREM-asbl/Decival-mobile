@@ -85,19 +85,16 @@ const { title, currentPage = "home" } = Astro.props;
 
     <script>
       import { isDarkMode } from "../stores/themeStore";
-      import { preloadSounds } from "../utils/preloadSounds";
-
       // Initialisation du mode sombre
       isDarkMode.listen((isDark) => {
         document.documentElement.classList.toggle("dark", isDark);
       });
 
       // Chargement des sons
-      if (typeof window !== "undefined") {
-        window.addEventListener("load", () => {
-          preloadSounds().catch(console.error);
-        });
-      }
+      /*
+       * Les sons sont synthétisés via Web Audio API (voir src/utils/soundEffects.ts)
+       * donc pas de préchargement de fichiers nécessaire.
+       */
     </script>
   </body>
 </html>
