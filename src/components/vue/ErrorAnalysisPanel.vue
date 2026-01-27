@@ -7,7 +7,7 @@
     <div v-else class="space-y-4">
       <div v-for="(test, testIndex) in testsWithErrors" :key="testIndex" class="border dark:border-gray-700 rounded-lg p-4 mb-4">
         <div class="font-semibold mb-2 dark:text-white">
-          Test {{ testIndex + 1 }} - {{ formatTestType(test.type) }} ({{ formatDate(test.startTime) }})
+          Test - {{ formatTestType(test.type) }} ({{ formatDate(test.startTime) }})
         </div>
         <div v-for="(item, itemIndex) in getItemsWithErrors(test)" :key="`${testIndex}-${itemIndex}`"
              class="bg-red-50 dark:bg-red-900/30 p-3 mb-2 rounded-md">
@@ -81,7 +81,13 @@ function formatTestType(type) {
 
 // Formater la date
 function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString();
+  return new Date(dateString).toLocaleString([], {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 // Formater la question en fonction du type de test
