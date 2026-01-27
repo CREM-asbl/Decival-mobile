@@ -47,7 +47,7 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(2));
       errorTypes = ['powerOfTen', 'decimalProduct'];
       rule = {
-        id: 'mult-dec-2',
+        id: 'mult-dec-4',
         name: 'Multiplication de deux nombres décimaux'
       };
       break;
@@ -77,7 +77,7 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
       correctAnswer = parseFloat((firstNumber * secondNumber).toFixed(1));
       errorTypes = ['powerOfTen', 'tableMultiplication'];
       rule = {
-        id: 'mult-dec-3',
+        id: 'mult-dec-2',
         name: 'Multiplication d\'un nombre entier par un nombre décimal'
       };
       break;

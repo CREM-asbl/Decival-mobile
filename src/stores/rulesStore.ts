@@ -533,11 +533,11 @@ const defaultRules: Record<RuleType, Rule[]> = {
       id: 'mult-dec-4',
       type: 'decimal',
       title: 'Multiplication de deux nombres décimaux',
-      description: 'Comment multiplier deux nombres qui ont chacun une décimale',
+      description: 'Comment multiplier deux nombres décimaux entre eux',
       steps: [
-        'Compter le nombre total de décimales (1+1=2)',
-        'Multiplier les nombres comme s\'ils étaient entiers',
-        'Placer la virgule en comptant 2 chiffres depuis la droite'
+        'Compter le nombre total de chiffres après la virgule dans les deux nombres',
+        'Multiplier les nombres comme s\'ils étaient entiers (en ignorant la virgule)',
+        'Placer la virgule dans le résultat final en comptant depuis la droite autant de chiffres qu\'il y avait au total'
       ],
       examples: [
         {
@@ -547,8 +547,9 @@ const defaultRules: Record<RuleType, Rule[]> = {
         }
       ],
       tips: [
-        'Le résultat a souvent un chiffre de plus que les facteurs',
-        'Attention au nombre de zéros nécessaires avant le premier chiffre significatif'
+        'Le nombre de décimales du résultat est la somme des nombres de décimales des facteurs',
+        'Attention au nombre de zéros nécessaires avant le premier chiffre significatif',
+        'Vérifier que l\'ordre de grandeur est logique (ex: 0,2 × 0,3 est bien plus petit que 0,2 et 0,3)'
       ]
     },
     {
@@ -657,24 +658,24 @@ const defaultRules: Record<RuleType, Rule[]> = {
       id: 'mult-dec-9',
       type: 'decimal',
       title: 'Multiplication à deux chiffres avec décimales',
-      description: 'Comment multiplier un nombre décimal par un nombre à deux chiffres',
+      description: 'Comment multiplier un nombre décimal par un nombre entier à deux chiffres',
       steps: [
-        'Décomposer le multiplicateur en dizaines et unités',
-        'Multiplier le nombre décimal par les unités',
-        'Multiplier le nombre décimal par les dizaines (et multiplier par 10)',
+        'Multiplier d\'abord comme s\'il s\'agissait de nombres entiers (ignorer la virgule)',
+        'Multiplier par les unités, puis par les dizaines (en ajoutant un zéro à droite)',
         'Additionner les deux résultats intermédiaires',
-        'Placer la virgule en fonction du nombre total de décimales'
+        'Compter le nombre de chiffres après la virgule dans le nombre de départ',
+        'Placer la virgule dans le résultat final en comptant ce même nombre de chiffres depuis la droite'
       ],
       examples: [
         {
           problem: '0,72 × 25',
           solution: '18,00',
-          explanation: '0,72 × 5 = 3,60 puis 0,72 × 20 = 14,40 et enfin 3,60 + 14,40 = 18,00'
+          explanation: '72 × 25 = 1800. Comme 0,72 a 2 décimales, on place la virgule pour avoir 2 décimales : 18,00'
         }
       ],
       tips: [
-        'On peut aussi multiplier comme d\'habitude et placer la virgule à la fin',
-        'Vérifier que l\'ordre de grandeur du résultat est cohérent'
+        'On peut aussi multiplier par les unités puis par les dizaines tout en gardant la virgule',
+        'Vérifier que l\'ordre de grandeur du résultat est cohérent (ex: 0,72 est proche de 1, donc 0,72 × 25 est proche de 25)'
       ]
     }
   ],
