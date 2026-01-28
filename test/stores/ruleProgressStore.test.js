@@ -10,7 +10,8 @@ describe('Rule Progress Store', () => {
         addition: 0,
         subtraction: 0,
         multiplication: 0,
-        comparison: 0
+        comparison: 0,
+        decimal: 0
       }
     });
   });
@@ -23,6 +24,7 @@ describe('Rule Progress Store', () => {
       successCount: 1,
       failureCount: 0,
       lastAttemptDate: expect.any(Date),
+      consecutiveSuccesses: 1,
       mastered: false
     });
   });
@@ -35,8 +37,8 @@ describe('Rule Progress Store', () => {
     expect(progress.failureCount).toBe(0);
   });
 
-  test('devrait marquer une règle comme maîtrisée après 5 succès', () => {
-    for (let i = 0; i < 5; i++) {
+  test('devrait marquer une règle comme maîtrisée après avoir atteint le seuil', () => {
+    for (let i = 0; i < 3; i++) {
       updateRuleProgress('add-1', true);
     }
 

@@ -1,11 +1,17 @@
 import { nanoid } from 'nanoid';
 import { type SubtractionItem, type SubtractionTest } from '../types/subtraction';
+import {
+  EPSILON,
+  DEFAULT_TEST_ITEMS,
+  DECIMAL_SUBTRACTION_TYPES,
+  INTEGER_RANGE
+} from '../config/constants';
 
 export function generateSubtractionItem(mode: 'integer' | 'decimal' = 'integer'): SubtractionItem {
   if (mode === 'integer') {
     // Générer des nombres entiers comme avant
-    const secondNumber = Math.floor(Math.random() * 50); // Nombres jusqu'à 50 pour commencer
-    const firstNumber = secondNumber + Math.floor(Math.random() * 50); // Premier nombre toujours plus grand
+    const secondNumber = Math.floor(Math.random() * (INTEGER_RANGE.subtraction.max / 2));
+    const firstNumber = secondNumber + Math.floor(Math.random() * (INTEGER_RANGE.subtraction.max / 2));
 
     return {
       id: nanoid(),
@@ -28,9 +34,9 @@ export function generateSubtractionItem(mode: 'integer' | 'decimal' = 'integer')
  * Génère un item de soustraction avec nombres décimaux selon différents types
  * de cas d'utilisation, similaire à l'ancien Decival
  */
-function generateDecimalSubtractionItem(): SubtractionItem {
-  // Choisir un type d'item aléatoirement (0-6 comme dans l'ancien code)
-  const type = Math.floor(Math.random() * 7);
+function generateDecimalSubtractionItem(forcedType?: number): SubtractionItem {
+  // Choisir un type d'item aléatoirement si non forcé
+  const type = forcedType !== undefined ? forcedType : Math.floor(Math.random() * DECIMAL_SUBTRACTION_TYPES);
 
   // Variables pour stocker les nombres générés
   let firstNumber: number;
@@ -140,7 +146,7 @@ function generateDecimalSubtractionItem(): SubtractionItem {
   };
 }
 
-export function createSubtractionTest(numberOfItems: number = 10, mode: 'integer' | 'decimal' = 'integer'): SubtractionTest {
+export function createSubtractionTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): SubtractionTest {
   // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
   if (mode === 'decimal') {
     // Assurer une distribution des différents types de problèmes
@@ -183,14 +189,7 @@ function generateDistributedItems(count: number): SubtractionItem[] {
   // Distribuer les items selon l'ordre aléatoire des types
   for (let i = 0; i < count; i++) {
     const type = types[i % types.length];
-
-    // Force la génération d'un item du type spécifique
-    let item = generateDecimalSubtractionItem();
-    while (item.type !== type) {
-      item = generateDecimalSubtractionItem();
-    }
-
-    items.push(item);
+    items.push(generateDecimalSubtractionItem(type));
   }
 
   return items;
@@ -199,7 +198,7 @@ function generateDistributedItems(count: number): SubtractionItem[] {
 export function checkAnswer(item: SubtractionItem, answer: number): boolean {
   if (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) {
     const expectedAnswer = item.correctAnswer as number;
-    return Math.abs(answer - expectedAnswer) < 0.0001;
+    return Math.abs(answer - expectedAnswer) < EPSILON;
   }
 
   // Pour les nombres entiers, comparaison simple
@@ -235,7 +234,7 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
 } {
   // Si la réponse est correcte, pas d'erreur à analyser
   const correctAnswer = item.correctAnswer as number;
-  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.0001;
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < EPSILON;
 
   if (isCorrect) {
     return { errorType: 'none', feedback: 'Réponse correcte' };

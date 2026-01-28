@@ -124,13 +124,13 @@ describe('Génération de nombres décimaux', () => {
 
   describe('Multiplication avec décimaux', () => {
     test('La création d\'un test de multiplication en mode décimal devrait générer des items décimaux distribués', () => {
-      const test = createMultiplicationTest(5, 'decimal');
+      const test = createMultiplicationTest(7, 'decimal');
 
-      // Vérifier que les 5 items couvrent les 5 types de cas d'utilisation
+      // Vérifier que les 7 items couvrent les 7 types de cas d'utilisation
       const types = new Set(test.items.map(item => item.type));
 
-      expect(types.size).toBe(5); // Devrait avoir 5 types différents (0-4)
-      expect(test.items.length).toBe(5);
+      expect(types.size).toBe(7); // Devrait avoir 7 types différents (0-6)
+      expect(test.items.length).toBe(7);
       expect(test.mode).toBe('decimal');
 
       // Vérifier que chaque item possède les propriétés attendues pour les tests décimaux
@@ -155,11 +155,13 @@ describe('Génération de nombres décimaux', () => {
       });
 
       // Tester la distribution des types
-      expect(test.items.filter(item => item.type === 0).length).toBe(1); // Type 0: Produit sans changement de position
-      expect(test.items.filter(item => item.type === 1).length).toBe(1); // Type 1: Produit avec changement de position
-      expect(test.items.filter(item => item.type === 2).length).toBe(1); // Type 2: Multiplication de deux décimaux
-      expect(test.items.filter(item => item.type === 3).length).toBe(1); // Type 3: Multiplication avec retenue
-      expect(test.items.filter(item => item.type === 4).length).toBe(1); // Type 4: Multiplication avec précisions différentes
+      expect(test.items.filter(item => item.type === 0).length).toBe(1);
+      expect(test.items.filter(item => item.type === 1).length).toBe(1);
+      expect(test.items.filter(item => item.type === 2).length).toBe(1);
+      expect(test.items.filter(item => item.type === 3).length).toBe(1);
+      expect(test.items.filter(item => item.type === 4).length).toBe(1);
+      expect(test.items.filter(item => item.type === 5).length).toBe(1);
+      expect(test.items.filter(item => item.type === 6).length).toBe(1);
     });
 
     test('Les calculs de multiplication décimale doivent avoir la précision correcte selon le type', () => {
@@ -169,12 +171,14 @@ describe('Génération de nombres décimaux', () => {
         let expectedPrecision;
 
         // Définir la précision attendue selon le type d'exercice
-        if (item.type === 0 || item.type === 1) {
-          expectedPrecision = 1; // 1 décimale
-        } else if (item.type === 2 || item.type === 3) {
-          expectedPrecision = 2; // 2 décimales
-        } else if (item.type === 4) {
-          expectedPrecision = 3; // 3 décimales
+        if (item.type === 1) {
+          expectedPrecision = 0; // Multiplication par 10, 100
+        } else if (item.type === 0 || item.type === 2 || item.type === 4 || item.type === 6) {
+          expectedPrecision = 2; // La plupart des types ont au plus 2 décimales
+        } else if (item.type === 3 || item.type === 5) {
+          expectedPrecision = 3; // Types avec 0,01 ou 0,001
+        } else {
+          expectedPrecision = 2; // Fallback
         }
 
         // Vérifier que la réponse a la précision attendue
@@ -215,20 +219,20 @@ describe('Génération de nombres décimaux', () => {
       });
 
       // Tester la distribution des types
-      expect(test.items.filter(item => item.type === 0).length).toBe(1); // Type 0: Comparaison simple de dixièmes
-      expect(test.items.filter(item => item.type === 1).length).toBe(1); // Type 1: Comparaison avec zéros non significatifs
-      expect(test.items.filter(item => item.type === 2).length).toBe(1); // Type 2: Comparaison dixième vs centième (même chiffre)
-      expect(test.items.filter(item => item.type === 3).length).toBe(1); // Type 3: Comparaison dixième vs centième (différents chiffres)
-      expect(test.items.filter(item => item.type === 4).length).toBe(1); // Type 4: Comparaison avec confusion possible
-      expect(test.items.filter(item => item.type === 5).length).toBe(1); // Type 5: Comparaison avec zéro à droite et différents chiffres
-      expect(test.items.filter(item => item.type === 6).length).toBe(1); // Type 6: Comparaison avec zéro à droite, même valeur
+      expect(test.items.filter(item => item.type === 0).length).toBe(1);
+      expect(test.items.filter(item => item.type === 1).length).toBe(1); // Equality
+      expect(test.items.filter(item => item.type === 2).length).toBe(1);
+      expect(test.items.filter(item => item.type === 3).length).toBe(1);
+      expect(test.items.filter(item => item.type === 4).length).toBe(1);
+      expect(test.items.filter(item => item.type === 5).length).toBe(1); // Equality
+      expect(test.items.filter(item => item.type === 6).length).toBe(1);
     });
 
     test('Les comparaisons de nombres décimaux doivent être correctes', () => {
       // Tester spécifiquement le cas d'égalité (type 6)
       for (let i = 0; i < 10; i++) {
         const test = createComparisonTest(7, 'decimal');
-        const equalityItem = test.items.find(item => item.type === 6);
+        const equalityItem = test.items.find(item => item.type === 1 || item.type === 5);
 
         if (equalityItem) {
           // Pour ce type, les nombres doivent être égaux malgré des formats différents

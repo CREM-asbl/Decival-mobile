@@ -1,11 +1,17 @@
 import { nanoid } from 'nanoid';
 import { type AdditionItem, type AdditionTest } from '../types/addition';
+import {
+  EPSILON,
+  DEFAULT_TEST_ITEMS,
+  DECIMAL_ADDITION_TYPES,
+  INTEGER_RANGE
+} from '../config/constants';
 
 export function generateAdditionItem(mode: 'integer' | 'decimal' = 'integer'): AdditionItem {
   if (mode === 'integer') {
     // Générer des nombres entiers comme avant
-    const firstNumber = Math.floor(Math.random() * 100);
-    const secondNumber = Math.floor(Math.random() * 100);
+    const firstNumber = Math.floor(Math.random() * INTEGER_RANGE.addition.max);
+    const secondNumber = Math.floor(Math.random() * INTEGER_RANGE.addition.max);
 
     return {
       id: nanoid(),
@@ -28,9 +34,9 @@ export function generateAdditionItem(mode: 'integer' | 'decimal' = 'integer'): A
  * Génère un item d'addition avec nombres décimaux selon différents types
  * de cas d'utilisation, similaire à l'ancienne version
  */
-function generateDecimalAdditionItem(): AdditionItem {
-  // Choisir un type d'item aléatoirement (0-6 comme dans l'ancien code)
-  const type = Math.floor(Math.random() * 7);
+function generateDecimalAdditionItem(forcedType?: number): AdditionItem {
+  // Choisir un type d'item aléatoirement si non forcé
+  const type = forcedType !== undefined ? forcedType : Math.floor(Math.random() * DECIMAL_ADDITION_TYPES);
 
   // Variables pour stocker les nombres générés
   let firstNumber: number;
@@ -190,7 +196,7 @@ function generateDecimalAdditionItem(): AdditionItem {
   };
 }
 
-export function createAdditionTest(numberOfItems: number = 10, mode: 'integer' | 'decimal' = 'integer'): AdditionTest {
+export function createAdditionTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): AdditionTest {
   // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
   if (mode === 'decimal') {
     // Assurer une distribution des différents types de problèmes
@@ -234,17 +240,7 @@ function generateDistributedItems(count: number): AdditionItem[] {
   for (let i = 0; i < count; i++) {
     // Utiliser le type mélangé (si count > 7, on recommence le cycle mélangé)
     const type = types[i % types.length];
-
-    // Force la génération d'un item du type spécifique
-    let item = generateDecimalAdditionItem();
-    // On regénère jusqu'à obtenir le bon type
-    // Note: Idéalement, generateDecimalAdditionItem devrait accepter le type en paramètre
-    // pour éviter cette boucle while, mais pour l'instant on garde la compatibilité
-    while (item.type !== type) {
-      item = generateDecimalAdditionItem();
-    }
-
-    items.push(item);
+    items.push(generateDecimalAdditionItem(type));
   }
 
   return items;
@@ -254,7 +250,7 @@ export function checkAnswer(item: AdditionItem, answer: number): boolean {
   // Pour les nombres décimaux, comparer avec une précision appropriée
   if (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) {
     const expectedAnswer = item.correctAnswer as number;
-    return Math.abs(answer - expectedAnswer) < 0.0001;
+    return Math.abs(answer - expectedAnswer) < EPSILON;
   }
 
   // Pour les nombres entiers, comparaison simple
@@ -274,7 +270,7 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
 } {
   // Si la réponse est correcte, pas d'erreur à analyser
   const correctAnswer = item.correctAnswer as number;
-  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.0001;
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < EPSILON;
 
   if (isCorrect) {
     return { errorType: 'none', feedback: 'Réponse correcte' };
@@ -295,8 +291,8 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
   // Détecter les erreurs spécifiques pour fournir un feedback précis
   if (item.errorTypes.includes('powerOfTen')) {
     const powerOfTenError =
-      Math.abs(userAnswer - correctAnswer * 10) < 0.0001 ||
-      Math.abs(userAnswer - correctAnswer / 10) < 0.0001;
+      Math.abs(userAnswer - correctAnswer * 10) < EPSILON ||
+      Math.abs(userAnswer - correctAnswer / 10) < EPSILON;
 
     if (powerOfTenError) {
       return {

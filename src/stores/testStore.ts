@@ -1,4 +1,5 @@
 import { atom } from 'nanostores';
+import { XP_PER_CORRECT_ANSWER, XP_BONUS_PERFECT_SCORE, XP_PER_LEVEL } from '../config/constants';
 import { type AdditionTest } from '../types/addition';
 import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
@@ -106,9 +107,9 @@ export function completeTest(test: Test) {
   const currentStats = stats.get();
 
   // Calculer l'XP gagnée (10 pts par réponse correcte + 20 bonus pour un sans-faute)
-  const xpGained = (correctAnswers * 10) + (score === 100 ? 20 : 0);
+  const xpGained = (correctAnswers * XP_PER_CORRECT_ANSWER) + (score === 100 ? XP_BONUS_PERFECT_SCORE : 0);
   const newTotalXp = (currentStats.xp || 0) + xpGained;
-  const newLevel = Math.floor(newTotalXp / 100) + 1;
+  const newLevel = Math.floor(newTotalXp / XP_PER_LEVEL) + 1;
   const leveledUp = newLevel > (currentStats.level || 1);
 
   const newStats = {

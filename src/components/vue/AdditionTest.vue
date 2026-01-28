@@ -66,8 +66,7 @@
       </div>
     </form>
 
-
-    <!-- Utilisation du composant réutilisable pour la modal de fin de test -->
+    <!-- Modal de fin de test -->
     <TestCompleteModal
       :show="showCompleteModal"
       :score="score"
@@ -79,196 +78,36 @@
 </template>
 
 <script setup>
-import { computed, nextTick, ref } from 'vue'
 import { analyzeError, createAdditionTest } from '../../logic/additionLogic'
-import { playSound } from '../../stores/soundStore'
-import { completeTest, currentTest } from '../../stores/testStore'
+import { useMathTest } from '../../composables/useMathTest'
 import TestCompleteModal from '../tests/TestCompleteModal.vue'
 import TestModeSelector from '../tests/TestModeSelector.vue'
 import MrComma from './MrComma.vue'
 
-// État local
-const testStarted = ref(false)
-const currentQuestionIndex = ref(0)
-const answer = ref('')
-const showResultModal = ref(false)
-const showCompleteModal = ref(false)
-const isCorrect = ref(false)
-const score = ref(0)
-const gamificationResults = ref(null)
-const testMode = ref('integer')
-const errorAnalysis = ref(null) // Pour stocker l'analyse de l'erreur
-const continueBtn = ref(null) // Référence pour le bouton continuer
-const answerInput = ref(null) // Référence pour le champ de saisie
-
-// Récupérer ou créer un test
-const test = ref(null)
-
-// Helper pour donner le focus au champ de saisie
-function focusInput() {
-  nextTick(() => {
-    answerInput.value?.focus();
-  });
-}
-
-// Démarrer un test avec le mode sélectionné
-function startTestWithMode(mode) {
-  testMode.value = mode
-  test.value = createAdditionTest(5, mode)
-  currentTest.set(test.value)
-  testStarted.value = true
-  focusInput()
-}
-
-// Calculer la progression
-const progress = computed(() => ((currentQuestionIndex.value + 1) / test.value?.items.length) * 100)
-
-// Obtenir l'item courant
-const currentItem = computed(() => test.value?.items[currentQuestionIndex.value])
-
-// Calculer le pas d'incrément pour l'input
-const inputStep = computed(() => {
-  // Utiliser un step uniforme pour tous les tests décimaux (0.01) pour ne pas induire la réponse
-  // Cela permet aux utilisateurs de saisir des valeurs avec jusqu'à 2 décimales dans tous les cas
-  if (test.value?.mode === 'decimal') {
-    return 0.01;
-  }
-  // Par défaut pour les entiers
-  return 1;
-});
-
-// Gérer la soumission du formulaire
-function handleSubmit() {
-  // Si le résultat est déjà affiché, le Enter doit continuer
-  if (showResultModal.value) {
-    handleContinue();
-    return;
-  }
-
-  // Vérifier que la réponse n'est pas vide
-  if (answer.value === null || answer.value === undefined || answer.value === '') {
-    return; // Ne rien faire si le champ est vide
-  }
-
-  // Convertir et valider la réponse
-  let userAnswer;
-
-  if (test.value.mode === 'decimal') {
-    // Convertir en string pour la validation du format si ce n'est pas déjà une string
-    // On remplace la virgule par un point pour le traitement interne
-    const answerStr = String(answer.value).replace(',', '.');
-
-    // Vérifier que c'est un nombre décimal valide
-    if (!/^-?\d+(\.\d+)?$/.test(answerStr)) {
-      // Format invalide, ne pas soumettre
-      return;
-    }
-    userAnswer = parseFloat(answerStr);
-
-    // Vérifier que c'est dans la plage acceptable (éviter des valeurs extrêmes)
-    if (isNaN(userAnswer) || userAnswer < 0 || userAnswer > 1000) {
-      return;
-    }
-
-    // Pour les décimaux, on compare les valeurs avec une tolérance pour éviter les imprécisions de calcul
-    const expectedAnswer = currentItem.value.correctAnswer;
-    isCorrect.value = Math.abs(userAnswer - expectedAnswer) < 0.0001;
-  } else {
-    // Convertir en string pour la validation du format si ce n'est pas déjà une string
-    const answerStr = String(answer.value);
-
-    // Vérifier que c'est un entier valide
-    if (!/^-?\d+$/.test(answerStr)) {
-      // Format invalide, ne pas soumettre
-      return;
-    }
-    userAnswer = parseInt(answerStr);
-
-    // Vérifier que c'est dans la plage acceptable
-    if (isNaN(userAnswer) || userAnswer < 0 || userAnswer > 1000) {
-      return;
-    }
-
-    // Pour les entiers, comparaison simple
-    isCorrect.value = userAnswer === currentItem.value.correctAnswer;
-  }
-
-  // Mettre à jour l'item avec la réponse
-  test.value.items[currentQuestionIndex.value].userAnswer = userAnswer;
-  test.value.items[currentQuestionIndex.value].isCorrect = isCorrect.value;
-
-  // Analyser l'erreur si la réponse est incorrecte
-  if (!isCorrect.value) {
-    const analysis = analyzeError(currentItem.value, userAnswer);
-    // Stocker l'analyse dans l'item au lieu de l'afficher directement
-    test.value.items[currentQuestionIndex.value].errorAnalysis = analysis;
-  }
-
-  // Jouer le son approprié
-  playSound(isCorrect.value ? 'correct' : 'incorrect');
-
-  // Afficher le résultat
-  showResultModal.value = true;
-  
-  // Donner le focus au bouton continuer pour permettre de valider avec Enter
-  nextTick(() => {
-    continueBtn.value?.focus();
-  });
-}
-
-// Formater un nombre pour l'affichage (afficher les décimaux de manière adaptée)
-function formatNumber(number) {
-  if (test.value?.mode === 'decimal') {
-    if (typeof number !== 'number') return number;
-    
-    // Nettoyer les imprécisions de calcul (ex: 0.15000000000000002 -> 0.15)
-    const cleanNumber = Number(number.toPrecision(12));
-    const numberStr = cleanNumber.toString();
-    const decimalPart = numberStr.includes('.') ? numberStr.split('.')[1] : '';
-    
-    // On veut au moins une décimale pour les nombres décimaux
-    const precision = Math.max(1, decimalPart.length);
-    
-    return cleanNumber.toFixed(precision).replace('.', ',');
-  }
-  return number;
-}
-
-// Gérer le clic sur Continuer
-function handleContinue() {
-  showResultModal.value = false
-  answer.value = ''
-
-  if (currentQuestionIndex.value + 1 >= test.value.items.length) {
-    // Calculer le score final
-    const correctAnswers = test.value.items.filter(item => item.isCorrect).length
-    score.value = Math.round((correctAnswers / test.value.items.length) * 100)
-
-    // Terminer le test
-    const results = completeTest(test.value)
-    gamificationResults.value = results
-
-    // Afficher la modal de fin
-    showCompleteModal.value = true
-  } else {
-    // Passer à la question suivante
-    currentQuestionIndex.value++
-    focusInput()
-  }
-}
-
-// Gérer le redémarrage
-function handleRestart() {
-  // Créer un nouveau test avec le même mode
-  const newTest = createAdditionTest(5, testMode.value)
-  test.value = newTest
-  currentTest.set(newTest)
-
-  // Réinitialiser l'état local
-  currentQuestionIndex.value = 0
-  answer.value = ''
-  showCompleteModal.value = false
-  score.value = 0
-  focusInput()
-}
+const {
+  testStarted,
+  currentQuestionIndex,
+  answer,
+  showResultModal,
+  showCompleteModal,
+  isCorrect,
+  score,
+  gamificationResults,
+  continueBtn,
+  answerInput,
+  test,
+  progress,
+  inputStep,
+  currentItem,
+  startTestWithMode,
+  handleSubmit,
+  formatNumber,
+  handleContinue,
+  handleRestart
+} = useMathTest({
+  createTest: createAdditionTest,
+  analyzeError: analyzeError,
+  testType: 'addition',
+  isComparison: false
+})
 </script>

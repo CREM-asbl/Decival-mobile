@@ -1,14 +1,19 @@
 import { nanoid } from 'nanoid';
 import { type ComparisonItem, type ComparisonTest } from '../types/comparison';
+import {
+  DEFAULT_TEST_ITEMS,
+  DECIMAL_COMPARISON_TYPES,
+  INTEGER_RANGE
+} from '../config/constants';
 
 export function generateComparisonItem(mode: 'integer' | 'decimal' = 'integer'): ComparisonItem {
   if (mode === 'integer') {
     // Générer deux nombres entiers différents pour la comparaison
-    let firstNumber = Math.floor(Math.random() * 100);
+    let firstNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
     let secondNumber;
 
     do {
-      secondNumber = Math.floor(Math.random() * 100);
+      secondNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
     } while (secondNumber === firstNumber);
 
     return {
@@ -32,9 +37,9 @@ export function generateComparisonItem(mode: 'integer' | 'decimal' = 'integer'):
  * Génère un item de comparaison avec nombres décimaux selon différents types
  * de cas d'utilisation, similaire à l'ancien Decival
  */
-function generateDecimalComparisonItem(): ComparisonItem {
-  // Choisir un type d'item aléatoirement (0-6 comme dans l'ancien code)
-  const type = Math.floor(Math.random() * 7);
+function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
+  // Choisir un type d'item aléatoirement si non forcé
+  const type = forcedType !== undefined ? forcedType : Math.floor(Math.random() * DECIMAL_COMPARISON_TYPES);
 
   // Variables pour stocker les nombres générés
   let firstNumber: number;
@@ -242,7 +247,7 @@ function generateDecimalComparisonItem(): ComparisonItem {
   };
 }
 
-export function createComparisonTest(numberOfItems: number = 10, mode: 'integer' | 'decimal' = 'integer'): ComparisonTest {
+export function createComparisonTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): ComparisonTest {
   // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
   if (mode === 'decimal') {
     // Assurer une distribution des différents types de problèmes
@@ -285,14 +290,7 @@ function generateDistributedItems(count: number): ComparisonItem[] {
   // Distribuer les items selon l'ordre aléatoire des types
   for (let i = 0; i < count; i++) {
     const type = types[i % types.length];
-
-    // Force la génération d'un item du type spécifique
-    let item = generateDecimalComparisonItem();
-    while (item.type !== type) {
-      item = generateDecimalComparisonItem();
-    }
-
-    items.push(item);
+    items.push(generateDecimalComparisonItem(type));
   }
 
   return items;

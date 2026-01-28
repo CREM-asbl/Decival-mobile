@@ -39,7 +39,6 @@ describe('Rule System Integration', () => {
       }
     });
 
-    updateRuleProgress('add-1', validation1.isValid);
     let progress = getRuleProgress('add-1');
 
     expect(validation1.isValid).toBe(true);
@@ -56,7 +55,6 @@ describe('Rule System Integration', () => {
       }
     });
 
-    updateRuleProgress('add-1', validation2.isValid);
     progress = getRuleProgress('add-1');
 
     expect(validation2.isValid).toBe(false);
@@ -78,7 +76,7 @@ describe('Rule System Integration', () => {
   test('devrait détecter la maîtrise d\'une règle après plusieurs succès', () => {
     // 5 exercices réussis consécutifs
     for (let i = 0; i < 5; i++) {
-      const validation = validateRule({
+      validateRule({
         ruleId: 'add-1',
         answer: 37,
         expectedAnswer: 37,
@@ -87,8 +85,6 @@ describe('Rule System Integration', () => {
           secondNumber: 13
         }
       });
-
-      updateRuleProgress('add-1', validation.isValid);
     }
 
     const progress = getRuleProgress('add-1');

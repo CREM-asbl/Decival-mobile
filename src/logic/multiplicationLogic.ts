@@ -1,11 +1,17 @@
 import { nanoid } from 'nanoid';
 import { type MultiplicationItem, type MultiplicationTest } from '../types/multiplication';
+import {
+  EPSILON,
+  DEFAULT_TEST_ITEMS,
+  DECIMAL_MULTIPLICATION_TYPES,
+  INTEGER_RANGE
+} from '../config/constants';
 
 export function generateMultiplicationItem(mode: 'integer' | 'decimal' = 'integer'): MultiplicationItem {
   if (mode === 'integer') {
     // Nombres entiers simples (1-12) pour l'apprentissage
-    const firstNumber = Math.floor(Math.random() * 12) + 1;
-    const secondNumber = Math.floor(Math.random() * 12) + 1;
+    const firstNumber = Math.floor(Math.random() * INTEGER_RANGE.multiplication.max) + 1;
+    const secondNumber = Math.floor(Math.random() * INTEGER_RANGE.multiplication.max) + 1;
 
     return {
       id: nanoid(),
@@ -28,9 +34,9 @@ export function generateMultiplicationItem(mode: 'integer' | 'decimal' = 'intege
  * Génère un item de multiplication avec nombres décimaux selon différents types
  * de cas d'utilisation, similaire à l'ancien Decival
  */
-function generateDecimalMultiplicationItem(): MultiplicationItem {
-  // Choisir un type d'item aléatoirement (0-6 comme dans l'ancien code)
-  const type = Math.floor(Math.random() * 7);
+function generateDecimalMultiplicationItem(forcedType?: number): MultiplicationItem {
+  // Choisir un type d'item aléatoirement si non forcé
+  const type = forcedType !== undefined ? forcedType : Math.floor(Math.random() * DECIMAL_MULTIPLICATION_TYPES);
 
   // Variables pour stocker les nombres générés
   let firstNumber: number;
@@ -164,7 +170,7 @@ function generateDecimalMultiplicationItem(): MultiplicationItem {
   };
 }
 
-export function createMultiplicationTest(numberOfItems: number = 10, mode: 'integer' | 'decimal' = 'integer'): MultiplicationTest {
+export function createMultiplicationTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): MultiplicationTest {
   // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
   if (mode === 'decimal') {
     // Assurer une distribution des différents types de problèmes
@@ -207,14 +213,7 @@ function generateDistributedItems(count: number): MultiplicationItem[] {
   // Distribuer les items selon l'ordre aléatoire des types
   for (let i = 0; i < count; i++) {
     const type = types[i % types.length];
-
-    // Force la génération d'un item du type spécifique
-    let item = generateDecimalMultiplicationItem();
-    while (item.type !== type) {
-      item = generateDecimalMultiplicationItem();
-    }
-
-    items.push(item);
+    items.push(generateDecimalMultiplicationItem(type));
   }
 
   return items;
@@ -224,7 +223,7 @@ export function checkAnswer(item: MultiplicationItem, answer: number): boolean {
   // Pour les nombres décimaux, comparer avec une précision appropriée
   if (typeof item.firstNumber === 'number' && (item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0)) {
     const expectedAnswer = item.correctAnswer as number;
-    return Math.abs(answer - expectedAnswer) < 0.0001;
+    return Math.abs(answer - expectedAnswer) < EPSILON;
   }
 
   // Pour les nombres entiers, comparaison simple
@@ -244,7 +243,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
 } {
   // Si la réponse est correcte, pas d'erreur à analyser
   const correctAnswer = item.correctAnswer as number;
-  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.0001;
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < EPSILON;
 
   if (isCorrect) {
     return { errorType: 'none', feedback: 'Réponse correcte' };
@@ -265,10 +264,10 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   if (item.errorTypes.includes('powerOfTen')) {
     // Vérifier si l'erreur vient d'une confusion dans les puissances de dix
     const powerOfTenError =
-      Math.abs(userAnswer - correctAnswer * 10) < 0.0001 ||
-      Math.abs(userAnswer - correctAnswer / 10) < 0.0001 ||
-      Math.abs(userAnswer - correctAnswer * 100) < 0.0001 ||
-      Math.abs(userAnswer - correctAnswer / 100) < 0.0001;
+      Math.abs(userAnswer - correctAnswer * 10) < EPSILON ||
+      Math.abs(userAnswer - correctAnswer / 10) < EPSILON ||
+      Math.abs(userAnswer - correctAnswer * 100) < EPSILON ||
+      Math.abs(userAnswer - correctAnswer / 100) < EPSILON;
 
     if (powerOfTenError) {
       return {

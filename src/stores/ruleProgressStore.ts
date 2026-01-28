@@ -1,6 +1,7 @@
 import { atom } from 'nanostores';
 import { type RuleType } from '../types/rules';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
+import { MASTERY_THRESHOLD } from '../config/constants';
 
 interface RuleProgress {
   ruleId: string;
@@ -121,17 +122,17 @@ export function updateRuleProgress(ruleId: string, isSuccess: boolean, details?:
     failureCount: isSuccess ? currentProgress.failureCount : currentProgress.failureCount + 1,
     lastAttemptDate: new Date(),
     consecutiveSuccesses,
-    // Une règle est maîtrisée après 5 succès consécutifs
-    mastered: isSuccess && (consecutiveSuccesses >= 5 || currentProgress.mastered)
+    // Une règle est maîtrisée après avoir atteint le seuil (MASTERY_THRESHOLD)
+    mastered: isSuccess && (consecutiveSuccesses >= MASTERY_THRESHOLD || currentProgress.mastered)
   };
 
-  console.log(`Mise à jour de la progression pour ${ruleId}:`, updatedProgress);
+  console.log(`Mise à jour de la progression pour ${specificRuleId}:`, updatedProgress);
 
   const newState = {
     ...state,
     progress: {
       ...state.progress,
-      [ruleId]: updatedProgress
+      [specificRuleId]: updatedProgress
     }
   };
 

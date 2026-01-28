@@ -2,7 +2,7 @@ export interface AdditionItem {
   id: string;
   firstNumber: number;
   secondNumber: number;
-  correctAnswer?: number;
+  correctAnswer: number;
   userAnswer?: number;
   isCorrect?: boolean;
   // Champs pour le système d'analyse d'erreurs

@@ -1,6 +1,7 @@
 import { updateRuleProgress } from '../stores/ruleProgressStore';
 import { getRuleById } from '../stores/rulesStore';
 import { RuleValidation } from '../types/rules';
+import { EPSILON } from '../config/constants';
 
 interface ValidationContext {
   ruleId: string;
@@ -178,7 +179,7 @@ function validateDecimal({ ruleId, answer, expectedAnswer, details }: Validation
   const { firstNumber = 0, secondNumber = 0 } = details || {};
 
   // Vérifier si la réponse est correcte (avec tolérance pour les arrondis)
-  const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.001;
+  const isCorrect = Math.abs(userAnswer - correctAnswer) < EPSILON;
   if (isCorrect) {
     return {
       ruleId,
