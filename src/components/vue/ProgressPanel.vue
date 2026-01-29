@@ -6,11 +6,11 @@
       <div class="flex flex-col sm:flex-row justify-between items-center gap-6 relative z-10">
         <div class="flex items-center gap-4">
           <div class="bg-white/20 p-2 rounded-2xl backdrop-blur-md border border-white/30 shadow-inner">
-            <MrComma :variant="commaVariant" :class="commaClass" class="w-20 h-20" />
+            <MrComma :variant="commaVariant" :class="commaClass" :level="testStats.level || 1" class="w-20 h-20" />
           </div>
           <div>
-            <div class="text-white/80 text-sm font-bold uppercase tracking-wider">Niveau</div>
-            <div class="text-5xl font-black">{{ testStats.level || 1 }}</div>
+            <div class="text-white/80 text-sm font-bold uppercase tracking-wider">{{ rpgTitle }}</div>
+            <div class="text-5xl font-black">Niveau {{ testStats.level || 1 }}</div>
           </div>
         </div>
         
@@ -225,9 +225,18 @@ const commaVariant = computed(() => {
 const commaClass = computed(() => {
   const level = testStats.value.level || 1
   let classes = 'transition-all duration-500 '
-  if (level >= 50) classes += 'drop-shadow-[0_0_15px_rgba(250,204,21,0.8)] scale-110'
-  else if (level >= 25) classes += 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+  if (level >= 50) classes += 'scale-110'
   return classes
+})
+
+const rpgTitle = computed(() => {
+  const level = testStats.value.level || 1
+  if (level >= 50) return 'Légende Vivante'
+  if (level >= 35) return 'Grand Maître'
+  if (level >= 20) return 'Chevalier Décimal'
+  if (level >= 10) return 'Érudit des Chiffres'
+  if (level >= 5) return 'Apprenti'
+  return 'Novice'
 })
 
 // Récupération des règles maîtrisées
