@@ -161,8 +161,11 @@ const props = defineProps({
 }
 
 @keyframes cape-flutter {
-  0%, 100% { transform: scaleX(1) skewX(0deg); }
-  50% { transform: scaleX(1.1) skewX(2deg); }
+  0% { transform: scale(1) rotate(0deg) skewX(0deg); }
+  25% { transform: scale(1.05) rotate(3deg) skewX(2deg); }
+  50% { transform: scale(1) rotate(0deg) skewX(-3deg); }
+  75% { transform: scale(1.05) rotate(-3deg) skewX(1deg); }
+  100% { transform: scale(1) rotate(0deg) skewX(0deg); }
 }
 
 .accessory-crown-silver {
