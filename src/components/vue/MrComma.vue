@@ -1,14 +1,18 @@
 <template>
   <div class="mr-comma-container" :class="{ 'animate-bounce': animate, 'has-glow': level >= 35, 'has-aura': level >= 50 }">
+    <!-- RPG Accessories - Cape (Must be first in DOM or use negative z-index relative to stacking context if supported, but safer here) -->
+    <div v-if="level >= 20" class="accessory-cape-container" title="Cape de Héros">
+      <div class="cape-fabric"></div>
+    </div>
+
     <!-- Character Base -->
     <img
       :src="`/images/mrcomma_v2/${variant}.png`"
       :alt="altText"
       class="base-image w-full h-full object-contain"
     />
-
-    <!-- RPG Accessories Overlays -->
-    <div v-if="level >= 20" class="accessory accessory-cape" title="Cape de Héros">🧣</div>
+    
+    <!-- Face Accessories -->
     <div v-if="level >= 10" class="accessory accessory-glasses" title="Lunettes d'Érudit">👓</div>
     <div v-if="level >= 50" class="accessory accessory-crown-gold" title="Couronne d'Or">👑</div>
     <div v-else-if="level >= 35" class="accessory accessory-crown-silver" title="Couronne d'Argent">👑</div>
@@ -19,7 +23,6 @@
 </template>
 
 <script setup>
-
 const props = defineProps({
   variant: {
     type: String,
@@ -49,6 +52,8 @@ const props = defineProps({
   justify-content: center;
   align-items: center;
   position: relative;
+  /* Stacking context root */
+  z-index: 1; 
 }
 
 .base-image {
@@ -66,83 +71,99 @@ const props = defineProps({
 }
 
 .accessory-glasses {
-  top: 40%;
+  /* Position ajustée pour être pile sur les yeux */
+  top: 15%; 
   left: 50%;
   transform: translateX(-50%);
-  font-size: 1.5rem;
-  opacity: 0.9;
+  font-size: 1.3rem; 
+  z-index: 20;
+  opacity: 0.95;
 }
 
-.accessory-cape {
-  bottom: 8%;
+/* Cape Styling - Slightly lower to attach to the body better */
+.accessory-cape-container {
+  position: absolute;
+  top: 52%; 
   left: 50%;
-  transform: translateX(-50%) rotate(-10deg);
-  font-size: 2.8rem;
-  z-index: 5; /* Behind the character */
-  opacity: 1;
+  transform: translateX(-50%);
+  width: 50px; 
+  height: 25px; 
+  z-index: 5;
+  pointer-events: none;
+}
+
+.cape-fabric {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+  clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+  border-radius: 4px;
+  transform-origin: top center;
+  animation: cape-flutter 3.5s infinite ease-in-out;
+}
+
+@keyframes cape-flutter {
+  0%, 100% { transform: scaleX(1) skewX(0deg); }
+  50% { transform: scaleX(1.1) skewX(2deg); }
 }
 
 .accessory-crown-silver {
-  top: -25%;
+  top: -35%; 
   left: 50%;
   transform: translateX(-50%) rotate(-5deg);
-  font-size: 2.2rem;
+  font-size: 2rem;
+  z-index: 20;
   filter: grayscale(1) brightness(1.5) drop-shadow(0 0 5px white);
 }
 
 .accessory-crown-gold {
-  top: -30%;
+  top: -40%; 
   left: 50%;
   transform: translateX(-50%) rotate(5deg);
   font-size: 2.5rem;
+  z-index: 20;
   filter: drop-shadow(0 0 10px #fbbf24);
   animation: crown-shimmer 2s infinite alternate;
 }
 
 /* Visual Effects */
 .has-glow .base-image {
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
 }
 
 .has-aura .base-image {
-  filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.8));
+  filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.9));
 }
 
 .aura-sparkles {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: -15px;
   background-image: radial-gradient(circle, #fbbf24 1px, transparent 1px);
   background-size: 15px 15px;
   z-index: 2;
-  opacity: 0.4;
+  opacity: 0.5;
   animation: aura-pulse 3s infinite linear;
   border-radius: 50%;
+  pointer-events: none;
 }
 
 @keyframes crown-shimmer {
-  from { transform: translateX(-50%) rotate(5deg) scale(1); }
-  to { transform: translateX(-50%) rotate(5deg) scale(1.1); filter: drop-shadow(0 0 15px #fcd34d); }
+  from { transform: translateX(-50%) rotate(5deg) scale(1); filter: drop-shadow(0 0 10px #fbbf24); }
+  to { transform: translateX(-50%) rotate(5deg) scale(1.1); filter: drop-shadow(0 0 20px #fcd34d); }
 }
 
 @keyframes aura-pulse {
-  0% { transform: scale(0.9); opacity: 0.2; }
-  50% { transform: scale(1.2); opacity: 0.5; }
-  100% { transform: scale(0.9); opacity: 0.2; }
+  0% { transform: scale(0.95); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.6; }
+  100% { transform: scale(0.95); opacity: 0.3; }
 }
 
 @keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .animate-bounce {
-  animation: bounce 1s ease infinite;
+  animation: bounce 1.5s ease infinite;
 }
 </style>
