@@ -5,8 +5,8 @@
       <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
       <div class="flex flex-col sm:flex-row justify-between items-center gap-6 relative z-10">
         <div class="flex items-center gap-4">
-          <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-md border border-white/30 text-4xl shadow-inner">
-            🚀
+          <div class="bg-white/20 p-2 rounded-2xl backdrop-blur-md border border-white/30 shadow-inner">
+            <MrComma :variant="commaVariant" :class="commaClass" class="w-20 h-20" />
           </div>
           <div>
             <div class="text-white/80 text-sm font-bold uppercase tracking-wider">Niveau</div>
@@ -65,7 +65,17 @@
     </div>
 
     <!-- Statistiques globales -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg">
+            <span class="text-xl">🔥</span>
+          </div>
+          <h2 class="text-lg font-semibold dark:text-gray-100">Série</h2>
+        </div>
+        <p class="text-3xl font-black text-orange-600 dark:text-orange-400">{{ testStats.dailyStreak || 0 }}j</p>
+      </div>
+
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-3 mb-2">
           <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
@@ -204,6 +214,21 @@ const unlockedBadgesIds = computed(() => unlockedBadges.get())
 
 const formattedAvgScore = computed(() => `${Math.round(testStats.value.averageScore)}%`)
 const formattedBestScore = computed(() => `${Math.round(testStats.value.bestScore)}%`)
+
+const commaVariant = computed(() => {
+  const level = testStats.value.level || 1
+  if (level >= 15) return 'happy'
+  if (level >= 5) return 'pointing'
+  return 'default'
+})
+
+const commaClass = computed(() => {
+  const level = testStats.value.level || 1
+  let classes = 'transition-all duration-500 '
+  if (level >= 50) classes += 'drop-shadow-[0_0_15px_rgba(250,204,21,0.8)] scale-110'
+  else if (level >= 25) classes += 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+  return classes
+})
 
 // Récupération des règles maîtrisées
 const masteredRules = computed(() => {

@@ -1,7 +1,7 @@
 import { atom } from 'nanostores';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
 
-export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'MASTERY_5' | 'MASTERY_10' | 'MASTERY_ADDITION' | 'MASTERY_SUBTRACTION' | 'MASTERY_MULTIPLICATION' | 'MASTERY_COMPARISON' | 'LEVEL_5';
+export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'MASTERY_5' | 'MASTERY_10' | 'MASTERY_ADDITION' | 'MASTERY_SUBTRACTION' | 'MASTERY_MULTIPLICATION' | 'MASTERY_COMPARISON' | 'LEVEL_5' | 'LEVEL_50';
 
 export interface Badge {
     id: BadgeId;
@@ -77,6 +77,12 @@ export const BADGES: Record<BadgeId, Badge> = {
         title: 'Expert',
         description: 'Atteins le niveau 5',
         icon: '🚀'
+    },
+    LEVEL_50: {
+        id: 'LEVEL_50',
+        title: 'Légende de Decival',
+        description: 'Atteins le niveau ultra-secret 50',
+        icon: '👑'
     }
 };
 

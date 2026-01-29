@@ -16,6 +16,8 @@ interface TestStats {
   bestScore: number;
   xp: number;
   level: number;
+  dailyStreak: number;
+  lastPracticeDate?: string;
 }
 
 // Store pour le test en cours
@@ -30,7 +32,8 @@ export const stats = atom<TestStats>({
   averageScore: 0,
   bestScore: 0,
   xp: 0,
-  level: 1
+  level: 1,
+  dailyStreak: 0
 });
 
 // Charger les données sauvegardées
@@ -112,12 +115,36 @@ export function completeTest(test: Test) {
   const newLevel = Math.floor(newTotalXp / XP_PER_LEVEL) + 1;
   const leveledUp = newLevel > (currentStats.level || 1);
 
+  // Calculer la série journalière
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let newDailyStreak = currentStats.dailyStreak || 0;
+  if (!currentStats.lastPracticeDate) {
+    newDailyStreak = 1;
+  } else {
+    const lastDate = new Date(currentStats.lastPracticeDate);
+    lastDate.setHours(0, 0, 0, 0);
+    const diffTime = today.getTime() - lastDate.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
+
+    if (diffDays === 1) {
+      newDailyStreak += 1;
+    } else if (diffDays > 1) {
+      newDailyStreak = 1;
+    } else if (diffDays === 0 && newDailyStreak === 0) {
+      newDailyStreak = 1;
+    }
+  }
+
   const newStats = {
     totalTests: currentStats.totalTests + 1,
     averageScore: (currentStats.averageScore * currentStats.totalTests + score) / (currentStats.totalTests + 1),
     bestScore: Math.max(currentStats.bestScore, score),
     xp: newTotalXp,
-    level: newLevel
+    level: newLevel,
+    dailyStreak: newDailyStreak,
+    lastPracticeDate: new Date().toISOString()
   };
   stats.set(newStats);
 
@@ -147,6 +174,12 @@ export function completeTest(test: Test) {
   }
   if (newLevel >= 5) {
     if (unlockBadge('LEVEL_5')) newlyUnlockedBadges.push('LEVEL_5');
+  }
+  if (newLevel >= 50) {
+    if (unlockBadge('LEVEL_50')) newlyUnlockedBadges.push('LEVEL_50');
+  }
+  if (newDailyStreak >= 3) {
+    if (unlockBadge('STREAK_3')) newlyUnlockedBadges.push('STREAK_3');
   }
 
   // Logique de maîtrise des règles
@@ -214,7 +247,8 @@ export function resetTestData() {
     averageScore: 0,
     bestScore: 0,
     xp: 0,
-    level: 1
+    level: 1,
+    dailyStreak: 0
   });
   currentTest.set(null);
 }
