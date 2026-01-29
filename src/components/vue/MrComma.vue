@@ -161,11 +161,11 @@ const props = defineProps({
 }
 
 @keyframes cape-flutter {
-  0% { transform: scale(1) rotate(0deg) skewX(0deg); }
-  25% { transform: scale(1.05) rotate(3deg) skewX(2deg); }
-  50% { transform: scale(1) rotate(0deg) skewX(-3deg); }
-  75% { transform: scale(1.05) rotate(-3deg) skewX(1deg); }
-  100% { transform: scale(1) rotate(0deg) skewX(0deg); }
+  0% { transform: scale(1) rotate(0deg) skewX(0deg); clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%); border-radius: 4px; }
+  25% { transform: scale(1.05) rotate(2deg) skewX(2deg); clip-path: polygon(30% 0%, 70% 0%, 95% 95%, 5% 105%); border-radius: 4px 4px 10px 5px; }
+  50% { transform: scale(1) rotate(0deg) skewX(-2deg); clip-path: polygon(30% 0%, 70% 0%, 90% 90%, 10% 95%); border-radius: 4px 4px 5px 10px; }
+  75% { transform: scale(1.05) rotate(-2deg) skewX(1deg); clip-path: polygon(30% 0%, 70% 0%, 105% 100%, 0% 95%); border-radius: 4px 4px 10px 5px; }
+  100% { transform: scale(1) rotate(0deg) skewX(0deg); clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%); border-radius: 4px; }
 }
 
 .accessory-crown-silver {
