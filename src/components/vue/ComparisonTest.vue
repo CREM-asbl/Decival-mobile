@@ -22,12 +22,12 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto border border-transparent dark:border-gray-700">
         <div class="text-center mb-8">
           <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 dark:text-white">
-            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.firstNumberDisplay || formatNumber(currentItem.firstNumber) }}</span>
+            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.firstNumberDisplay }}</span>
             <span class="text-3xl transition-all duration-300 font-mono" 
               :class="showResultModal ? (isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') : 'text-accent'">
               {{ showResultModal ? currentItem.userAnswer : '?' }}
             </span>
-            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.secondNumberDisplay || formatNumber(currentItem.secondNumber) }}</span>
+            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.secondNumberDisplay }}</span>
           </div>
         </div>
 
@@ -78,7 +78,7 @@
           <div v-if="showResultModal" class="flex flex-col items-center gap-4 w-full animate-fade-in">
             <MrComma :variant="isCorrect ? 'happy' : 'confused'" animate />
             <p v-if="!isCorrect" class="text-red-600 dark:text-red-400 font-medium text-center">
-              La bonne réponse était : <span class="font-bold underline">{{ currentItem.firstNumberDisplay || formatNumber(currentItem.firstNumber) }} {{ currentItem.correctAnswer }} {{ currentItem.secondNumberDisplay || formatNumber(currentItem.secondNumber) }}</span>
+              La bonne réponse était : <span class="font-bold underline">{{ currentItem.firstNumberDisplay }} {{ currentItem.correctAnswer }} {{ currentItem.secondNumberDisplay }}</span>
             </p>
             <button ref="continueBtn" @click="handleContinue" type="button"
               class="inline-flex items-center justify-center px-8 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent w-full max-w-xs transition-colors">
@@ -123,7 +123,6 @@ const {
   progress,
   currentItem,
   startTestWithMode,
-  formatNumber,
   handleContinue,
   handleRestart
 } = useMathTest({
@@ -171,4 +170,6 @@ function handleAnswer(answer) {
     continueBtn.value?.focus()
   })
 }
+
+
 </script>

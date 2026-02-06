@@ -18,8 +18,3 @@ export interface DecimalTest {
   status: 'not_started' | 'in_progress' | 'completed';
 }
 
-// Export par défaut pour garantir la compatibilité avec l'hydratation
-export default {
-  DecimalItem,
-  DecimalTest
-};

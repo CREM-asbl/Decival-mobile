@@ -20,6 +20,8 @@ export function generateComparisonItem(mode: 'integer' | 'decimal' = 'integer'):
       id: nanoid(),
       firstNumber,
       secondNumber,
+      firstNumberDisplay: firstNumber.toString(),
+      secondNumberDisplay: secondNumber.toString(),
       correctAnswer: firstNumber > secondNumber ? '>' :
         firstNumber < secondNumber ? '<' : '=',
       rule: {
@@ -65,8 +67,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
 
       firstNumber = parseFloat((n1 / 10).toFixed(1));
       secondNumber = parseFloat((n2 / 10).toFixed(1));
-      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
-      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+      firstNumberDisplay = firstNumber.toFixed(1).replace('.', ',');
+      secondNumberDisplay = secondNumber.toFixed(1).replace('.', ',');
 
       correctAnswer = firstNumber > secondNumber ? '>' :
         firstNumber < secondNumber ? '<' : '=';
@@ -85,8 +87,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
       firstNumber = parseFloat((n1b / 10).toFixed(1));
       secondNumber = parseFloat((n2b / 10).toFixed(1)); // Pour forcer l'affichage comme 0,10
 
-      firstNumberDisplay = (n1b / 10).toLocaleString('fr-FR');
-      secondNumberDisplay = (n2b / 10).toLocaleString('fr-FR') + '0'; // Force le zéro à la fin
+      firstNumberDisplay = (n1b / 10).toFixed(1).replace('.', ',');
+      secondNumberDisplay = (n2b / 10).toFixed(1).replace('.', ',') + '0'; // Force le zéro à la fin
 
       correctAnswer = '='; // Toujours égaux
 
@@ -103,8 +105,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
 
       firstNumber = parseFloat((n1c / 10).toFixed(1));
       secondNumber = parseFloat((n2c / 100).toFixed(2));
-      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
-      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+      firstNumberDisplay = firstNumber.toFixed(1).replace('.', ',');
+      secondNumberDisplay = secondNumber.toFixed(2).replace('.', ',');
 
       correctAnswer = '>'; // Le dixième est toujours plus grand que le centième (pour un même chiffre)
 
@@ -122,8 +124,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
       firstNumber = parseFloat((n1d / 10).toFixed(1));
       secondNumber = parseFloat((n2d / 100).toFixed(2));
 
-      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
-      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+      firstNumberDisplay = firstNumber.toFixed(1).replace('.', ',');
+      secondNumberDisplay = secondNumber.toFixed(2).replace('.', ',');
 
       correctAnswer = '>'; // Le dixième est toujours plus grand
 
@@ -144,8 +146,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
 
       // Assurer un affichage propre (max 2 décimales)
       firstNumber = parseFloat(firstNumber.toFixed(2));
-      firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
-      secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+      firstNumberDisplay = firstNumber.toFixed(2).replace('.', ',');
+      secondNumberDisplay = secondNumber.toFixed(1).replace('.', ',');
 
       // Déterminer la réponse correcte
       if (firstNumber > secondNumber) {
@@ -169,8 +171,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
       firstNumber = parseFloat((n1f / 10).toFixed(1));
       secondNumber = parseFloat((n1f / 10).toFixed(1)); // Même valeur
 
-      firstNumberDisplay = (n1f / 10).toLocaleString('fr-FR') + '0';
-      secondNumberDisplay = (n1f / 10).toLocaleString('fr-FR');
+      firstNumberDisplay = (n1f / 10).toFixed(1).replace('.', ',') + '0';
+      secondNumberDisplay = (n1f / 10).toFixed(1).replace('.', ',');
 
       correctAnswer = '=';
 
@@ -197,8 +199,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
         firstNumber = parseFloat((n1g / 10).toFixed(1));
         secondNumber = parseFloat((n2g / 10).toFixed(1));
 
-        firstNumberDisplay = firstNumber.toLocaleString('fr-FR') + '0';
-        secondNumberDisplay = secondNumber.toLocaleString('fr-FR');
+        firstNumberDisplay = firstNumber.toFixed(1).replace('.', ',') + '0';
+        secondNumberDisplay = secondNumber.toFixed(1).replace('.', ',');
 
         correctAnswer = firstNumber < secondNumber ? '<' : '>';
       } else {
@@ -207,8 +209,8 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
         firstNumber = parseFloat((n1g / 10).toFixed(1));
         secondNumber = parseFloat((n2g / 10).toFixed(1));
 
-        firstNumberDisplay = firstNumber.toLocaleString('fr-FR');
-        secondNumberDisplay = secondNumber.toLocaleString('fr-FR') + '0';
+        firstNumberDisplay = firstNumber.toFixed(1).replace('.', ',');
+        secondNumberDisplay = secondNumber.toFixed(1).replace('.', ',') + '0';
 
         correctAnswer = firstNumber < secondNumber ? '<' : '>';
       }

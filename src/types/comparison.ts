@@ -2,8 +2,8 @@ export interface ComparisonItem {
   id: string;
   firstNumber: number;
   secondNumber: number;
-  firstNumberDisplay?: string; // Pour l'affichage explicite (ex: "0,30")
-  secondNumberDisplay?: string; // Pour l'affichage explicite (ex: "0,30")
+  firstNumberDisplay: string; // Pour l'affichage explicite (ex: "0,30")
+  secondNumberDisplay: string; // Pour l'affichage explicite (ex: "0,30")
   correctAnswer: string;
   userAnswer?: string;
   isCorrect?: boolean;

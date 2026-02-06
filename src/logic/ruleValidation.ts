@@ -1,6 +1,6 @@
 import { updateRuleProgress } from '../stores/ruleProgressStore';
 import { getRuleById } from '../stores/rulesStore';
-import { RuleValidation } from '../types/rules';
+import type { RuleValidation } from '../types/rules';
 import { EPSILON } from '../config/constants';
 
 interface ValidationContext {

@@ -100,7 +100,7 @@ function formatQuestion(item, testType) {
     case 'multiplication':
       return `${item.firstNumber} × ${item.secondNumber} = ?`;
     case 'comparison':
-      return `${item.firstNumber} ? ${item.secondNumber}`;
+      return `${item.firstNumberDisplay || item.firstNumber} ? ${item.secondNumberDisplay || item.secondNumber}`;
     default:
       return 'Question non disponible';
   }
