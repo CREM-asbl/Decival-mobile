@@ -1,5 +1,6 @@
 ---
 import Icon from "./common/Icon.astro";
+import { APP_VERSION } from "../config/constants";
 
 interface Props {
   currentPage?: string;
@@ -50,5 +51,10 @@ const navItems = [
         ))
       }
     </ul>
+    <div
+      class="text-[8px] text-gray-400 dark:text-gray-500 text-center pb-1 -mt-2 pointer-events-none"
+    >
+      v{APP_VERSION}
+    </div>
   </nav>
 </footer>

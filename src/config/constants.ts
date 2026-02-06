@@ -3,6 +3,11 @@
  * Centralized location for all magic numbers and hardcoded values
  */
 
+import pkg from '../../package.json';
+
+/** Application version */
+export const APP_VERSION = pkg.version;
+
 // ============================================================================
 // Gamification Constants
 // ============================================================================

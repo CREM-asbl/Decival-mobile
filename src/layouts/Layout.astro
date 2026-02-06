@@ -3,6 +3,7 @@ import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import InstallPWA from "../components/InstallPWA.astro";
 import FeedbackButton from "../components/vue/FeedbackButton.vue";
+import { APP_VERSION } from "../config/constants";
 
 interface Props {
   title: string;
@@ -81,9 +82,9 @@ const { title, currentPage = "home" } = Astro.props;
 
     <Footer currentPage={currentPage} />
     <InstallPWA />
-    <FeedbackButton client:load />
+    <FeedbackButton client:load appVersion={APP_VERSION} />
 
-    <script>
+    <script define:vars={{ APP_VERSION }}>
       import { isDarkMode } from "../stores/themeStore";
       import { initAnalytics } from "../firebase";
 
@@ -93,7 +94,7 @@ const { title, currentPage = "home" } = Astro.props;
       });
 
       // Initialisation de Firebase Analytics
-      initAnalytics().catch(console.error);
+      initAnalytics(APP_VERSION).catch(console.error);
 
       // Chargement des sons
       /*

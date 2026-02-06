@@ -2,6 +2,7 @@
 import AnimationSettings from "../components/common/AnimationSettings.astro";
 import SoundSettings from "../components/common/SoundSettings.astro";
 import Layout from "../layouts/Layout.astro";
+import { APP_VERSION } from "../config/constants";
 ---
 
 <Layout title="Paramètres - Decival">
@@ -26,6 +27,14 @@ import Layout from "../layouts/Layout.astro";
         Les sons et animations sont conçus pour renforcer votre apprentissage
         tout en restant discrets. Vous pouvez les ajuster ou les désactiver
         selon vos besoins.
+      </p>
+    </div>
+
+    <div
+      class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center"
+    >
+      <p class="text-xs text-gray-400 dark:text-gray-500">
+        Decival version {APP_VERSION}
       </p>
     </div>
   </div>

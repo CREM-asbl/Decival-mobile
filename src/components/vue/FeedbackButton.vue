@@ -100,8 +100,9 @@
             </div>
 
             <!-- Contexte (automatique) -->
-            <div class="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-2 rounded">
-              📍 Page actuelle: {{ currentPage }} | 📱 {{ isOnline ? 'En ligne' : 'Hors ligne' }}
+            <div class="text-[10px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-2 rounded flex justify-between items-center">
+              <span>📍 {{ currentPage }} | 📱 {{ isOnline ? 'En ligne' : 'Hors ligne' }}</span>
+              <span v-if="appVersion" class="font-mono text-[9px] opacity-75">v{{ appVersion }}</span>
             </div>
 
             <!-- Erreur/Success -->
@@ -146,6 +147,13 @@
 <script setup>
 import { actions } from 'astro:actions';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+
+const props = defineProps({
+  appVersion: {
+    type: String,
+    default: ''
+  }
+});
 
 const isOpen = ref(false);
 const isSubmitting = ref(false);
@@ -197,6 +205,7 @@ const submitFeedback = async () => {
       comment: form.value.comment,
       email: form.value.email,
       page: currentPage.value,
+      appVersion: props.appVersion,
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString()
     });

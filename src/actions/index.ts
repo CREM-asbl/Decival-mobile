@@ -16,6 +16,7 @@ const feedbackSchema = z.object({
   comment: z.string().min(10, 'Commentaire doit faire au moins 10 caractères'),
   email: z.string().email().optional().or(z.literal('')),
   page: z.string(),
+  appVersion: z.string().optional(),
   userAgent: z.string(),
   timestamp: z.string(),
 });
@@ -50,6 +51,7 @@ export const server = {
               comment: data.comment,
               email: data.email || 'anonymous@feedback.local',
               page: data.page,
+              appVersion: data.appVersion || 'unknown',
               userAgent: data.userAgent,
               timestamp: Timestamp.fromDate(new Date(data.timestamp)),
               createdAt: FieldValue.serverTimestamp(),
@@ -111,6 +113,11 @@ export const server = {
       <div class="field">
         <div class="label">📍 Page</div>
         <div class="value">${data.page}</div>
+      </div>
+
+      <div class="field">
+        <div class="label">🔢 Version</div>
+        <div class="value">${data.appVersion || 'N/A'}</div>
       </div>
 
       <div class="field">

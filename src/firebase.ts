@@ -15,9 +15,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Analytics only in the browser and if supported
-export const initAnalytics = async () => {
+export const initAnalytics = async (appVersion?: string) => {
     if (typeof window !== "undefined" && (await isSupported())) {
-        return getAnalytics(app);
+        const analytics = getAnalytics(app);
+        if (appVersion) {
+            const { setUserProperties } = await import("firebase/analytics");
+            setUserProperties(analytics, { app_version: appVersion });
+        }
+        return analytics;
     }
     return null;
 };
