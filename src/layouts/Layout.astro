@@ -85,10 +85,15 @@ const { title, currentPage = "home" } = Astro.props;
 
     <script>
       import { isDarkMode } from "../stores/themeStore";
+      import { initAnalytics } from "../firebase";
+
       // Initialisation du mode sombre
       isDarkMode.listen((isDark) => {
         document.documentElement.classList.toggle("dark", isDark);
       });
+
+      // Initialisation de Firebase Analytics
+      initAnalytics().catch(console.error);
 
       // Chargement des sons
       /*
