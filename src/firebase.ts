@@ -12,7 +12,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// If apiKey is missing from env, initializeApp without arguments to allow autoconfiguration (App Hosting)
+const app = firebaseConfig.apiKey
+    ? initializeApp(firebaseConfig)
+    : initializeApp();
 
 // Initialize Analytics only in the browser and if supported
 export const initAnalytics = async (appVersion?: string) => {
