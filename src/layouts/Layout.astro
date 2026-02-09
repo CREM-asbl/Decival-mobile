@@ -84,7 +84,8 @@ const { title, currentPage = "home" } = Astro.props;
     <InstallPWA />
     <FeedbackButton client:load appVersion={APP_VERSION} />
 
-    <script define:vars={{ APP_VERSION }}>
+    <script>
+      import { APP_VERSION } from "../config/constants";
       import { isDarkMode } from "../stores/themeStore";
       import { initAnalytics } from "../firebase";
 
