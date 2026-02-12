@@ -22,15 +22,17 @@ const feedbackSchema = z.object({
 });
 
 // Initialiser le transporteur Nodemailer
-const hasEmailCreds = !!import.meta.env.EMAIL_PASSWORD;
+const emailUser = process.env.EMAIL_USER ?? import.meta.env.EMAIL_USER;
+const emailPassword = process.env.EMAIL_PASSWORD ?? import.meta.env.EMAIL_PASSWORD;
+const hasEmailCreds = !!(emailUser && emailPassword);
 const transporter = hasEmailCreds
   ? nodemailer.createTransport({
     host: 'smtp.office365.com',
     port: 587,
     secure: false,
     auth: {
-      user: import.meta.env.EMAIL_USER,
-      pass: import.meta.env.EMAIL_PASSWORD,
+      user: emailUser,
+      pass: emailPassword,
     },
   })
   : null;
@@ -67,7 +69,7 @@ export const server = {
         if (transporter) {
           try {
             await transporter.sendMail({
-              from: import.meta.env.EMAIL_USER || 'pliezgeoffrey@gmail.com',
+              from: emailUser,
               to: 'pliezgeoffrey@gmail.com',
               subject: `[Feedback Décimal] ${data.category} - ${data.rating}/5 ⭐`,
               html: `
