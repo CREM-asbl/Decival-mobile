@@ -1,10 +1,10 @@
 <template>
-  <div class="fixed bottom-4 right-4 z-50">
+  <div :class="containerClass">
     <!-- Bouton flottant -->
     <button
       v-if="!isOpen"
       @click="isOpen = true"
-      class="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 flex items-center gap-2"
+      :class="buttonClass"
       title="Donner un retour"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,6 +152,10 @@ const props = defineProps({
   appVersion: {
     type: String,
     default: ''
+  },
+  variant: {
+    type: String,
+    default: 'floating'
   }
 });
 
@@ -176,6 +180,18 @@ const isFormValid = computed(() => {
   const hasComment = form.value.comment && form.value.comment.trim().length >= 10;
 
   return hasCategory && hasRating && hasComment;
+});
+
+const containerClass = computed(() => {
+  return props.variant === 'inline'
+    ? 'relative z-50'
+    : 'fixed right-4 top-20 md:top-auto md:bottom-4 z-50';
+});
+
+const buttonClass = computed(() => {
+  return props.variant === 'inline'
+    ? 'bg-blue-600 hover:bg-blue-700 text-white rounded-full px-3 py-2 shadow-md transition-all duration-200 flex items-center gap-2 text-sm'
+    : 'bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 flex items-center gap-2';
 });
 
 onMounted(() => {

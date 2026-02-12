@@ -1,4 +1,7 @@
 ---
+import FeedbackButton from "./vue/FeedbackButton.vue";
+import { APP_VERSION } from "../config/constants";
+
 interface Props {
   title?: string;
   currentPage?: string;
@@ -17,6 +20,7 @@ const { title = "Decival", currentPage = "home" } = Astro.props;
         {title}
       </h1>
     </div>
+    <FeedbackButton client:load appVersion={APP_VERSION} variant="inline" />
     <nav class="flex items-center gap-4">
       <button
         id="darkModeToggle"
