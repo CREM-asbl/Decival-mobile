@@ -1,5 +1,4 @@
 import apphosting from '@apphosting/astro-adapter';
-import tailwind from '@astrojs/tailwind';
 import vue from '@astrojs/vue';
 import { defineConfig } from 'astro/config';
 import serviceWorker from 'astrojs-service-worker';
@@ -11,7 +10,6 @@ export default defineConfig({
     mode: "standalone"
   }),
   integrations: [
-    tailwind(),
     vue(),
     serviceWorker({
       workbox: {
