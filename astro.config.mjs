@@ -3,12 +3,18 @@ import vue from '@astrojs/vue';
 import { defineConfig } from 'astro/config';
 import serviceWorker from 'astrojs-service-worker';
 
+import node from '@astrojs/node';
+
+import tailwindcss from '@tailwindcss/vite';
+
 export default defineConfig({
   // Les server actions nécessitent un rendu serveur (server/hybrid)
   output: 'server',
-  adapter: apphosting({
-    mode: "standalone"
+
+  adapter: node({
+    mode: 'standalone'
   }),
+
   integrations: [
     vue(),
     serviceWorker({
@@ -42,5 +48,9 @@ export default defineConfig({
         ]
       }
     })
-  ]
+  ],
+
+  vite: {
+    plugins: [tailwindcss()]
+  }
 });
