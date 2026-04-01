@@ -49,27 +49,10 @@ const { title, currentPage = "home" } = Astro.props;
         return "light";
       })();
 
-      if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+      const isDark = theme === "dark";
+      document.documentElement.classList.toggle("dark", isDark);
+      document.documentElement.style.colorScheme = isDark ? "dark" : "light";
     </script>
-
-    <!-- Variables CSS globales -->
-    <style is:global>
-      :root {
-        --accent: 79, 70, 229; /* Indigo-600 */
-        --accent-hover: 67, 56, 202; /* Indigo-700 */
-        --accent-active: 55, 48, 163; /* Indigo-800 */
-      }
-
-      :root.dark {
-        --accent: 99, 102, 241; /* Indigo-500 en dark mode */
-        --accent-hover: 79, 70, 229; /* Indigo-600 en dark mode */
-        --accent-active: 67, 56, 202; /* Indigo-700 en dark mode */
-      }
-    </style>
   </head>
   <body
     class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen pb-20"
@@ -85,12 +68,6 @@ const { title, currentPage = "home" } = Astro.props;
     <script>
       import { APP_VERSION } from "../config/constants";
       import { initAnalytics } from "../firebase";
-      import { isDarkMode } from "../stores/themeStore";
-
-      // Initialisation du mode sombre
-      isDarkMode.listen((isDark) => {
-        document.documentElement.classList.toggle("dark", isDark);
-      });
 
       // Initialisation de Firebase Analytics
       initAnalytics(APP_VERSION).catch(console.error);

@@ -1,1 +1,71 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-accent: rgb(var(--accent));
+  --color-accent-hover: rgb(var(--accent-hover));
+  --color-accent-active: rgb(var(--accent-active));
+  --color-accent-light: rgb(var(--accent-light));
+
+  --animate-fadeIn: fadeIn 0.3s ease-in-out;
+  --animate-fadeOut: fadeOut 0.3s ease-in-out;
+  --animate-slideIn: slideIn 0.3s ease-in-out;
+  --animate-slideOut: slideOut 0.3s ease-in-out;
+}
+
+:root {
+  --accent: 79, 70, 229;
+  --accent-hover: 67, 56, 202;
+  --accent-active: 55, 48, 163;
+  --accent-light: 99, 102, 241;
+  color-scheme: light;
+}
+
+:root.dark {
+  --accent: 99, 102, 241;
+  --accent-hover: 79, 70, 229;
+  --accent-active: 67, 56, 202;
+  --accent-light: 129, 140, 248;
+  color-scheme: dark;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}

@@ -16,7 +16,7 @@
             'bg-amber-50 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-800': rec.type === 'tip'
           }">
         <div class="flex items-start">
-          <span class="w-5 h-5 mt-0.5 mr-2 flex-shrink-0" :class="{
+          <span class="w-5 h-5 mt-0.5 mr-2 shrink-0" :class="{
             'text-green-600 dark:text-green-400': rec.type === 'strength',
             'text-red-600 dark:text-red-400': rec.type === 'weakness',
             'text-blue-600 dark:text-blue-400': rec.type === 'opportunity',

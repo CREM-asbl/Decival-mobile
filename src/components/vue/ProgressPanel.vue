@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
     <!-- XP and Level Section -->
-    <div class="bg-gradient-to-r from-accent to-indigo-600 rounded-2xl p-6 text-white shadow-lg overflow-hidden relative">
+    <div class="bg-linear-to-r from-accent to-indigo-600 rounded-2xl p-6 text-white shadow-lg overflow-hidden relative">
       <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
       <div class="flex flex-col sm:flex-row justify-between items-center gap-6 relative z-10">
         <div class="flex items-center gap-4">

@@ -1,4 +1,3 @@
-import apphosting from '@apphosting/astro-adapter';
 import vue from '@astrojs/vue';
 import { defineConfig } from 'astro/config';
 import serviceWorker from 'astrojs-service-worker';
