@@ -68,4 +68,4 @@ Tout agent doit respecter ces règles techniques impératives :
 Les agents doivent mettre à jour cette section après chaque changement majeur pour conserver le contexte entre les sessions.
 
 - **Dernière mise à jour** : 12/05/2026
-- **État actuel** : Migration du feedback enseignant terminée. Le feedback n'est plus affiché dans la modal de fin de test mais dispose de sa propre page dédiée (`/progress/feedback/[id]`) accessible via l'historique dans `ProgressPanel.vue`. Migration de la route `/progress` vers la structure de répertoire (`src/pages/progress/index.astro`) effectuée. Le workflow Addy's Skill est maintenu rigoureusement.
+- **État actuel** : Suppression de l'affichage du résultat après chaque réponse dans les tests (diagnostique) pour éviter d'influencer l'élève. Le passage à la question suivante est désormais immédiat. Les sons de feedback (correct/incorrect) ont été remplacés par un son de clic neutre durant le test. Le workflow Addy's Skill est maintenu rigoureusement.

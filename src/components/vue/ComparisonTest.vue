@@ -23,9 +23,8 @@
         <div class="text-center mb-8">
           <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 dark:text-white">
             <span class="transition-all duration-300 hover:scale-110">{{ currentItem.firstNumberDisplay }}</span>
-            <span class="text-3xl transition-all duration-300 font-mono" 
-              :class="showResultModal ? (isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') : 'text-accent'">
-              {{ showResultModal ? currentItem.userAnswer : '?' }}
+            <span class="text-3xl transition-all duration-300 font-mono text-accent">
+              ?
             </span>
             <span class="transition-all duration-300 hover:scale-110">{{ currentItem.secondNumberDisplay }}</span>
           </div>
@@ -33,56 +32,20 @@
 
         <div class="flex flex-col items-center gap-6">
           <div class="flex justify-center gap-4">
-            <button type="button" @click="() => !showResultModal && handleAnswer('<')"
-              :disabled="showResultModal"
-              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300"
-              :class="[
-                showResultModal
-                  ? (currentItem.userAnswer === '<'
-                    ? (isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white')
-                    : (currentItem.correctAnswer === '<' ? 'border-2 border-green-500 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'))
-                  : 'bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95'
-              ]"
+            <button type="button" @click="handleAnswer('<')"
+              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300 bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95"
               aria-label="Plus petit que">
               &lt;
             </button>
-            <button type="button" @click="() => !showResultModal && handleAnswer('=')"
-              :disabled="showResultModal"
-              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300"
-              :class="[
-                showResultModal
-                  ? (currentItem.userAnswer === '='
-                    ? (isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white')
-                    : (currentItem.correctAnswer === '=' ? 'border-2 border-green-500 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'))
-                  : 'bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95'
-              ]"
+            <button type="button" @click="handleAnswer('=')"
+              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300 bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95"
               aria-label="Égal à">
               =
             </button>
-            <button type="button" @click="() => !showResultModal && handleAnswer('>')"
-              :disabled="showResultModal"
-              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300"
-              :class="[
-                showResultModal
-                  ? (currentItem.userAnswer === '>'
-                    ? (isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white')
-                    : (currentItem.correctAnswer === '>' ? 'border-2 border-green-500 text-green-600 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'))
-                  : 'bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95'
-              ]"
+            <button type="button" @click="handleAnswer('>')"
+              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300 bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95"
               aria-label="Plus grand que">
               &gt;
-            </button>
-          </div>
-
-          <!-- Inline Feedback & Continue Button -->
-          <div v-if="showResultModal" class="flex flex-col items-center gap-4 w-full animate-fade-in">
-            <MrComma :variant="isCorrect ? 'happy' : 'confused'" animate />
-            <p v-if="!isCorrect" class="text-red-600 dark:text-red-400 font-medium text-center">
-              La bonne réponse était : <span class="font-bold underline">{{ currentItem.firstNumberDisplay }} {{ currentItem.correctAnswer }} {{ currentItem.secondNumberDisplay }}</span>
-            </p>
-            <button ref="continueBtn" @click="handleContinue" type="button"
-              class="inline-flex items-center justify-center px-8 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent w-full max-w-xs transition-colors">
-              Continuer
             </button>
           </div>
         </div>
@@ -163,12 +126,8 @@ function handleAnswer(answer) {
     test.value.items[currentQuestionIndex.value].errorAnalysis = analysis
   }
 
-  playSound(isCorrect.value ? 'correct' : 'incorrect')
-  showResultModal.value = true
-
-  nextTick(() => {
-    continueBtn.value?.focus()
-  })
+  playSound('click')
+  handleContinue()
 }
 
 

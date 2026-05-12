@@ -143,16 +143,11 @@ export function useMathTest(config: MathTestConfig) {
             errorAnalysis.value = null
         }
 
-        // Jouer le son approprié
-        playSound(isCorrect.value ? 'correct' : 'incorrect')
+        // Jouer un son neutre pour indiquer que la réponse est enregistrée
+        playSound('click')
 
-        // Afficher le résultat
-        showResultModal.value = true
-
-        // Donner le focus au bouton continuer
-        nextTick(() => {
-            continueBtn.value?.focus()
-        })
+        // Passer directement à la suite sans afficher de feedback
+        handleContinue()
     }
 
     // Gérer la soumission pour les comparaisons
@@ -176,12 +171,10 @@ export function useMathTest(config: MathTestConfig) {
             test.value.items[currentQuestionIndex.value].errorAnalysis = analysis
         }
 
-        playSound(isCorrect.value ? 'correct' : 'incorrect')
-        showResultModal.value = true
+        playSound('click')
 
-        nextTick(() => {
-            continueBtn.value?.focus()
-        })
+        // Passer directement à la suite sans afficher de feedback
+        handleContinue()
     }
 
     // Formater un nombre pour l'affichage

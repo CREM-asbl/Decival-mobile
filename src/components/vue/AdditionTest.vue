@@ -30,37 +30,17 @@
             <div class="flex flex-col gap-1">
               <input ref="answerInput" v-model="answer" type="text" required
                 :step="inputStep"
-                :disabled="showResultModal"
-                class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300 bg-white dark:bg-gray-700 dark:text-white"
-                :class="[
-                  showResultModal
-                    ? isCorrect
-                      ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                      : 'border-red-500 bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    : 'border-gray-300 dark:border-gray-600'
-                ]"
+                class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300 bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
                 :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" />
-              <small v-if="test.mode === 'decimal' && !showResultModal" class="text-gray-500 dark:text-gray-400 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
-              
-              <!-- Inline Feedback -->
-              <div v-if="showResultModal" class="mt-2 text-center animate-fade-in flex flex-col items-center gap-2">
-                <MrComma :variant="isCorrect ? 'happy' : 'confused'" animate />
-                <p v-if="!isCorrect" class="text-red-600 dark:text-red-400 font-medium">
-                  La bonne réponse était : <span class="font-bold underline">{{ formatNumber(currentItem.correctAnswer) }}</span>
-                </p>
-              </div>
+              <small v-if="test.mode === 'decimal'" class="text-gray-500 dark:text-gray-400 text-center">Utilisez une virgule (,) comme séparateur décimal</small>
             </div>
           </div>
         </div>
 
         <div class="flex flex-col items-center gap-4">
-          <button v-if="!showResultModal" type="submit"
+          <button type="submit"
             class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
             Suivant
-          </button>
-          <button v-else ref="continueBtn" @click="handleContinue" type="submit"
-            class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
-            Continuer
           </button>
         </div>
       </div>
