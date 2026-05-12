@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { type SubtractionItem, type SubtractionTest } from '../types/subtraction';
 import {
   EPSILON,
-  DEFAULT_TEST_ITEMS,
+  ITEMS_COUNT_SUBTRACTION,
   DECIMAL_SUBTRACTION_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
@@ -146,22 +146,19 @@ function generateDecimalSubtractionItem(forcedType?: number): SubtractionItem {
   };
 }
 
-export function createSubtractionTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): SubtractionTest {
-  // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
+export function createSubtractionTest(numberOfItems: number = ITEMS_COUNT_SUBTRACTION, mode: 'integer' | 'decimal' = 'integer'): SubtractionTest {
   if (mode === 'decimal') {
-    // Assurer une distribution des différents types de problèmes
     return {
       id: nanoid(),
       type: 'subtraction',
       mode,
-      items: generateDistributedItems(numberOfItems),
+      items: generateDistributedSubtractionItems(numberOfItems),
       currentItemIndex: 0,
       startTime: new Date(),
       status: 'not_started'
     };
   }
 
-  // Pour les entiers, comportement inchangé
   return {
     id: nanoid(),
     type: 'subtraction',
@@ -173,23 +170,20 @@ export function createSubtractionTest(numberOfItems: number = DEFAULT_TEST_ITEMS
   };
 }
 
-/**
- * Génère une répartition équilibrée des différents types d'items décimaux
- */
-function generateDistributedItems(count: number): SubtractionItem[] {
+function generateDistributedSubtractionItems(count: number): SubtractionItem[] {
   const items: SubtractionItem[] = [];
-  const types = [0, 1, 2, 3, 4, 5, 6];
-
-  // Mélanger les types
-  for (let i = types.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [types[i], types[j]] = [types[j], types[i]];
+  const itemsPerType = Math.floor(count / DECIMAL_SUBTRACTION_TYPES);
+  
+  for (let type = 0; type < DECIMAL_SUBTRACTION_TYPES; type++) {
+    for (let i = 0; i < itemsPerType; i++) {
+      items.push(generateDecimalSubtractionItem(type));
+    }
   }
 
-  // Distribuer les items selon l'ordre aléatoire des types
-  for (let i = 0; i < count; i++) {
-    const type = types[i % types.length];
-    items.push(generateDecimalSubtractionItem(type));
+  // Shuffle items
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
   }
 
   return items;

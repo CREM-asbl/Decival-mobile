@@ -31,10 +31,13 @@ export const MASTERY_THRESHOLD = 3
 // Test Generation Constants
 // ============================================================================
 
-/** Default number of items per test */
-export const DEFAULT_TEST_ITEMS = 5
+/** Number of items per test category (Decival Legacy parity) */
+export const ITEMS_COUNT_COMPARISON = 49
+export const ITEMS_COUNT_ADDITION = 28
+export const ITEMS_COUNT_SUBTRACTION = 28
+export const ITEMS_COUNT_MULTIPLICATION = 20
 
-/** Number of different decimal item types in subtraction/addition */
+/** Number of different decimal item types per category */
 export const DECIMAL_SUBTRACTION_TYPES = 7
 export const DECIMAL_ADDITION_TYPES = 7
 export const DECIMAL_MULTIPLICATION_TYPES = 7

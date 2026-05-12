@@ -4,11 +4,12 @@ import { type AdditionTest } from '../types/addition';
 import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
-import { updateRuleProgress, updateTypeStreak, ruleProgress } from './ruleProgressStore';
 import { unlockBadge } from './badgeStore';
-import { rules } from './rulesStore';
+import { updateTypeMastery, getMasteredCount, isCategoryMastered } from './typeMasteryStore';
+import { type ComparisonTest } from '../types/comparison';
+import { generateTeacherFeedback } from '../logic/teacherFeedback';
 
-type Test = AdditionTest | SubtractionTest | MultiplicationTest;
+type Test = AdditionTest | SubtractionTest | MultiplicationTest | ComparisonTest;
 
 interface TestStats {
   totalTests: number;
@@ -156,13 +157,11 @@ export function completeTest(test: Test) {
   const history = testHistory.get();
   testHistory.set([test, ...history]);
 
-  // Mettre à jour la progression des règles
-  test.items.forEach(item => {
-    updateRuleProgress(item.rule.id, item.isCorrect || false);
+  // Mettre à jour la maîtrise des types via le feedback diagnostique
+  const teacherFeedback = generateTeacherFeedback(test);
+  teacherFeedback.resultsByType.forEach(res => {
+    updateTypeMastery(test.type, res.type, res.mastered, (res.correct / res.total) * 100);
   });
-
-  // Mettre à jour la série du type de règle
-  updateTypeStreak(test.type, isSuccessful);
 
   // Badges
   const newlyUnlockedBadges = [];
@@ -182,10 +181,8 @@ export function completeTest(test: Test) {
     if (unlockBadge('STREAK_3')) newlyUnlockedBadges.push('STREAK_3');
   }
 
-  // Logique de maîtrise des règles
-  const progressState = ruleProgress.get();
-  const allMasteredRules = Object.values(progressState.progress).filter(p => p.mastered);
-  const masteredCount = allMasteredRules.length;
+  // Logique de maîtrise des types pour les badges
+  const masteredCount = getMasteredCount();
 
   if (masteredCount >= 1) {
     if (unlockBadge('MASTERY_REACHED')) newlyUnlockedBadges.push('MASTERY_REACHED');
@@ -197,37 +194,31 @@ export function completeTest(test: Test) {
     if (unlockBadge('MASTERY_10')) newlyUnlockedBadges.push('MASTERY_10');
   }
 
-  // Vérifier la maîtrise des catégories
-  const allRulesData = rules.get();
-
-  // Addition
-  const additionRules = allRulesData.addition || [];
-  if (additionRules.length > 0 && additionRules.every(r => progressState.progress[r.id]?.mastered)) {
+  // Vérifier la maîtrise des catégories (nombres de types basés sur constants.ts)
+  // Addition: 7 types
+  if (isCategoryMastered('addition', 7)) {
     if (unlockBadge('MASTERY_ADDITION')) newlyUnlockedBadges.push('MASTERY_ADDITION');
   }
 
-  // Soustraction
-  const subtractionRules = allRulesData.subtraction || [];
-  if (subtractionRules.length > 0 && subtractionRules.every(r => progressState.progress[r.id]?.mastered)) {
+  // Soustraction: 7 types
+  if (isCategoryMastered('subtraction', 7)) {
     if (unlockBadge('MASTERY_SUBTRACTION')) newlyUnlockedBadges.push('MASTERY_SUBTRACTION');
   }
 
-  // Multiplication
-  const multiplicationRules = allRulesData.multiplication || [];
-  if (multiplicationRules.length > 0 && multiplicationRules.every(r => progressState.progress[r.id]?.mastered)) {
+  // Multiplication: 7 types
+  if (isCategoryMastered('multiplication', 7)) {
     if (unlockBadge('MASTERY_MULTIPLICATION')) newlyUnlockedBadges.push('MASTERY_MULTIPLICATION');
   }
 
-  // Comparaison
-  const comparisonRules = allRulesData.comparison || [];
-  if (comparisonRules.length > 0 && comparisonRules.every(r => progressState.progress[r.id]?.mastered)) {
+  // Comparaison: 7 types
+  if (isCategoryMastered('comparison', 7)) {
     if (unlockBadge('MASTERY_COMPARISON')) newlyUnlockedBadges.push('MASTERY_COMPARISON');
   }
 
   // Réinitialiser le test en cours
   currentTest.set(null);
 
-  return { score, xpGained, leveledUp, newLevel, newlyUnlockedBadges };
+  return { score, xpGained, leveledUp, newLevel, newlyUnlockedBadges, teacherFeedback };
 }
 
 export function getTestStats(): TestStats {

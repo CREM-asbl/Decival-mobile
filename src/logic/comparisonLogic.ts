@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { type ComparisonItem, type ComparisonTest } from '../types/comparison';
 import {
-  DEFAULT_TEST_ITEMS,
+  ITEMS_COUNT_COMPARISON,
   DECIMAL_COMPARISON_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
@@ -249,22 +249,19 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
   };
 }
 
-export function createComparisonTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): ComparisonTest {
-  // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
+export function createComparisonTest(numberOfItems: number = ITEMS_COUNT_COMPARISON, mode: 'integer' | 'decimal' = 'integer'): ComparisonTest {
   if (mode === 'decimal') {
-    // Assurer une distribution des différents types de problèmes
     return {
       id: nanoid(),
       type: 'comparison',
       mode,
-      items: generateDistributedItems(numberOfItems),
+      items: generateDistributedComparisonItems(numberOfItems),
       currentItemIndex: 0,
       startTime: new Date(),
       status: 'not_started'
     };
   }
 
-  // Pour les entiers, comportement inchangé
   return {
     id: nanoid(),
     type: 'comparison',
@@ -276,23 +273,20 @@ export function createComparisonTest(numberOfItems: number = DEFAULT_TEST_ITEMS,
   };
 }
 
-/**
- * Génère une répartition équilibrée des différents types d'items décimaux
- */
-function generateDistributedItems(count: number): ComparisonItem[] {
+function generateDistributedComparisonItems(count: number): ComparisonItem[] {
   const items: ComparisonItem[] = [];
-  const types = [0, 1, 2, 3, 4, 5, 6];
-
-  // Mélanger les types
-  for (let i = types.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [types[i], types[j]] = [types[j], types[i]];
+  const itemsPerType = Math.floor(count / DECIMAL_COMPARISON_TYPES);
+  
+  for (let type = 0; type < DECIMAL_COMPARISON_TYPES; type++) {
+    for (let i = 0; i < itemsPerType; i++) {
+      items.push(generateDecimalComparisonItem(type));
+    }
   }
 
-  // Distribuer les items selon l'ordre aléatoire des types
-  for (let i = 0; i < count; i++) {
-    const type = types[i % types.length];
-    items.push(generateDecimalComparisonItem(type));
+  // Shuffle items
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
   }
 
   return items;

@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { type AdditionItem, type AdditionTest } from '../types/addition';
 import {
   EPSILON,
-  DEFAULT_TEST_ITEMS,
+  ITEMS_COUNT_ADDITION,
   DECIMAL_ADDITION_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
@@ -196,22 +196,19 @@ function generateDecimalAdditionItem(forcedType?: number): AdditionItem {
   };
 }
 
-export function createAdditionTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): AdditionTest {
-  // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
+export function createAdditionTest(numberOfItems: number = ITEMS_COUNT_ADDITION, mode: 'integer' | 'decimal' = 'integer'): AdditionTest {
   if (mode === 'decimal') {
-    // Assurer une distribution des différents types de problèmes
     return {
       id: nanoid(),
       type: 'addition',
       mode,
-      items: generateDistributedItems(numberOfItems),
+      items: generateDistributedAdditionItems(numberOfItems),
       currentItemIndex: 0,
       startTime: new Date(),
       status: 'not_started'
     };
   }
 
-  // Pour les entiers, comportement inchangé
   return {
     id: nanoid(),
     type: 'addition',
@@ -223,24 +220,20 @@ export function createAdditionTest(numberOfItems: number = DEFAULT_TEST_ITEMS, m
   };
 }
 
-/**
- * Génère une répartition équilibrée des différents types d'items décimaux
- */
-function generateDistributedItems(count: number): AdditionItem[] {
+function generateDistributedAdditionItems(count: number): AdditionItem[] {
   const items: AdditionItem[] = [];
-  const types = [0, 1, 2, 3, 4, 5, 6];
-
-  // Mélanger les types pour éviter que ce soit toujours les mêmes (0-4) pour un test de 5 questions
-  for (let i = types.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [types[i], types[j]] = [types[j], types[i]];
+  const itemsPerType = Math.floor(count / DECIMAL_ADDITION_TYPES);
+  
+  for (let type = 0; type < DECIMAL_ADDITION_TYPES; type++) {
+    for (let i = 0; i < itemsPerType; i++) {
+      items.push(generateDecimalAdditionItem(type));
+    }
   }
 
-  // Distribuer les items selon l'ordre aléatoire des types
-  for (let i = 0; i < count; i++) {
-    // Utiliser le type mélangé (si count > 7, on recommence le cycle mélangé)
-    const type = types[i % types.length];
-    items.push(generateDecimalAdditionItem(type));
+  // Shuffle items
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
   }
 
   return items;

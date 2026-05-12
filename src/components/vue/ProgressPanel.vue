@@ -113,35 +113,38 @@
       </div>
     </div>
 
-    <!-- Règles maîtrisées -->
+    <!-- Maîtrise des concepts -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8 border border-transparent dark:border-gray-700 overflow-hidden">
       <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-        <h2 class="text-xl font-semibold dark:text-white">Règles maîtrisées</h2>
-        <a
-          href="/rules/summary"
-          class="text-accent hover:text-accent-hover flex items-center gap-2 font-medium"
-        >
-          Toutes les règles
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
+        <h2 class="text-xl font-semibold dark:text-white">Maîtrise des concepts</h2>
+        <span class="text-xs font-bold px-2 py-1 bg-green-100 text-green-700 rounded-full">
+          {{ masteredTypes.length }} types maîtrisés
+        </span>
       </div>
       <div class="p-6">
-        <p v-if="masteredRules.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8 bg-gray-50 dark:bg-gray-900/50 rounded-lg border-2 border-dashed dark:border-gray-700">
-          Continue à t'entraîner pour maîtriser tes premières règles !
+        <p v-if="masteredTypes.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8 bg-gray-50 dark:bg-gray-900/50 rounded-lg border-2 border-dashed dark:border-gray-700">
+          Continue à t'entraîner pour maîtriser tes premiers types d'exercices !
         </p>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div v-for="rule in masteredRules" :key="rule.id" class="border dark:border-gray-700 rounded-xl p-4 bg-gray-50 dark:bg-gray-900/30 hover:shadow-md transition-shadow">
-            <div class="flex items-center gap-3 mb-2">
-              <div class="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full">
-                <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+        <div v-else class="space-y-6">
+          <div v-for="category in categories" :key="category.id" class="space-y-3">
+            <h3 class="font-black text-sm uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
+              {{ category.name }}
+              <span class="h-px flex-1 bg-gray-100 dark:bg-gray-700"></span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div v-for="type in getMasteredTypesByCategory(category.id)" :key="type.type" 
+                   class="border dark:border-gray-700 rounded-xl p-3 bg-gray-50 dark:bg-gray-900/30 flex items-center gap-3">
+                <div class="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full shrink-0">
+                  <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-bold dark:text-white text-sm">{{ getTypeLabel(category.id, type.type) }}</h4>
+                  <p class="text-xs text-gray-500">Dernier score : {{ Math.round(type.lastScore) }}%</p>
+                </div>
               </div>
-              <h3 class="font-bold dark:text-white">{{ rule.title }}</h3>
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ rule.description }}</p>
           </div>
         </div>
       </div>
@@ -196,24 +199,83 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { ruleProgress, resetProgress } from '../../stores/ruleProgressStore'
-import { getRuleById } from '../../stores/rulesStore'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
+import { typeMastery, resetTypeMastery } from '../../stores/typeMasteryStore'
 import { BADGES, unlockedBadges } from '../../stores/badgeStore'
 import ErrorAnalysisPanel from './ErrorAnalysisPanel.vue'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
 
-// Composant qui accède uniquement aux stores et expose des données réactives
-// sans manipuler directement le localStorage
-
 // Données réactives dérivées des stores
 const testStats = computed(() => stats.get())
-const allProgress = computed(() => ruleProgress.get())
 const unlockedBadgesIds = computed(() => unlockedBadges.get())
+const masteryState = computed(() => typeMastery.get())
 
 const formattedAvgScore = computed(() => `${Math.round(testStats.value.averageScore)}%`)
 const formattedBestScore = computed(() => `${Math.round(testStats.value.bestScore)}%`)
+
+const categories = [
+  { id: 'addition', name: 'Addition' },
+  { id: 'subtraction', name: 'Soustraction' },
+  { id: 'multiplication', name: 'Multiplication' },
+  { id: 'comparison', name: 'Comparaison' }
+]
+
+const additionLabels = [
+  'Dixièmes sans retenue',
+  'Centièmes sans retenue',
+  'Précisions différentes',
+  'Dixièmes avec retenue',
+  'Centièmes avec retenue',
+  'Plusieurs décimales',
+  'Entier et décimal'
+]
+
+const subtractionLabels = [
+  'Dixièmes sans emprunt',
+  'Centièmes sans emprunt',
+  'Précisions différentes',
+  'Dixièmes avec emprunt',
+  'Centièmes avec emprunt',
+  'Nombres mixtes',
+  'Entier et décimal'
+]
+
+const multiplicationLabels = [
+  'X simple (0,x * 0,y)',
+  'X par 10, 100, ...',
+  'X entier * décimal',
+  'X précisions diff.',
+  'X avec retenue',
+  'X par 0,1, 0,01, ...',
+  'X nombre à 2 chiffres'
+]
+
+const comparisonLabels = [
+  'Simple (mêmes décimales)',
+  'Zéro à gauche',
+  'Zéro intercalé',
+  'Précisions différentes',
+  'Plus de chiffres ≠ plus grand',
+  'Zéro non significatif à droite',
+  'Égalités avec zéros à droite'
+]
+
+function getTypeLabel(category, type) {
+  if (category === 'addition') return additionLabels[type] || `Type ${type}`
+  if (category === 'subtraction') return subtractionLabels[type] || `Type ${type}`
+  if (category === 'multiplication') return multiplicationLabels[type] || `Type ${type}`
+  if (category === 'comparison') return comparisonLabels[type] || `Type ${type}`
+  return `Type ${type}`
+}
+
+const masteredTypes = computed(() => {
+  return Object.values(masteryState.value.mastery).filter(m => m.mastered)
+})
+
+function getMasteredTypesByCategory(category) {
+  return masteredTypes.value.filter(m => m.category === category)
+}
 
 const commaVariant = computed(() => {
   const level = testStats.value.level || 1
@@ -237,16 +299,6 @@ const rpgTitle = computed(() => {
   if (level >= 10) return 'Érudit des Chiffres'
   if (level >= 5) return 'Apprenti'
   return 'Novice'
-})
-
-// Récupération des règles maîtrisées
-const masteredRules = computed(() => {
-  if (!allProgress.value || !allProgress.value.progress) return []
-
-  return Object.entries(allProgress.value.progress)
-    .filter(([_, ruleProgress]) => ruleProgress.mastered)
-    .map(([ruleId]) => getRuleById(ruleId))
-    .filter(rule => rule !== undefined)
 })
 
 // Récupération des tests récents
@@ -297,8 +349,8 @@ function getCorrectAnswersCount(test) {
 // Fonction pour réinitialiser les données (pour déboguer)
 function resetData() {
   if (confirm("Voulez-vous réinitialiser toutes les données de progression ? Cette action est irréversible.")) {
-    resetProgress()
     resetTestData()
+    resetTypeMastery()
     alert("Données réinitialisées avec succès")
   }
 }
@@ -327,12 +379,9 @@ const encouragementMessage = computed(() => {
   return "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !"
 })
 
-// Initialisation - s'assurer que les stores sont bien initialisés
+// Initialisation
 onMounted(() => {
   console.log("ProgressPanel monté")
-  console.log("État des stats:", testStats.value)
-  console.log("État de la progression:", allProgress.value)
-  console.log("Règles maîtrisées:", masteredRules.value)
   console.log("Tests récents:", recentTests.value)
 })
 </script>

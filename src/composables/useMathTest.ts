@@ -49,7 +49,7 @@ export function useMathTest(config: MathTestConfig) {
     // Démarrer un test avec le mode sélectionné
     function startTestWithMode(mode: 'integer' | 'decimal') {
         testMode.value = mode
-        test.value = config.createTest(5, mode)
+        test.value = config.createTest(undefined, mode)
         currentTest.set(test.value)
         testStarted.value = true
         focusInput()
@@ -227,7 +227,7 @@ export function useMathTest(config: MathTestConfig) {
 
     // Gérer le redémarrage
     function handleRestart() {
-        const newTest = config.createTest(5, testMode.value)
+        const newTest = config.createTest(undefined, testMode.value)
         test.value = newTest
         currentTest.set(newTest)
 

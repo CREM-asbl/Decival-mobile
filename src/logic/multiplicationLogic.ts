@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { type MultiplicationItem, type MultiplicationTest } from '../types/multiplication';
 import {
   EPSILON,
-  DEFAULT_TEST_ITEMS,
+  ITEMS_COUNT_MULTIPLICATION,
   DECIMAL_MULTIPLICATION_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
@@ -170,22 +170,19 @@ function generateDecimalMultiplicationItem(forcedType?: number): MultiplicationI
   };
 }
 
-export function createMultiplicationTest(numberOfItems: number = DEFAULT_TEST_ITEMS, mode: 'integer' | 'decimal' = 'integer'): MultiplicationTest {
-  // Distribution proportionnelle des items pour couvrir tous les types d'erreurs
+export function createMultiplicationTest(numberOfItems: number = ITEMS_COUNT_MULTIPLICATION, mode: 'integer' | 'decimal' = 'integer'): MultiplicationTest {
   if (mode === 'decimal') {
-    // Assurer une distribution des différents types de problèmes
     return {
       id: nanoid(),
       type: 'multiplication',
       mode,
-      items: generateDistributedItems(numberOfItems),
+      items: generateDistributedMultiplicationItems(numberOfItems),
       currentItemIndex: 0,
       startTime: new Date(),
       status: 'not_started'
     };
   }
 
-  // Pour les entiers, comportement inchangé
   return {
     id: nanoid(),
     type: 'multiplication',
@@ -197,23 +194,20 @@ export function createMultiplicationTest(numberOfItems: number = DEFAULT_TEST_IT
   };
 }
 
-/**
- * Génère une répartition équilibrée des différents types d'items décimaux
- */
-function generateDistributedItems(count: number): MultiplicationItem[] {
+function generateDistributedMultiplicationItems(count: number): MultiplicationItem[] {
   const items: MultiplicationItem[] = [];
-  const types = [0, 1, 2, 3, 4, 5, 6];
-
-  // Mélanger les types
-  for (let i = types.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [types[i], types[j]] = [types[j], types[i]];
+  const itemsPerType = Math.floor(count / DECIMAL_MULTIPLICATION_TYPES);
+  
+  for (let type = 0; type < DECIMAL_MULTIPLICATION_TYPES; type++) {
+    for (let i = 0; i < itemsPerType; i++) {
+      items.push(generateDecimalMultiplicationItem(type));
+    }
   }
 
-  // Distribuer les items selon l'ordre aléatoire des types
-  for (let i = 0; i < count; i++) {
-    const type = types[i % types.length];
-    items.push(generateDecimalMultiplicationItem(type));
+  // Shuffle items
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
   }
 
   return items;

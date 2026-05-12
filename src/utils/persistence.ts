@@ -1,5 +1,5 @@
 export const STORAGE_KEYS = {
-  RULE_PROGRESS: 'decival_rule_progress',
+  TYPE_MASTERY: 'decival_type_mastery',
   UNLOCKED_BADGES: 'decival_unlocked_badges',
   CURRENT_LEVEL: 'decival_level',
   TOTAL_XP: 'decival_xp',
@@ -48,21 +48,13 @@ export function loadFromStorage<T>(key: string): T | null {
   }
 }
 
-// Fonctions spécifiques pour la progression des règles
-export function saveRuleProgress(data: any): void {
-  saveToStorage(STORAGE_KEYS.RULE_PROGRESS, data);
-}
-
-export function loadRuleProgress<T>(): T | null {
-  return loadFromStorage<T>(STORAGE_KEYS.RULE_PROGRESS);
-}
-
 // Fonction utilitaire pour nettoyer le stockage
 export function clearStorage(): void {
   try {
-    localStorage.removeItem(STORAGE_KEYS.RULE_PROGRESS);
     localStorage.removeItem(STORAGE_KEYS.TEST_HISTORY);
     localStorage.removeItem(STORAGE_KEYS.TEST_STATS);
+    localStorage.removeItem(STORAGE_KEYS.TYPE_MASTERY);
+    localStorage.removeItem(STORAGE_KEYS.UNLOCKED_BADGES);
     console.log("Stockage effacé avec succès");
   } catch (error) {
     console.error('Erreur lors du nettoyage du stockage:', error);

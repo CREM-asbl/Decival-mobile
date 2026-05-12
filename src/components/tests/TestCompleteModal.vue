@@ -1,6 +1,6 @@
 <template>
-  <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md mx-auto shadow-xl p-6 border border-transparent dark:border-gray-700 animate-bounce-in">
+  <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100 overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl p-6 border border-transparent dark:border-gray-700 animate-bounce-in my-8">
       <div class="text-center py-4">
         <div class="text-6xl mb-4">🎉</div>
         <h3 class="text-2xl font-bold mb-2 dark:text-white">Félicitations !</h3>
@@ -20,7 +20,13 @@
           </div>
         </div>
 
-        <div v-if="gamificationResults?.newlyUnlockedBadges?.length" class="mb-6">
+        <!-- Diagnostic Feedback Section -->
+        <DiagnosticFeedback 
+          v-if="gamificationResults?.teacherFeedback" 
+          :feedback="gamificationResults.teacherFeedback" 
+        />
+
+        <div v-if="gamificationResults?.newlyUnlockedBadges?.length" class="mt-6 mb-6">
           <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Badge débloqué !</p>
           <div class="flex justify-center gap-2">
             <div v-for="badgeId in gamificationResults.newlyUnlockedBadges" :key="badgeId" class="text-4xl animate-bounce">
@@ -29,7 +35,7 @@
           </div>
         </div>
 
-        <p class="text-sm text-gray-600 dark:text-gray-400">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-4">
           Consulte tes progrès pour voir tes badges et ton niveau !
         </p>
       </div>
@@ -57,6 +63,7 @@ import { watch } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
+import DiagnosticFeedback from '../vue/DiagnosticFeedback.vue';
 
 const props = defineProps({
   show: {
@@ -119,3 +126,4 @@ watch(() => props.show, (newVal) => {
   }
 });
 </script>
+
