@@ -20,32 +20,35 @@
 
     <form v-if="testStarted" @submit.prevent class="mt-8">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto border border-transparent dark:border-gray-700">
-        <div class="text-center mb-8">
-          <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 dark:text-white">
-            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.firstNumberDisplay }}</span>
-            <span class="text-3xl transition-all duration-300 font-mono text-accent">
-              ?
-            </span>
-            <span class="transition-all duration-300 hover:scale-110">{{ currentItem.secondNumberDisplay }}</span>
-          </div>
-        </div>
-
-        <div class="flex flex-col items-center gap-6">
-          <div class="flex justify-center gap-4">
-            <button type="button" @click="handleAnswer('<')"
-              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300 bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95"
-              aria-label="Plus petit que">
-              &lt;
+        <div class="flex flex-col items-center gap-8 py-4">
+          <p class="text-gray-600 dark:text-gray-400 text-center text-lg mb-2">Sélectionnez le nombre le plus grand, ou le signe égal s'ils sont identiques :</p>
+          
+          <div class="flex items-center justify-center gap-2 sm:gap-6 w-full max-w-md mx-auto">
+            <button
+              type="button"
+              @click="handleAnswer('>')"
+              class="flex-1 py-6 px-2 sm:px-4 text-3xl sm:text-4xl font-bold rounded-xl transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-accent dark:hover:border-accent hover:bg-white dark:hover:bg-gray-600 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-accent/30"
+              aria-label="Sélectionner le premier nombre"
+            >
+              {{ currentItem.firstNumberDisplay }}
             </button>
-            <button type="button" @click="handleAnswer('=')"
-              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300 bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95"
-              aria-label="Égal à">
+
+            <button
+              type="button"
+              @click="handleAnswer('=')"
+              class="w-14 h-14 sm:w-16 sm:h-16 shrink-0 text-3xl font-mono font-bold rounded-full flex items-center justify-center transition-all duration-300 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-2 border-transparent hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-accent/30"
+              aria-label="Ils sont égaux"
+            >
               =
             </button>
-            <button type="button" @click="handleAnswer('>')"
-              class="w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl rounded-md flex items-center justify-center transition-all duration-300 bg-accent text-white hover:bg-accent-hover hover:scale-105 active:scale-95"
-              aria-label="Plus grand que">
-              &gt;
+
+            <button
+              type="button"
+              @click="handleAnswer('<')"
+              class="flex-1 py-6 px-2 sm:px-4 text-3xl sm:text-4xl font-bold rounded-xl transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-accent dark:hover:border-accent hover:bg-white dark:hover:bg-gray-600 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-accent/30"
+              aria-label="Sélectionner le deuxième nombre"
+            >
+              {{ currentItem.secondNumberDisplay }}
             </button>
           </div>
         </div>
