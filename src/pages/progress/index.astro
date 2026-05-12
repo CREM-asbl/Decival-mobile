@@ -1,10 +1,10 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Icon from "../components/common/Icon.astro";
-import Button from "../components/common/Button.astro";
-import ErrorAnalysisPanel from "../components/vue/ErrorAnalysisPanel.vue";
-import ProgressPanel from "../components/vue/ProgressPanel.vue";
-import MrComma from "../components/vue/MrComma.vue";
+import Layout from "../../layouts/Layout.astro";
+import Icon from "../../components/common/Icon.astro";
+import Button from "../../components/common/Button.astro";
+import ErrorAnalysisPanel from "../../components/vue/ErrorAnalysisPanel.vue";
+import ProgressPanel from "../../components/vue/ProgressPanel.vue";
+import MrComma from "../../components/vue/MrComma.vue";
 
 // Note : les données seront chargées côté client via les components Vue
 ---
@@ -26,7 +26,7 @@ import MrComma from "../components/vue/MrComma.vue";
 
 <script>
   // Script minimal pour gérer l'export CSV uniquement
-  import { stats, testHistory } from "../stores/testStore";
+  import { stats, testHistory } from "../../stores/testStore";
 
   function exportResults() {
     const history = testHistory.get();

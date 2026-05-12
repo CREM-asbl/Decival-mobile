@@ -181,8 +181,16 @@
                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                 <span class="text-sm font-bold text-accent">{{ calculateScore(test) }}%</span>
               </div>
-              <div class="text-sm font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
-                {{ getCorrectAnswersCount(test) }}/{{ test.items.length }} vrais
+              <div class="flex items-center gap-2">
+                <a :href="`/progress/feedback/${test.id}`" class="text-xs font-bold text-accent hover:underline flex items-center gap-1 bg-accent/5 px-2 py-1 rounded-lg transition-colors hover:bg-accent/10">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Analyser
+                </a>
+                <div class="text-sm font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
+                  {{ getCorrectAnswersCount(test) }}/{{ test.items.length }} vrais
+                </div>
               </div>
             </div>
           </div>

@@ -68,4 +68,4 @@ Tout agent doit respecter ces règles techniques impératives :
 Les agents doivent mettre à jour cette section après chaque changement majeur pour conserver le contexte entre les sessions.
 
 - **Dernière mise à jour** : 12/05/2026
-- **État actuel** : Nettoyage complet de la logique obsolète basée sur les "règles" (suppression de `old/archived` et des composants Astro legacy). Migration totale vers le système de "Type Mastery" validée. `ProgressPanel.vue` refactorisé et fonctionnel. Stores de tests et de maîtrise harmonisés avec fonctions de réinitialisation propres. Tests unitaires et logic en phase avec la pédagogie FWB. Le workflow Addy's Skill est maintenu rigoureusement.
+- **État actuel** : Migration du feedback enseignant terminée. Le feedback n'est plus affiché dans la modal de fin de test mais dispose de sa propre page dédiée (`/progress/feedback/[id]`) accessible via l'historique dans `ProgressPanel.vue`. Migration de la route `/progress` vers la structure de répertoire (`src/pages/progress/index.astro`) effectuée. Le workflow Addy's Skill est maintenu rigoureusement.

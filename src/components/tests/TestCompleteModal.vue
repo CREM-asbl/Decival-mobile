@@ -6,25 +6,25 @@
         <h3 class="text-2xl font-bold mb-2 dark:text-white">Félicitations !</h3>
         <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testType }}.</p>
         
-        <div class="bg-accent/10 dark:bg-accent/20 rounded-xl p-4 mb-6">
-          <div class="text-lg dark:text-gray-200 mb-1">
-            Score : <span class="font-bold text-accent text-2xl">{{ score }}%</span>
-          </div>
-          <div v-if="gamificationResults" class="flex flex-col gap-2 mt-2">
-            <div class="text-green-600 dark:text-green-400 font-bold animate-pulse">
-              +{{ gamificationResults.xpGained }} XP gagnés !
+        <div class="bg-accent/10 dark:bg-accent/20 rounded-xl p-6 mb-6 border border-accent/20">
+          <div class="text-sm font-bold text-accent uppercase tracking-widest mb-1">Score final</div>
+          <div class="text-5xl font-black text-accent mb-2">{{ score }}%</div>
+          
+          <div v-if="gamificationResults" class="flex flex-col gap-1">
+            <div class="text-green-600 dark:text-green-400 font-black flex items-center justify-center gap-2">
+              <span class="text-xl">✨</span> +{{ gamificationResults.xpGained }} XP
             </div>
-            <div v-if="gamificationResults.leveledUp" class="bg-yellow-400 text-yellow-900 text-sm font-black py-1 px-3 rounded-full self-center uppercase tracking-wider animate-bounce">
+            <div v-if="gamificationResults.leveledUp" class="mt-2 bg-yellow-400 text-yellow-900 text-xs font-black py-1 px-3 rounded-full self-center uppercase tracking-wider animate-bounce shadow-lg">
               NIVEAU SUPÉRIEUR : {{ gamificationResults.newLevel }} !
             </div>
           </div>
         </div>
 
-        <!-- Diagnostic Feedback Section -->
-        <DiagnosticFeedback 
-          v-if="gamificationResults?.teacherFeedback" 
-          :feedback="gamificationResults.teacherFeedback" 
-        />
+        <div v-if="gamificationResults?.teacherFeedback" class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4 mb-6 border border-indigo-100 dark:border-indigo-800/50">
+          <p class="text-sm text-indigo-800 dark:text-indigo-300 font-medium">
+            Une analyse pédagogique de tes résultats est disponible dans ton profil.
+          </p>
+        </div>
 
         <div v-if="gamificationResults?.newlyUnlockedBadges?.length" class="mt-6 mb-6">
           <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Badge débloqué !</p>
@@ -63,7 +63,6 @@ import { watch } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
-import DiagnosticFeedback from '../vue/DiagnosticFeedback.vue';
 
 const props = defineProps({
   show: {

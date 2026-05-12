@@ -1,0 +1,16 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import TeacherFeedbackPage from "../../../components/vue/TeacherFeedbackPage.vue";
+
+export function getStaticPaths() {
+  return []; // On utilise le rendu côté client pour Nanostores, donc SSR ou prerender=false
+}
+
+const { id } = Astro.params;
+---
+
+<Layout title="Feedback Enseignant - Decival" currentPage="progress">
+  <div class="container mx-auto">
+    <TeacherFeedbackPage client:only="vue" testId={id} />
+  </div>
+</Layout>
