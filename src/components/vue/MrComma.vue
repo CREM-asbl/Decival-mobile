@@ -1,34 +1,87 @@
 <template>
-  <div class="mr-comma-container" :class="{ 'animate-bounce': animate, 'has-glow': level >= 35, 'has-aura': level >= 50 }">
-    <!-- RPG Accessories - Cape (Must be first in DOM or use negative z-index relative to stacking context if supported, but safer here) -->
-    <div v-if="level >= 20" class="accessory-cape-container" title="Cape de Héros">
-      <div class="cape-fabric"></div>
-    </div>
+  <div class="mr-comma-container" :class="{ 'animate-bounce': animate }">
+    <!-- Le SVG utilise viewBox pour créer un système de coordonnées absolu et fluide. -->
+    <!-- On utilise 0 0 100 100 pour que le personnage prenne toute la place, et on laisse déborder (overflow) les accessoires. -->
+    <svg viewBox="0 0 100 100" width="100%" height="100%" class="mr-comma-svg">
+      <defs>
+        <!-- Définitions des dégradés -->
+        <linearGradient id="cape-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#dc2626" />
+          <stop offset="100%" stop-color="#991b1b" />
+        </linearGradient>
+        
+        <linearGradient id="lens-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#1f2937" />
+          <stop offset="100%" stop-color="#000000" />
+        </linearGradient>
+        
+        <radialGradient id="aura-gradient" cx="50%" cy="50%" r="50%">
+          <stop offset="50%" stop-color="#fbbf24" stop-opacity="0.3" />
+          <stop offset="100%" stop-color="#fbbf24" stop-opacity="0" />
+        </radialGradient>
+      </defs>
 
-    <!-- Character Base -->
-    <img
-      :src="`/images/mrcomma_v2/${variant}.png`"
-      :alt="altText"
-      class="base-image w-full h-full object-contain"
-    />
-    
-    <!-- Face Accessories -->
-    <div v-if="level >= 10" class="accessory-glasses-container" title="Lunettes d'Érudit">
-      <div class="glasses-frame">
-        <div class="lens lens-left"><div class="shine"></div></div>
-        <div class="bridge"></div>
-        <div class="lens lens-right"><div class="shine"></div></div>
-      </div>
-    </div>
-    <div v-if="level >= 50" class="accessory accessory-crown-gold" title="Couronne d'Or">👑</div>
-    <div v-else-if="level >= 35" class="accessory accessory-crown-silver" title="Couronne d'Argent">👑</div>
-    
-    <!-- Aura effect for legends -->
-    <div v-if="level >= 50" class="aura-sparkles"></div>
+      <!-- 1. Aura (Arrière-plan) -->
+      <g v-if="level >= 50" class="aura-sparkles">
+        <circle cx="50" cy="50" r="55" fill="url(#aura-gradient)" />
+      </g>
+
+      <!-- 2. Cape (Derrière le personnage) -->
+      <g v-if="level >= 20" class="cape-container">
+        <!-- Cape dessinée de X=35 à X=65 en haut, s'élargissant vers le bas -->
+        <path d="M 25 40 L 55 40 L 85 100 L 15 100 Z" fill="url(#cape-gradient)" class="cape-fabric" />
+      </g>
+
+      <!-- 3. Personnage principal (Image PNG) -->
+      <!-- Coordonnées 0 à 100 -->
+      <image 
+        :href="`/images/mrcomma_v2/${variant}.png`" 
+        x="0" 
+        y="0" 
+        width="100" 
+        height="100" 
+        preserveAspectRatio="xMidYMid meet" 
+        class="base-image"
+        :class="{ 'has-glow': level >= 35, 'has-aura': level >= 50 }"
+      />
+
+      <!-- 4. Lunettes -->
+      <!-- positionnées dynamiquement sur l'axe X et Y selon la variante -->
+      <g v-if="level >= 10" class="glasses" :transform="`translate(${glassesPosition.x}, ${glassesPosition.y})`">
+        <!-- Pont -->
+        <rect x="-2" y="-0.5" width="4" height="1.5" :fill="level >= 50 ? '#f59e0b' : '#fbbf24'" />
+        
+        <!-- Verre Gauche -->
+        <g transform="translate(-8, 0) rotate(-3)">
+          <rect x="-5.5" y="-4.5" width="11" height="9" rx="2" 
+                fill="url(#lens-gradient)" 
+                :stroke="level >= 50 ? '#f59e0b' : '#fbbf24'" 
+                stroke-width="1.5" />
+          <!-- Reflet étoile -->
+          <polygon points="-2,-2 0,-3 2,-2 3,0 2,2 0,3 -2,2 -3,0" fill="rgba(255,255,255,0.9)" transform="translate(-2, -1) scale(0.6)" />
+        </g>
+        
+        <!-- Verre Droit -->
+        <g transform="translate(8, 0) rotate(3)">
+          <rect x="-5.5" y="-4.5" width="11" height="9" rx="2" 
+                fill="url(#lens-gradient)" 
+                :stroke="level >= 50 ? '#f59e0b' : '#fbbf24'" 
+                stroke-width="1.5" />
+          <polygon points="-2,-2 0,-3 2,-2 3,0 2,2 0,3 -2,2 -3,0" fill="rgba(255,255,255,0.9)" transform="translate(-2, -1) scale(0.6)" />
+        </g>
+      </g>
+
+      <!-- 5. Couronnes -->      
+      <text v-if="level >= 35" x="38" y="18" font-size="28" text-anchor="middle" class="accessory-crown-silver">👑</text>
+      <text  v-if="level >= 50" x="45" y="18" font-size="28" text-anchor="middle" class="accessory-crown-gold">👑</text>
+      
+    </svg>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   variant: {
     type: String,
@@ -48,177 +101,114 @@ const props = defineProps({
     required: false
   }
 })
+
+// 🎯 LE RÉGLAGE EST ICI : 
+// Permet d'ajuster au pixel près (sur l'échelle 0-100) la position X et Y des lunettes 
+// pour chaque variante d'image PNG. 
+// X: vers la gauche (< 50) ou la droite (> 50)
+// Y: vers le haut (< 30) ou le bas (> 30)
+const glassesPosition = computed(() => {
+  const positions = {
+    default: { x: 42, y: 36 },
+    happy: { x: 42, y: 35 },
+    pointing: { x: 38, y: 35 }, // Plus à gauche (38) et plus bas (38)
+    confused: { x: 42, y: 36 }
+  }
+  return positions[props.variant] || { x: 42, y: 36 }
+})
 </script>
 
 <style scoped>
 .mr-comma-container {
   width: 80px;
   height: 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
-  /* Stacking context root */
-  z-index: 1; 
+  /* Rend visible ce qui déborde (la couronne et la cape) */
+  overflow: visible; 
 }
 
-.base-image {
-  position: relative;
-  z-index: 10;
-}
-
-/* Accessory Positioning */
-.accessory {
-  position: absolute;
-  z-index: 20;
+.mr-comma-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  /* Empêche la sélection de l'image SVG */
   user-select: none;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Kawaii & Star Celebrity Glasses */
-.accessory-glasses-container {
-  position: absolute;
-  top: 26%; 
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 25;
-  pointer-events: none;
-}
-
-.glasses-frame {
-  display: flex;
-  align-items: center;
-  gap: 0px; /* Écart supprimé */
-}
-
-.lens {
-  width: 11px; 
-  height: 9px; 
-  background: linear-gradient(180deg, #1f2937 0%, #000000 100%);
-  border: 1px solid #fbbf24; 
-  border-radius: 2px 2px 4px 4px; 
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-
-.lens-left { 
-  transform: rotate(-3deg); 
-}
-.lens-right { 
-  transform: rotate(3deg); 
-}
-
-.bridge {
-  width: 2px; /* Pont réduit */
-  height: 1px;
-  background: #fbbf24;
-  margin-top: -2px;
-}
-
-/* Star-shaped shine for Kawaii effect */
-.shine {
-  position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 50%;
-  height: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  transform: scale(0.6);
-}
-
-/* Version Dorée Star */
-.has-aura .lens {
-  border-color: #f59e0b;
-  box-shadow: 0 0 5px #fcd34d;
-}
-.has-aura .bridge {
-  background: #f59e0b;
-}
-
-/* Cape Styling - Slightly lower to attach to the body better */
-.accessory-cape-container {
-  position: absolute;
-  top: 55%; 
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px; 
-  height: 25px; 
-  z-index: 5;
-  pointer-events: none;
+/* Animations de la cape */
+.cape-inside {
+  transform-origin: 40px 40px;
+  transform-box: view-box;
+  animation: cape-flutter-inner 2.5s infinite ease-in-out;
 }
 
 .cape-fabric {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
-  clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
-  border-radius: 4px;
-  transform-origin: top center;
-  animation: cape-flutter 3.5s infinite ease-in-out;
+  transform-origin: 40px 40px;
+  transform-box: view-box;
+  animation: cape-flutter 2.5s infinite ease-in-out;
+  filter: drop-shadow(0px 8px 8px rgba(0,0,0,0.5));
 }
 
 @keyframes cape-flutter {
-  0% { transform: scale(1) rotate(0deg) skewX(0deg); clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%); border-radius: 4px; }
-  25% { transform: scale(1.05) rotate(2deg) skewX(2deg); clip-path: polygon(30% 0%, 70% 0%, 95% 95%, 5% 105%); border-radius: 4px 4px 10px 5px; }
-  50% { transform: scale(1) rotate(0deg) skewX(-2deg); clip-path: polygon(30% 0%, 70% 0%, 90% 90%, 10% 95%); border-radius: 4px 4px 5px 10px; }
-  75% { transform: scale(1.05) rotate(-2deg) skewX(1deg); clip-path: polygon(30% 0%, 70% 0%, 105% 100%, 0% 95%); border-radius: 4px 4px 10px 5px; }
-  100% { transform: scale(1) rotate(0deg) skewX(0deg); clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%); border-radius: 4px; }
+  0% { transform: scale(1) rotate(0deg) skewX(0deg) skewY(0deg); }
+  25% { transform: scaleX(1.05) scaleY(1.02) rotate(3deg) skewX(8deg) skewY(2deg); }
+  50% { transform: scale(0.95) rotate(0deg) skewX(-2deg) skewY(0deg); }
+  75% { transform: scaleX(1.05) scaleY(1.02) rotate(-3deg) skewX(-8deg) skewY(-2deg); }
+  100% { transform: scale(1) rotate(0deg) skewX(0deg) skewY(0deg); }
 }
 
+@keyframes cape-flutter-inner {
+  0% { transform: scale(1) rotate(0deg) skewX(0deg); }
+  25% { transform: scale(0.95) rotate(1deg) skewX(3deg); }
+  50% { transform: scale(1) rotate(0deg) skewX(-1deg); }
+  75% { transform: scale(0.95) rotate(-1deg) skewX(-3deg); }
+  100% { transform: scale(1) rotate(0deg) skewX(0deg); }
+}
+
+/* Effets sur les couronnes */
 .accessory-crown-silver {
-  top: -38%; 
-  left: 53%; /* Décalage léger à droite */
-  transform: translateX(-50%) rotate(-5deg);
-  font-size: 2rem;
-  z-index: 20;
   filter: grayscale(1) brightness(1.5) drop-shadow(0 0 5px white);
+  transform-origin: 53px -5px;
+  transform: rotate(-5deg);
 }
 
 .accessory-crown-gold {
-  top: -43%; 
-  left: 53%; /* Décalage léger à droite */
-  transform: translateX(-50%) rotate(5deg);
-  font-size: 2.5rem;
-  z-index: 20;
-  filter: drop-shadow(0 0 10px #fbbf24);
+  filter: drop-shadow(0 0 8px #fbbf24);
+  transform-origin: 53px -10px;
   animation: crown-shimmer 2s infinite alternate;
 }
 
-/* Visual Effects */
-.has-glow .base-image {
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
-}
-
-.has-aura .base-image {
-  filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.9));
-}
-
-.aura-sparkles {
-  position: absolute;
-  inset: -15px;
-  background-image: radial-gradient(circle, #fbbf24 1px, transparent 1px);
-  background-size: 15px 15px;
-  z-index: 2;
-  opacity: 0.5;
-  animation: aura-pulse 3s infinite linear;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
 @keyframes crown-shimmer {
-  from { transform: translateX(-50%) rotate(5deg) scale(1); filter: drop-shadow(0 0 10px #fbbf24); }
-  to { transform: translateX(-50%) rotate(5deg) scale(1.1); filter: drop-shadow(0 0 20px #fcd34d); }
+  from { transform: rotate(5deg) scale(1); }
+  to { transform: rotate(5deg) scale(1.1); filter: drop-shadow(0 0 15px #fcd34d); }
+}
+
+/* Effets sur le personnage */
+.base-image {
+  transition: filter 0.5s ease;
+}
+
+.base-image.has-glow {
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+}
+
+.base-image.has-aura {
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.9));
+}
+
+/* Aura Background */
+.aura-sparkles {
+  animation: aura-pulse 3s infinite linear;
+  transform-origin: 50px 50px;
 }
 
 @keyframes aura-pulse {
-  0% { transform: scale(0.95); opacity: 0.3; }
-  50% { transform: scale(1.1); opacity: 0.6; }
-  100% { transform: scale(0.95); opacity: 0.3; }
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(0.95); opacity: 0.5; }
 }
 
+/* Animation de rebond global */
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
