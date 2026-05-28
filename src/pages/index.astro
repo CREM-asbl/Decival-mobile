@@ -7,23 +7,24 @@ import Layout from "../layouts/Layout.astro";
 const features = [
   {
     icon: "clipboard",
-    title: "Exercices interactifs",
-    description: "Additions, soustractions, multiplications et comparaisons",
+    title: "Évaluations diagnostiques",
+    description:
+      "Évaluez les acquis des élèves et identifiez les notions à consolider",
   },
   {
     icon: "chart",
-    title: "Suivi des progrès",
-    description: "Visualisez votre progression au fil du temps",
+    title: "Diagnostic pour l'enseignant",
+    description: "Repérez les erreurs fréquentes et les besoins d'accompagnement",
   },
   {
     icon: "book",
-    title: "Règles et guides",
-    description: "Apprenez les règles mathématiques essentielles",
+    title: "Lecture pédagogique des résultats",
+    description: "Interprétez les diagnostics pour ajuster les activités en classe",
   },
 ];
 ---
 
-<Layout title="Decival - Exercices de mathématiques" currentPage="home">
+<Layout title="Decival - Évaluation et diagnostic des décimaux" currentPage="home">
   <main class="max-w-lg mx-auto px-4 py-8">
     <section
       class="mb-8 rounded-2xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 shadow-sm dark:border-indigo-900 dark:bg-indigo-900/40"
@@ -39,7 +40,7 @@ const features = [
         </span>
         <div class="flex-1 space-y-1">
           <p class="text-sm font-semibold text-indigo-900 dark:text-indigo-50">
-            Decival évolue encore.
+            Outil d'évaluation diagnostique en évolution continue.
           </p>
           <p class="text-sm text-indigo-900/80 dark:text-indigo-100/80">
             Certaines fonctionnalités peuvent changer. Vos retours nous aident à
@@ -55,10 +56,11 @@ const features = [
     </section>
 
     <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold mb-4">Bienvenue sur Decival</h1>
+      <h1 class="text-3xl font-bold mb-4">Decival, au service du diagnostic pédagogique</h1>
       <p class="text-gray-600 mb-6">
-        Teste tes connaissances sur les décimaux en t’amusant et observe tes
-        progrès
+        Évaluez les élèves sur les décimaux et fournissez à l'enseignant un
+        diagnostic clair pour comprendre les erreurs commises et orienter la
+        remédiation
       </p>
       <div class="flex flex-col items-center justify-center">
         <div class="mb-4">
@@ -70,7 +72,7 @@ const features = [
           />
         </div>
         <a href="/tests" class="no-underline">
-          <Button variant="primary" size="lg"> Commencer les exercices </Button>
+          <Button variant="primary" size="lg"> Lancer l'évaluation diagnostique </Button>
         </a>
       </div>
     </div>
