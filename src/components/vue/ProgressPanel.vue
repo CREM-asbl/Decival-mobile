@@ -150,16 +150,6 @@
       </div>
     </div>
 
-    <!-- Analyses d'erreurs -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8 border border-transparent dark:border-gray-700 overflow-hidden">
-      <div class="p-4 border-b dark:border-gray-700">
-        <h2 class="text-xl font-semibold dark:text-white">Analyses des erreurs</h2>
-      </div>
-      <div class="p-4">
-        <ErrorAnalysisPanel />
-      </div>
-    </div>
-
     <!-- Historique des tests -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-transparent dark:border-gray-700 overflow-hidden">
       <div class="p-4 border-b dark:border-gray-700">
@@ -184,7 +174,8 @@
               <div class="flex items-center gap-2">
                 <a :href="`/progress/feedback/${test.id}`" class="text-xs font-bold text-accent hover:underline flex items-center gap-1 bg-accent/5 px-2 py-1 rounded-lg transition-colors hover:bg-accent/10">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                   Analyser
                 </a>
@@ -210,7 +201,6 @@ import { computed, onMounted } from 'vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery } from '../../stores/typeMasteryStore'
 import { BADGES, unlockedBadges } from '../../stores/badgeStore'
-import ErrorAnalysisPanel from './ErrorAnalysisPanel.vue'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
 
