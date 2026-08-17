@@ -286,7 +286,7 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
   // Pour toutes les autres erreurs, retourner la règle associée à l'item
   return {
     errorType: 'calculation',
-    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.',
+    feedback: 'Ce n\'est pas la bonne réponse. Vérifie ton calcul.',
     rule: item.rule || { // Fallback si la règle n'est pas définie
       id: item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0
         ? 'sub-dec-1'

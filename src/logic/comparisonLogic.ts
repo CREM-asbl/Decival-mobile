@@ -320,7 +320,7 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
   if (!item.errorTypes) {
     return {
       errorType: 'unknown',
-      feedback: 'Vérifiez votre comparaison',
+      feedback: 'Vérifie ta comparaison',
       rule: item.rule || {
         id: 'comp-1',
         name: 'Comparaison de nombres'
@@ -375,7 +375,7 @@ export function analyzeError(item: ComparisonItem, userAnswer: string): {
   // Pour toutes les autres erreurs, retourner un message générique avec la règle associée à l'item
   return {
     errorType: 'comparison',
-    feedback: 'Ce n\'est pas la bonne réponse. Comparez attentivement les nombres.',
+    feedback: 'Ce n\'est pas la bonne réponse. Compare attentivement les nombres.',
     rule: item.rule || { // Fallback si la règle n'est pas définie
       id: (typeof item.firstNumber === 'number' && item.firstNumber % 1 !== 0) ||
         (typeof item.secondNumber === 'number' && item.secondNumber % 1 !== 0)

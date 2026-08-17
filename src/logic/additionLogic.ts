@@ -273,7 +273,7 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
   if (!item.errorTypes) {
     return {
       errorType: 'unknown',
-      feedback: 'Vérifiez votre calcul',
+      feedback: 'Vérifie ton calcul',
       rule: item.rule || {
         id: 'add-1',
         name: 'Addition simple'
@@ -290,7 +290,7 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
     if (powerOfTenError) {
       return {
         errorType: 'powerOfTen',
-        feedback: 'Attention à la position de la virgule dans votre réponse',
+        feedback: 'Attention à la position de la virgule dans ta réponse',
         rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
@@ -332,7 +332,7 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
   // Pour toutes les autres erreurs, retourner la règle associée à l'item
   return {
     errorType: 'calculation',
-    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.',
+    feedback: 'Ce n\'est pas la bonne réponse. Vérifie ton calcul.',
     rule: item.rule || { // Fallback si la règle n'est pas définie pour une raison quelconque
       id: item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0
         ? 'add-dec-1'

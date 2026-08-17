@@ -1,6 +1,6 @@
 <template>
   <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border border-transparent dark:border-gray-700">
-    <h2 class="text-xl font-bold mb-4 text-center dark:text-white">Choisissez un mode</h2>
+    <h2 class="text-xl font-bold mb-4 text-center dark:text-white">Choisis un mode</h2>
     <div class="flex flex-col md:flex-row gap-4 justify-center">
       <button
         @click="selectMode('integer')"

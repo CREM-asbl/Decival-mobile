@@ -247,7 +247,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   if (!item.errorTypes) {
     return {
       errorType: 'unknown',
-      feedback: 'Vérifiez votre calcul',
+      feedback: 'Vérifie ton calcul',
       rule: item.rule || {
         id: 'mult-1',
         name: 'Tables de multiplication'
@@ -266,7 +266,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
     if (powerOfTenError) {
       return {
         errorType: 'powerOfTen',
-        feedback: 'Attention à la position de la virgule dans votre réponse. Comptez bien le nombre de décimales.',
+        feedback: 'Attention à la position de la virgule dans ta réponse. Comptez bien le nombre de décimales.',
         rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
@@ -283,7 +283,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
     if (productError) {
       return {
         errorType: 'decimalProduct',
-        feedback: "Attention à la façon dont vous multipliez les décimales ensemble.",
+        feedback: "Attention à la façon dont tu multiplies les décimales ensemble.",
         rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }
@@ -296,7 +296,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   if (tableError) {
     return {
       errorType: 'multiplicationTable',
-      feedback: 'Révisez votre table de multiplication pour ces nombres.',
+      feedback: 'Révise ta table de multiplication pour ces nombres.',
       rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
     };
   }
@@ -304,7 +304,7 @@ export function analyzeError(item: MultiplicationItem, userAnswer: number): {
   // Pour toutes les autres erreurs, retourner la règle associée à l'item
   return {
     errorType: 'calculation',
-    feedback: 'Ce n\'est pas la bonne réponse. Vérifiez votre calcul.',
+    feedback: 'Ce n\'est pas la bonne réponse. Vérifie ton calcul.',
     rule: item.rule || { // Fallback si la règle n'est pas définie
       id: item.firstNumber % 1 !== 0 || item.secondNumber % 1 !== 0
         ? 'mult-dec-1'

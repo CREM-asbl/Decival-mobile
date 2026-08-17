@@ -21,7 +21,7 @@
     <form v-if="testStarted" @submit.prevent class="mt-8">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto border border-transparent dark:border-gray-700">
         <div class="flex flex-col items-center gap-8 py-4">
-          <p class="text-gray-600 dark:text-gray-400 text-center text-lg mb-2">Sélectionnez le nombre le plus grand, ou le signe égal s'ils sont identiques :</p>
+          <p class="text-gray-600 dark:text-gray-400 text-center text-lg mb-2">Sélectionne le nombre le plus grand, ou le signe égal s'ils sont identiques :</p>
           
           <div class="flex items-center justify-center gap-2 sm:gap-6 w-full max-w-md mx-auto">
             <button
