@@ -1,8 +1,8 @@
 <template>
-  <div class="mr-comma-container" :class="{ 'animate-bounce': animate }">
+  <div class="mr-comma-container" :class="{ 'animate-float': animate }">
     <!-- Le SVG utilise viewBox pour créer un système de coordonnées absolu et fluide. -->
     <!-- On utilise 0 0 100 100 pour que le personnage prenne toute la place, et on laisse déborder (overflow) les accessoires. -->
-    <svg viewBox="0 0 100 100" width="100%" height="100%" class="mr-comma-svg">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" class="mr-comma-svg" role="img" :aria-label="altText">
       <defs>
         <!-- Définitions des dégradés -->
         <linearGradient id="cape-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -28,26 +28,23 @@
 
       <!-- 2. Cape (Derrière le personnage) -->
       <g v-if="level >= 20" class="cape-container">
-        <!-- Cape dessinée de X=35 à X=65 en haut, s'élargissant vers le bas -->
-        <path d="M 25 40 L 55 40 L 85 100 L 15 100 Z" fill="url(#cape-gradient)" class="cape-fabric" />
+        <path :d="capePath" fill="url(#cape-gradient)" class="cape-fabric" />
       </g>
 
       <!-- 3. Personnage principal (Image PNG) -->
-      <!-- Coordonnées 0 à 100 -->
       <image 
         :href="`/images/mrcomma_v2/${variant}.png`" 
-        x="0" 
-        y="0" 
-        width="100" 
-        height="100" 
+        :x="scene.image.x"
+        :y="scene.image.y"
+        :width="scene.image.width"
+        :height="scene.image.height"
         preserveAspectRatio="xMidYMid meet" 
         class="base-image"
         :class="{ 'has-glow': level >= 35, 'has-aura': level >= 50 }"
       />
 
       <!-- 4. Lunettes -->
-      <!-- positionnées dynamiquement sur l'axe X et Y selon la variante -->
-      <g v-if="level >= 10" class="glasses" :transform="`translate(${glassesPosition.x}, ${glassesPosition.y})`">
+      <g v-if="level >= 10" class="glasses" :transform="`translate(${scene.glasses.x}, ${scene.glasses.y})`">
         <!-- Pont -->
         <rect x="-2" y="-0.5" width="4" height="1.5" :fill="level >= 50 ? '#f59e0b' : '#fbbf24'" />
         
@@ -71,9 +68,23 @@
         </g>
       </g>
 
-      <!-- 5. Couronnes -->      
-      <text v-if="level >= 35" x="38" y="18" font-size="28" text-anchor="middle" class="accessory-crown-silver">👑</text>
-      <text  v-if="level >= 50" x="45" y="18" font-size="28" text-anchor="middle" class="accessory-crown-gold">👑</text>
+      <!-- 5. Couronne -->
+      <g
+        v-if="crownTier !== 'none'"
+        :transform="`translate(${scene.crown.x}, ${scene.crown.y})`"
+      >
+        <g class="crown" :class="`crown-${crownTier}`">
+          <path class="crown-shadow" d="M -14 7 L -9 1 L -3 6 L 0 -1 L 3 6 L 9 1 L 14 7 L 14 10 Q 0 14 -14 10 Z" />
+          <path class="crown-body" d="M -14 6 L -10 0 L -3 5 L 0 -2.5 L 3 5 L 10 0 L 14 6 L 14 9.5 Q 0 13 -14 9.5 Z" />
+          <path class="crown-rim" d="M -14 9.5 Q 0 13 14 9.5" />
+          <circle class="crown-jewel jewel-left" cx="-7" cy="4" r="1.8" />
+          <circle class="crown-jewel jewel-center" cx="0" cy="1.5" r="2.1" />
+          <circle class="crown-jewel jewel-right" cx="7" cy="4" r="1.8" />
+          <circle class="crown-pearl" cx="-10" cy="0" r="1.4" />
+          <circle class="crown-pearl" cx="0" cy="-2.5" r="1.6" />
+          <circle class="crown-pearl" cx="10" cy="0" r="1.4" />
+        </g>
+      </g>
       
     </svg>
   </div>
@@ -81,6 +92,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { getCrownTier, getMrCommaScene } from '../../utils/mrCommaScene'
 
 const props = defineProps({
   variant: {
@@ -102,19 +114,12 @@ const props = defineProps({
   }
 })
 
-// 🎯 LE RÉGLAGE EST ICI : 
-// Permet d'ajuster au pixel près (sur l'échelle 0-100) la position X et Y des lunettes 
-// pour chaque variante d'image PNG. 
-// X: vers la gauche (< 50) ou la droite (> 50)
-// Y: vers le haut (< 30) ou le bas (> 30)
-const glassesPosition = computed(() => {
-  const positions = {
-    default: { x: 42, y: 36 },
-    happy: { x: 42, y: 35 },
-    pointing: { x: 38, y: 35 }, // Plus à gauche (38) et plus bas (38)
-    confused: { x: 42, y: 36 }
-  }
-  return positions[props.variant] || { x: 42, y: 36 }
+const scene = computed(() => getMrCommaScene(props.variant))
+const crownTier = computed(() => getCrownTier(props.level))
+
+const capePath = computed(() => {
+  const { topLeft, topRight, bottomRight, bottomLeft } = scene.value.cape
+  return `M ${topLeft.x} ${topLeft.y} L ${topRight.x} ${topRight.y} L ${bottomRight.x} ${bottomRight.y} L ${bottomLeft.x} ${bottomLeft.y} Z`
 })
 </script>
 
@@ -165,22 +170,78 @@ const glassesPosition = computed(() => {
   100% { transform: scale(1) rotate(0deg) skewX(0deg); }
 }
 
-/* Effets sur les couronnes */
-.accessory-crown-silver {
-  filter: grayscale(1) brightness(1.5) drop-shadow(0 0 5px white);
-  transform-origin: 53px -5px;
-  transform: rotate(-5deg);
+/* Effets sur la couronne */
+.crown {
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
-.accessory-crown-gold {
-  filter: drop-shadow(0 0 8px #fbbf24);
-  transform-origin: 53px -10px;
+.crown-shadow {
+  fill: rgba(15, 23, 42, 0.22);
+  transform: translate(1px, 1.5px);
+}
+
+.crown-body,
+.crown-rim {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.crown-silver {
+  filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.45));
+}
+
+.crown-silver .crown-body {
+  fill: #e5e7eb;
+  stroke: #94a3b8;
+  stroke-width: 1.4;
+}
+
+.crown-silver .crown-rim {
+  fill: none;
+  stroke: #cbd5e1;
+  stroke-width: 1.4;
+}
+
+.crown-gold {
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
   animation: crown-shimmer 2s infinite alternate;
 }
 
+.crown-gold .crown-body {
+  fill: #fbbf24;
+  stroke: #d97706;
+  stroke-width: 1.4;
+}
+
+.crown-gold .crown-rim {
+  fill: none;
+  stroke: #fde68a;
+  stroke-width: 1.4;
+}
+
+.crown-jewel {
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 0.7;
+}
+
+.jewel-left,
+.jewel-right {
+  fill: #60a5fa;
+}
+
+.jewel-center {
+  fill: #fb7185;
+}
+
+.crown-pearl {
+  fill: #ffffff;
+  opacity: 0.95;
+}
+
 @keyframes crown-shimmer {
-  from { transform: rotate(5deg) scale(1); }
-  to { transform: rotate(5deg) scale(1.1); filter: drop-shadow(0 0 15px #fcd34d); }
+  from { transform: rotate(-2deg) scale(1); }
+  to { transform: rotate(2deg) scale(1.04); }
 }
 
 /* Effets sur le personnage */
@@ -208,13 +269,13 @@ const glassesPosition = computed(() => {
   100% { transform: scale(0.95); opacity: 0.5; }
 }
 
-/* Animation de rebond global */
-@keyframes bounce {
+/* Animation douce globale */
+@keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
-.animate-bounce {
-  animation: bounce 1.5s ease infinite;
+.animate-float {
+  animation: float 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 </style>
