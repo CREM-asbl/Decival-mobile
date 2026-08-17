@@ -67,10 +67,11 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { analyzeError, createComparisonTest } from '../../logic/comparisonLogic'
 import { useMathTest } from '../../composables/useMathTest'
 import { playSound } from '../../stores/soundStore'
+import { clearActiveElementFocus } from '../../utils/clearActiveElementFocus'
 import TestCompleteModal from '../tests/TestCompleteModal.vue'
 import TestModeSelector from '../tests/TestModeSelector.vue'
 import MrComma from './MrComma.vue'
@@ -130,6 +131,7 @@ function handleAnswer(answer) {
   }
 
   playSound('click')
+  clearActiveElementFocus()
   handleContinue()
 }
 
