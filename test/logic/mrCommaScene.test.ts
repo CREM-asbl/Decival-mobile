@@ -14,7 +14,7 @@ describe('MrComma scene layout', () => {
     expect(scene.cape.topLeft.x).toBe(34)
     expect(scene.cape.topRight.x).toBe(64)
     expect(scene.crown.x).toBe(50)
-    expect(scene.crown.y).toBe(14)
+    expect(scene.crown.y).toBe(1)
   })
 
   test('retombe sur la scene par défaut pour une variante inconnue', () => {

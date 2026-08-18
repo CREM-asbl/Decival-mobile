@@ -175,13 +175,10 @@ export function detectComparisonProfile(items: ComparisonItem[]): ComparisonProf
         break;
       default:
         // Si longueurs différentes, choisit le plus long
-        if (len1 > len2) {
-          if (item.userAnswer === '>') lengthScores[type]++;
-        } else if (len2 > len1) {
-          if (item.userAnswer === '<') lengthScores[type]++;
-        } else {
-          // Si même longueur (devrait pas arriver sauf type 0), correct
-          if (item.isCorrect) lengthScores[type]++;
+        if (len1 > len2 && item.userAnswer === '>') {
+          lengthScores[type]++;
+        } else if (len2 > len1 && item.userAnswer === '<') {
+          lengthScores[type]++;
         }
         break;
     }

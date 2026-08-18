@@ -67,5 +67,5 @@ Tout agent doit respecter ces règles techniques impératives :
 ## 🧠 Mémoire de l'Agent
 Les agents doivent mettre à jour cette section après chaque changement majeur pour conserver le contexte entre les sessions.
 
-- **Dernière mise à jour** : 12/05/2026
-- **État actuel** : Retour de l'interface de comparaison à la version historique : l'utilisateur clique directement sur le nombre le plus grand ou sur un bouton "=" central pour plus de clarté, remplaçant les anciens boutons "<, =, >". Suppression de l'affichage du résultat après chaque réponse dans les tests (diagnostique) pour éviter d'influencer l'élève. Le passage à la question suivante est désormais immédiat. Les sons de feedback (correct/incorrect) ont été remplacés par un son de clic neutre durant le test. Le workflow Addy's Skill est maintenu rigoureusement.
+- **Dernière mise à jour** : 18/08/2026
+- **État actuel** : Nettoyage et correction complets des tests unitaires Vitest. Suppression des faux tests de composants Astro basés sur la lecture de chaînes de caractères (composants migrés vers Vue) et des tests sur le store de règles obsolète (`ruleValidation`, `ruleProgressStore`, `ruleSystem`). Correction du bug de détection de profil `LENGTH` dans `diagnosticProfiles.ts` et ajustement des coordonnées dans `mrCommaScene.test.ts`. 100% des tests passés avec succès (68/68 tests dans 11 fichiers).
