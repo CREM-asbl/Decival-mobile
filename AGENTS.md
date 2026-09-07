@@ -67,5 +67,5 @@ Tout agent doit respecter ces règles techniques impératives :
 ## 🧠 Mémoire de l'Agent
 Les agents doivent mettre à jour cette section après chaque changement majeur pour conserver le contexte entre les sessions.
 
-- **Dernière mise à jour** : 18/08/2026
-- **État actuel** : Nettoyage et correction complets des tests unitaires Vitest. Suppression des faux tests de composants Astro basés sur la lecture de chaînes de caractères (composants migrés vers Vue) et des tests sur le store de règles obsolète (`ruleValidation`, `ruleProgressStore`, `ruleSystem`). Correction du bug de détection de profil `LENGTH` dans `diagnosticProfiles.ts` et ajustement des coordonnées dans `mrCommaScene.test.ts`. 100% des tests passés avec succès (68/68 tests dans 11 fichiers).
+- **Dernière mise à jour** : 07/09/2026
+- **État actuel** : Correction du bug d'affichage/sélection persistante sur mobile dans le test de comparaison. Ajout de la directive `:key="currentQuestionIndex"` sur le conteneur des boutons de réponse de `ComparisonTest.vue` afin de réinitialiser complètement le DOM des boutons entre les questions et éviter la persistance d'états tactiles/focus natifs. 69/69 tests Vitest passés avec succès.

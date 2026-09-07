@@ -23,7 +23,7 @@
         <div class="flex flex-col items-center gap-8 py-4">
           <p class="text-gray-600 dark:text-gray-400 text-center text-lg mb-2">Sélectionne le nombre le plus grand, ou le signe égal s'ils sont identiques :</p>
           
-          <div class="flex items-center justify-center gap-2 sm:gap-6 w-full max-w-md mx-auto">
+          <div :key="currentQuestionIndex" class="flex items-center justify-center gap-2 sm:gap-6 w-full max-w-md mx-auto">
             <button
               type="button"
               @click="handleAnswer('>')"
