@@ -67,6 +67,20 @@ describe('Comparison Logic', () => {
     expect(checkAnswer(items[2], '<')).toBe(false);
   });
 
+  test('generateComparisonItem devrait produire des égalités en mode integer', () => {
+    // Générer beaucoup d'items pour vérifier la distribution
+    const items = Array.from({ length: 200 }, () => generateComparisonItem('integer'));
+    const equalItems = items.filter(item => item.correctAnswer === '=');
+
+    // Vérifier que des égalités sont bien produites
+    expect(equalItems.length).toBeGreaterThan(0);
+
+    // Vérifier la distribution approximative (~30% ± 15%)
+    const ratio = equalItems.length / items.length;
+    expect(ratio).toBeGreaterThanOrEqual(0.15);
+    expect(ratio).toBeLessThanOrEqual(0.45);
+  });
+
   test('evaluateTest devrait calculer le score correctement', () => {
     const test = {
       id: '1',

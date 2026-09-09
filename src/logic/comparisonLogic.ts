@@ -8,13 +8,16 @@ import {
 
 export function generateComparisonItem(mode: 'integer' | 'decimal' = 'integer'): ComparisonItem {
   if (mode === 'integer') {
-    // Générer deux nombres entiers différents pour la comparaison
-    let firstNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
-    let secondNumber;
-
-    do {
-      secondNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
-    } while (secondNumber === firstNumber);
+    const firstNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
+    // ~30% de cas d'égalité : dupliquer le premier nombre
+    const secondNumber = Math.random() < 0.3 ? firstNumber :
+      (() => {
+        let n: number;
+        do {
+          n = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
+        } while (n === firstNumber);
+        return n;
+      })();
 
     return {
       id: nanoid(),
