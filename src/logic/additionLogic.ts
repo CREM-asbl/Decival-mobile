@@ -6,8 +6,10 @@ import {
   DECIMAL_ADDITION_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
+import { generateUniqueItems } from './utils';
 
 export function generateAdditionItem(mode: 'integer' | 'decimal' = 'integer'): AdditionItem {
+    // génération d'items uniques avec la méthode unique
   if (mode === 'integer') {
     // Générer des nombres entiers comme avant
     const firstNumber = Math.floor(Math.random() * INTEGER_RANGE.addition.max);
@@ -209,11 +211,18 @@ export function createAdditionTest(numberOfItems: number = ITEMS_COUNT_ADDITION,
     };
   }
 
+  // Mode entier - Utiliser generateUniqueItems pour éviter les doublons
+  const integerItems = generateUniqueItems(
+    numberOfItems,
+    () => generateAdditionItem('integer'),
+    (item) => `${item.firstNumber}_${item.secondNumber}`
+  );
+
   return {
     id: nanoid(),
     type: 'addition',
     mode,
-    items: Array.from({ length: numberOfItems }, () => generateAdditionItem(mode)),
+    items: integerItems,
     currentItemIndex: 0,
     startTime: new Date(),
     status: 'not_started'
@@ -223,10 +232,15 @@ export function createAdditionTest(numberOfItems: number = ITEMS_COUNT_ADDITION,
 function generateDistributedAdditionItems(count: number): AdditionItem[] {
   const items: AdditionItem[] = [];
   const itemsPerType = Math.floor(count / DECIMAL_ADDITION_TYPES);
-  
+
   for (let type = 0; type < DECIMAL_ADDITION_TYPES; type++) {
-    for (let i = 0; i < itemsPerType; i++) {
-      items.push(generateDecimalAdditionItem(type));
+    const uniqueItems = generateUniqueItems(
+      itemsPerType,
+      () => generateDecimalAdditionItem(type),
+      (item) => `${item.firstNumber}_${item.secondNumber}|${item.type}`
+    );
+    for (const uniqueItem of uniqueItems) {
+      items.push(uniqueItem);
     }
   }
 

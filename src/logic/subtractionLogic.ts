@@ -6,8 +6,10 @@ import {
   DECIMAL_SUBTRACTION_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
+import { generateUniqueItems } from './utils';
 
 export function generateSubtractionItem(mode: 'integer' | 'decimal' = 'integer'): SubtractionItem {
+    // génération d'items uniques avec la méthode unique
   if (mode === 'integer') {
     // Générer des nombres entiers comme avant
     const secondNumber = Math.floor(Math.random() * (INTEGER_RANGE.subtraction.max / 2));
@@ -159,11 +161,18 @@ export function createSubtractionTest(numberOfItems: number = ITEMS_COUNT_SUBTRA
     };
   }
 
+  // Mode entier - Utiliser generateUniqueItems pour éviter les doublons
+  const integerItems = generateUniqueItems(
+    numberOfItems,
+    () => generateSubtractionItem('integer'),
+    (item) => `${item.firstNumber}_${item.secondNumber}`
+  );
+
   return {
     id: nanoid(),
     type: 'subtraction',
     mode,
-    items: Array.from({ length: numberOfItems }, () => generateSubtractionItem(mode)),
+    items: integerItems,
     currentItemIndex: 0,
     startTime: new Date(),
     status: 'not_started'
@@ -173,10 +182,15 @@ export function createSubtractionTest(numberOfItems: number = ITEMS_COUNT_SUBTRA
 function generateDistributedSubtractionItems(count: number): SubtractionItem[] {
   const items: SubtractionItem[] = [];
   const itemsPerType = Math.floor(count / DECIMAL_SUBTRACTION_TYPES);
-  
+
   for (let type = 0; type < DECIMAL_SUBTRACTION_TYPES; type++) {
-    for (let i = 0; i < itemsPerType; i++) {
-      items.push(generateDecimalSubtractionItem(type));
+    const uniqueItems = generateUniqueItems(
+      itemsPerType,
+      () => generateDecimalSubtractionItem(type),
+      (item) => `${item.firstNumber}_${item.secondNumber}|${item.type}`
+    );
+    for (const uniqueItem of uniqueItems) {
+      items.push(uniqueItem);
     }
   }
 

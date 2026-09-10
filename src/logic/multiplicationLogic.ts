@@ -6,8 +6,10 @@ import {
   DECIMAL_MULTIPLICATION_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
+import { generateUniqueItems } from './utils';
 
 export function generateMultiplicationItem(mode: 'integer' | 'decimal' = 'integer'): MultiplicationItem {
+    // génération d'items uniques avec la méthode unique
   if (mode === 'integer') {
     // Nombres entiers simples (1-12) pour l'apprentissage
     const firstNumber = Math.floor(Math.random() * INTEGER_RANGE.multiplication.max) + 1;
@@ -183,11 +185,18 @@ export function createMultiplicationTest(numberOfItems: number = ITEMS_COUNT_MUL
     };
   }
 
+  // Mode entier - Utiliser generateUniqueItems pour éviter les doublons
+  const integerItems = generateUniqueItems(
+    numberOfItems,
+    () => generateMultiplicationItem('integer'),
+    (item) => `${item.firstNumber}_${item.secondNumber}`
+  );
+
   return {
     id: nanoid(),
     type: 'multiplication',
     mode,
-    items: Array.from({ length: numberOfItems }, () => generateMultiplicationItem(mode)),
+    items: integerItems,
     currentItemIndex: 0,
     startTime: new Date(),
     status: 'not_started'
@@ -197,10 +206,15 @@ export function createMultiplicationTest(numberOfItems: number = ITEMS_COUNT_MUL
 function generateDistributedMultiplicationItems(count: number): MultiplicationItem[] {
   const items: MultiplicationItem[] = [];
   const itemsPerType = Math.floor(count / DECIMAL_MULTIPLICATION_TYPES);
-  
+
   for (let type = 0; type < DECIMAL_MULTIPLICATION_TYPES; type++) {
-    for (let i = 0; i < itemsPerType; i++) {
-      items.push(generateDecimalMultiplicationItem(type));
+    const uniqueItems = generateUniqueItems(
+      itemsPerType,
+      () => generateDecimalMultiplicationItem(type),
+      (item) => `${item.firstNumber}_${item.secondNumber}|${item.type}`
+    );
+    for (const uniqueItem of uniqueItems) {
+      items.push(uniqueItem);
     }
   }
 
