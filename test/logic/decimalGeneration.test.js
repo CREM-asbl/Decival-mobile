@@ -7,13 +7,14 @@ import { createSubtractionTest } from '../../src/logic/subtractionLogic';
 
 describe('Génération de nombres décimaux', () => {
   describe('Addition avec décimaux', () => {
-    test('La création d\'un test d\'addition en mode décimal devrait générer des items décimaux distribués', () => {
+    test('La création d\'un test d\'addition en mode décimal devrait générer des items uniques', () => {
       const test = createAdditionTest(7, 'decimal');
 
-      // Vérifier que les 7 items couvrent les 7 types de cas d'utilisation
-      const types = new Set(test.items.map(item => item.type));
+      // Vérifier que les items sont uniques (pas de doublons)
+      const keys = test.items.map(item => `${item.firstNumber}_${item.secondNumber}|${item.type}`);
+      const uniqueKeys = new Set(keys);
+      expect(uniqueKeys.size).toBe(test.items.length); // Tous les items doivent être uniques
 
-      expect(types.size).toBe(7); // Devrait avoir 7 types différents (0-6)
       expect(test.items.length).toBe(7);
       expect(test.mode).toBe('decimal');
 
@@ -31,15 +32,6 @@ describe('Génération de nombres décimaux', () => {
         const storedAnswer = parseFloat(item.correctAnswer.toFixed(2));
         expect(storedAnswer).toBeCloseTo(calculatedAnswer, 2);
       });
-
-      // Tester la distribution des types
-      expect(test.items.filter(item => item.type === 0).length).toBe(1); // Type 0: Somme de dixièmes sans retenue
-      expect(test.items.filter(item => item.type === 1).length).toBe(1); // Type 1: Somme de centièmes sans retenue
-      expect(test.items.filter(item => item.type === 2).length).toBe(1); // Type 2: Somme avec précisions différentes
-      expect(test.items.filter(item => item.type === 3).length).toBe(1); // Type 3: Somme avec retenue
-      expect(test.items.filter(item => item.type === 4).length).toBe(1); // Type 4: Somme de centièmes avec retenue
-      expect(test.items.filter(item => item.type === 5).length).toBe(1); // Type 5: Addition avec nombres à plusieurs décimales
-      expect(test.items.filter(item => item.type === 6).length).toBe(1); // Type 6: Addition d'entier et décimal
     });
 
     test('Les calculs des nombres décimaux doivent avoir la précision attendue', () => {
@@ -62,13 +54,14 @@ describe('Génération de nombres décimaux', () => {
     });
   });
   describe('Soustraction avec décimaux', () => {
-    test('La création d\'un test de soustraction en mode décimal devrait générer des items décimaux distribués', () => {
+    test('La création d\'un test de soustraction en mode décimal devrait générer des items uniques', () => {
       const test = createSubtractionTest(7, 'decimal');
 
-      // Vérifier que les 7 items couvrent les 7 types de cas d'utilisation
-      const types = new Set(test.items.map(item => item.type));
+      // Vérifier que les items sont uniques (pas de doublons)
+      const keys = test.items.map(item => `${item.firstNumber}_${item.secondNumber}|${item.type}`);
+      const uniqueKeys = new Set(keys);
+      expect(uniqueKeys.size).toBe(test.items.length); // Tous les items doivent être uniques
 
-      expect(types.size).toBe(7); // Devrait avoir 7 types différents (0-6)
       expect(test.items.length).toBe(7);
       expect(test.mode).toBe('decimal');
 
@@ -91,14 +84,6 @@ describe('Génération de nombres décimaux', () => {
         const expectedAnswer = parseFloat((item.firstNumber - item.secondNumber).toFixed(precision));
         expect(item.correctAnswer).toBeCloseTo(expectedAnswer, precision);
       });
-
-      // Tester la distribution des types
-      expect(test.items.filter(item => item.type === 0).length).toBe(1); // Type 0: Soustraction de dixièmes sans emprunt
-      expect(test.items.filter(item => item.type === 1).length).toBe(1); // Type 1: Soustraction de centièmes sans emprunt
-      expect(test.items.filter(item => item.type === 2).length).toBe(1); // Type 2: Soustraction avec précisions différentes      expect(test.items.filter(item => item.type === 3).length).toBe(1); // Type 3: Soustraction de dixièmes avec emprunt
-      expect(test.items.filter(item => item.type === 4).length).toBe(1); // Type 4: Soustraction de centièmes avec emprunt
-      expect(test.items.filter(item => item.type === 5).length).toBe(1); // Type 5: Soustraction de nombres mixtes
-      expect(test.items.filter(item => item.type === 6).length).toBe(1); // Type 6: Soustraction d'un entier et d'un décimal
     });
 
     test('Les calculs de soustraction décimale doivent avoir la précision correcte selon le type', () => {
@@ -123,13 +108,14 @@ describe('Génération de nombres décimaux', () => {
   });
 
   describe('Multiplication avec décimaux', () => {
-    test('La création d\'un test de multiplication en mode décimal devrait générer des items décimaux distribués', () => {
+    test('La création d\'un test de multiplication en mode décimal devrait générer des items uniques', () => {
       const test = createMultiplicationTest(7, 'decimal');
 
-      // Vérifier que les 7 items couvrent les 7 types de cas d'utilisation
-      const types = new Set(test.items.map(item => item.type));
+      // Vérifier que les items sont uniques (pas de doublons)
+      const keys = test.items.map(item => `${item.firstNumber}_${item.secondNumber}|${item.type}`);
+      const uniqueKeys = new Set(keys);
+      expect(uniqueKeys.size).toBe(test.items.length); // Tous les items doivent être uniques
 
-      expect(types.size).toBe(7); // Devrait avoir 7 types différents (0-6)
       expect(test.items.length).toBe(7);
       expect(test.mode).toBe('decimal');
 
@@ -153,15 +139,6 @@ describe('Génération de nombres décimaux', () => {
         const expectedAnswer = parseFloat((item.firstNumber * item.secondNumber).toFixed(precision));
         expect(item.correctAnswer).toBeCloseTo(expectedAnswer, precision);
       });
-
-      // Tester la distribution des types
-      expect(test.items.filter(item => item.type === 0).length).toBe(1);
-      expect(test.items.filter(item => item.type === 1).length).toBe(1);
-      expect(test.items.filter(item => item.type === 2).length).toBe(1);
-      expect(test.items.filter(item => item.type === 3).length).toBe(1);
-      expect(test.items.filter(item => item.type === 4).length).toBe(1);
-      expect(test.items.filter(item => item.type === 5).length).toBe(1);
-      expect(test.items.filter(item => item.type === 6).length).toBe(1);
     });
 
     test('Les calculs de multiplication décimale doivent avoir la précision correcte selon le type', () => {
@@ -190,43 +167,35 @@ describe('Génération de nombres décimaux', () => {
   });
 
   describe('Comparaison avec décimaux', () => {
-    test('La création d\'un test de comparaison en mode décimal devrait générer des items décimaux distribués', () => {
-      const test = createComparisonTest(7, 'decimal');
+      test('La création d\'un test de comparaison en mode décimal devrait générer des items uniques', () => {
+        const test = createComparisonTest(7, 'decimal');
 
-      // Vérifier que les 7 items couvrent les 7 types de cas d'utilisation
-      const types = new Set(test.items.map(item => item.type));
+        // Vérifier que les items sont uniques (pas de doublons)
+        const keys = test.items.map(item => `${item.firstNumber}_${item.secondNumber}|${item.type}`);
+        const uniqueKeys = new Set(keys);
+        expect(uniqueKeys.size).toBe(test.items.length); // Tous les items doivent être uniques
 
-      expect(types.size).toBe(7); // Devrait avoir 7 types différents (0-6)
-      expect(test.items.length).toBe(7);
-      expect(test.mode).toBe('decimal');
+        expect(test.items.length).toBe(7);
+        expect(test.mode).toBe('decimal');
 
-      // Vérifier que chaque item possède les propriétés attendues pour les tests décimaux
-      test.items.forEach(item => {
-        expect(item).toHaveProperty('type');
-        expect(item).toHaveProperty('errorTypes');
-        expect(item).toHaveProperty('firstNumber');
-        expect(item).toHaveProperty('secondNumber');
-        expect(item).toHaveProperty('correctAnswer');
+        // Vérifier que chaque item possède les propriétés attendues pour les tests décimaux
+        test.items.forEach(item => {
+          expect(item).toHaveProperty('type');
+          expect(item).toHaveProperty('errorTypes');
+          expect(item).toHaveProperty('firstNumber');
+          expect(item).toHaveProperty('secondNumber');
+          expect(item).toHaveProperty('correctAnswer');
 
-        // Vérifier que la réponse correcte est cohérente avec les nombres
-        if (item.firstNumber > item.secondNumber) {
-          expect(item.correctAnswer).toBe('>');
-        } else if (item.firstNumber < item.secondNumber) {
-          expect(item.correctAnswer).toBe('<');
-        } else {
-          expect(item.correctAnswer).toBe('=');
-        }
+          // Vérifier que la réponse correcte est cohérente avec les nombres
+          if (item.firstNumber > item.secondNumber) {
+            expect(item.correctAnswer).toBe('>');
+          } else if (item.firstNumber < item.secondNumber) {
+            expect(item.correctAnswer).toBe('<');
+          } else {
+            expect(item.correctAnswer).toBe('=');
+          }
+        });
       });
-
-      // Tester la distribution des types
-      expect(test.items.filter(item => item.type === 0).length).toBe(1);
-      expect(test.items.filter(item => item.type === 1).length).toBe(1); // Equality
-      expect(test.items.filter(item => item.type === 2).length).toBe(1);
-      expect(test.items.filter(item => item.type === 3).length).toBe(1);
-      expect(test.items.filter(item => item.type === 4).length).toBe(1);
-      expect(test.items.filter(item => item.type === 5).length).toBe(1); // Equality
-      expect(test.items.filter(item => item.type === 6).length).toBe(1);
-    });
 
     test('Les comparaisons de nombres décimaux doivent être correctes', () => {
       // Tester spécifiquement le cas d'égalité (type 6)

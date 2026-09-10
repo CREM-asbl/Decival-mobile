@@ -6,8 +6,10 @@ import {
   DECIMAL_SUBTRACTION_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
+import { generateUniqueItems } from './utils';
 
 export function generateSubtractionItem(mode: 'integer' | 'decimal' = 'integer'): SubtractionItem {
+    // génération d'items uniques avec la méthode unique
   if (mode === 'integer') {
     // Générer des nombres entiers comme avant
     const secondNumber = Math.floor(Math.random() * (INTEGER_RANGE.subtraction.max / 2));
@@ -159,11 +161,18 @@ export function createSubtractionTest(numberOfItems: number = ITEMS_COUNT_SUBTRA
     };
   }
 
+  // Mode entier - Utiliser generateUniqueItems pour éviter les doublons
+  const integerItems = generateUniqueItems(
+    numberOfItems,
+      (index) => generateSubtractionItem('integer'),
+    (item) => `${item.firstNumber}_${item.secondNumber}`
+  );
+
   return {
     id: nanoid(),
     type: 'subtraction',
     mode,
-    items: Array.from({ length: numberOfItems }, () => generateSubtractionItem(mode)),
+    items: integerItems,
     currentItemIndex: 0,
     startTime: new Date(),
     status: 'not_started'
@@ -171,14 +180,28 @@ export function createSubtractionTest(numberOfItems: number = ITEMS_COUNT_SUBTRA
 }
 
 function generateDistributedSubtractionItems(count: number): SubtractionItem[] {
-  const items: SubtractionItem[] = [];
   const itemsPerType = Math.floor(count / DECIMAL_SUBTRACTION_TYPES);
-  
-  for (let type = 0; type < DECIMAL_SUBTRACTION_TYPES; type++) {
-    for (let i = 0; i < itemsPerType; i++) {
-      items.push(generateDecimalSubtractionItem(type));
+  const remainder = count % DECIMAL_SUBTRACTION_TYPES;
+
+  // Build a shuffled list of types with exact quotas
+  const typeList: number[] = [];
+  for (let i = 0; i < DECIMAL_SUBTRACTION_TYPES; i++) {
+    const quota = itemsPerType + (i < remainder ? 1 : 0);
+    for (let j = 0; j < quota; j++) {
+      typeList.push(i);
     }
   }
+  // Shuffle type list
+  for (let i = typeList.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [typeList[i], typeList[j]] = [typeList[j], typeList[i]];
+  }
+
+  const items = generateUniqueItems(
+    count,
+    (index) => generateDecimalSubtractionItem(typeList[index]),
+    (item) => `${item.firstNumber}_${item.secondNumber}|${item.type}`
+  );
 
   // Shuffle items
   for (let i = items.length - 1; i > 0; i--) {

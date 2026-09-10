@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { generateAdditionItem } from '../../src/logic/additionLogic';
 import { checkAnswer, createAdditionTest, evaluateTest, generateAdditionItem } from '../../src/logic/additionLogic';
 
 describe('Addition Logic', () => {
@@ -12,7 +13,7 @@ describe('Addition Logic', () => {
     expect(item.correctAnswer).toBe(item.firstNumber + item.secondNumber);
   });
 
-  test('createAdditionTest devrait créer un test avec le bon nombre d\'items', () => {
+  test('createAdditionTest devrait créer un test avec le bon nombre d\'items et des items uniques', () => {
     const numberOfItems = 5;
     const test = createAdditionTest(numberOfItems);
 
