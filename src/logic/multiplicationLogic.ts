@@ -188,7 +188,7 @@ export function createMultiplicationTest(numberOfItems: number = ITEMS_COUNT_MUL
   // Mode entier - Utiliser generateUniqueItems pour éviter les doublons
   const integerItems = generateUniqueItems(
     numberOfItems,
-    () => generateMultiplicationItem('integer'),
+      (index) => generateMultiplicationItem('integer'),
     (item) => `${item.firstNumber}_${item.secondNumber}`
   );
 
@@ -204,19 +204,28 @@ export function createMultiplicationTest(numberOfItems: number = ITEMS_COUNT_MUL
 }
 
 function generateDistributedMultiplicationItems(count: number): MultiplicationItem[] {
-  const items: MultiplicationItem[] = [];
   const itemsPerType = Math.floor(count / DECIMAL_MULTIPLICATION_TYPES);
+  const remainder = count % DECIMAL_MULTIPLICATION_TYPES;
 
-  for (let type = 0; type < DECIMAL_MULTIPLICATION_TYPES; type++) {
-    const uniqueItems = generateUniqueItems(
-      itemsPerType,
-      () => generateDecimalMultiplicationItem(type),
-      (item) => `${item.firstNumber}_${item.secondNumber}|${item.type}`
-    );
-    for (const uniqueItem of uniqueItems) {
-      items.push(uniqueItem);
+  // Build a shuffled list of types with exact quotas
+  const typeList: number[] = [];
+  for (let i = 0; i < DECIMAL_MULTIPLICATION_TYPES; i++) {
+    const quota = itemsPerType + (i < remainder ? 1 : 0);
+    for (let j = 0; j < quota; j++) {
+      typeList.push(i);
     }
   }
+  // Shuffle type list
+  for (let i = typeList.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [typeList[i], typeList[j]] = [typeList[j], typeList[i]];
+  }
+
+  const items = generateUniqueItems(
+    count,
+    (index) => generateDecimalMultiplicationItem(typeList[index]),
+    (item) => `${item.firstNumber}_${item.secondNumber}|${item.type}`
+  );
 
   // Shuffle items
   for (let i = items.length - 1; i > 0; i--) {

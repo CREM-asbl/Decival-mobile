@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { generateSubtractionItem } from '../../src/logic/subtractionLogic';
 import { checkAnswer, createSubtractionTest, evaluateTest, generateSubtractionItem } from '../../src/logic/subtractionLogic';
 
 describe('Subtraction Logic', () => {
@@ -14,7 +15,7 @@ describe('Subtraction Logic', () => {
     expect(item.correctAnswer).toBeGreaterThanOrEqual(0);
   });
 
-  test('createSubtractionTest devrait créer un test avec le bon nombre d\'items', () => {
+  test('createSubtractionTest devrait créer un test avec le bon nombre d\'items et des items uniques', () => {
     const numberOfItems = 5;
     const test = createSubtractionTest(numberOfItems);
 

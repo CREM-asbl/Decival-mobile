@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { generateMultiplicationItem } from '../../src/logic/multiplicationLogic';
 import { checkAnswer, createMultiplicationTest, evaluateTest, generateMultiplicationItem } from '../../src/logic/multiplicationLogic';
 
 describe('Multiplication Logic', () => {
@@ -16,7 +17,7 @@ describe('Multiplication Logic', () => {
     expect(item.correctAnswer).toBe(item.firstNumber * item.secondNumber);
   });
 
-  test('createMultiplicationTest devrait créer un test avec le bon nombre d\'items', () => {
+  test('createMultiplicationTest devrait créer un test avec le bon nombre d\'items et des items uniques', () => {
     const numberOfItems = 5;
     const test = createMultiplicationTest(numberOfItems);
 

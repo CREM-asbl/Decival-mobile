@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
  */
 export function generateUniqueItems<T>(
   count: number,
-  generator: () => T,
+  generator: (index: number) => T,
   keyFn: (item: T) => string,
   maxAttempts: number = 1000
 ): T[] {
@@ -20,7 +20,7 @@ export function generateUniqueItems<T>(
       throw new Error(`Impossible de générer ${count} exercices uniques`);
     }
 
-    const item = generator();
+    const item = generator(result.length);
     const key = keyFn(item);
 
     if (!seen.has(key)) {
