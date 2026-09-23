@@ -17,4 +17,17 @@ describe('clearActiveElementFocus focus reset', () => {
 
     expect(document.activeElement).not.toBe(button);
   });
+
+  test('réinitialise la sélection sur changement de question', () => {
+    document.body.innerHTML = '<div id="container"><button id="btn1">></button></div>';
+    const container = document.getElementById('container');
+    const btn = document.getElementById('btn1');
+    btn.focus();
+    expect(document.activeElement).toBe(btn);
+
+    // Simulation de re-mount du container
+    clearActiveElementFocus();
+    container.innerHTML = '<button id="btn2">></button>';
+    expect(document.activeElement).not.toBe(document.getElementById('btn2'));
+  });
 });

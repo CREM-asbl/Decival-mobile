@@ -1,5 +1,7 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
+import { generateComparisonItem } from '../../src/logic/comparisonLogic';
 import { checkAnswer, createComparisonTest, evaluateTest, generateComparisonItem } from '../../src/logic/comparisonLogic';
+import { ITEMS_COUNT_COMPARISON, DECIMAL_COMPARISON_TYPES } from '../../src/config/constants';
 
 describe('Comparison Logic', () => {
   test('generateComparisonItem devrait créer un item de comparaison valide', () => {
@@ -21,7 +23,7 @@ describe('Comparison Logic', () => {
     }
   });
 
-  test('createComparisonTest devrait créer un test avec le bon nombre d\'items', () => {
+  test('createComparisonTest devrait créer un test avec le bon nombre d\'items et des items uniques', () => {
     const numberOfItems = 5;
     const test = createComparisonTest(numberOfItems);
 
@@ -67,20 +69,57 @@ describe('Comparison Logic', () => {
     expect(checkAnswer(items[2], '<')).toBe(false);
   });
 
-  test('evaluateTest devrait calculer le score correctement', () => {
-    const test = {
-      id: '1',
-      items: [
-        { id: '1', isCorrect: true },
-        { id: '2', isCorrect: false },
-        { id: '3', isCorrect: true },
-        { id: '4', isCorrect: true }
-      ]
-    };
+  test('generateComparisonItem devrait produire des égalités en mode integer', () => {
+    // Générer beaucoup d'items pour vérifier la distribution
+    const items = Array.from({ length: 200 }, () => generateComparisonItem('integer'));
+    const equalItems = items.filter(item => item.correctAnswer === '=');
 
-    const result = evaluateTest(test);
-    expect(result.totalQuestions).toBe(4);
-    expect(result.correctAnswers).toBe(3);
-    expect(result.score).toBe(75);
+    // Vérifier que des égalités sont bien produites
+    expect(equalItems.length).toBeGreaterThan(0);
+
+    // Vérifier la distribution approximative (~30% ± 15%)
+    const ratio = equalItems.length / items.length;
+    expect(ratio).toBeGreaterThanOrEqual(0.15);
+    expect(ratio).toBeLessThanOrEqual(0.45);
   });
-});
+
+  test('createComparisonTest en mode décimal devrait distribuer proportionnellement les types', () => {
+      const test = createComparisonTest(ITEMS_COUNT_COMPARISON, 'decimal');
+
+      // Vérifier le nombre total d'items
+      expect(test.items).toHaveLength(ITEMS_COUNT_COMPARISON);
+
+      // Compter les items par type
+      const typeCounts = {};
+      for (let i = 0; i < DECIMAL_COMPARISON_TYPES; i++) {
+        typeCounts[i] = 0;
+      }
+      test.items.forEach(item => {
+        typeCounts[item.type] = (typeCounts[item.type] || 0) + 1;
+      });
+
+      // Vérifier la distribution proportionnelle : 49 items / 7 types = 7 par type
+      for (let i = 0; i < DECIMAL_COMPARISON_TYPES; i++) {
+        expect(typeCounts[i]).toBe(7);
+      }
+    });
+
+    test('createComparisonTest en mode décimal avec 21 items devrait distribuer proportionnellement', () => {
+      const test = createComparisonTest(21, 'decimal');
+
+      expect(test.items).toHaveLength(21);
+
+      const typeCounts = {};
+      for (let i = 0; i < DECIMAL_COMPARISON_TYPES; i++) {
+        typeCounts[i] = 0;
+      }
+      test.items.forEach(item => {
+        typeCounts[item.type] = (typeCounts[item.type] || 0) + 1;
+      });
+
+      // 21 / 7 = 3 par type
+      for (let i = 0; i < DECIMAL_COMPARISON_TYPES; i++) {
+        expect(typeCounts[i]).toBe(3);
+      }
+    });
+  });

@@ -5,16 +5,21 @@ import {
   DECIMAL_COMPARISON_TYPES,
   INTEGER_RANGE
 } from '../config/constants';
+import { generateUniqueItems } from './utils';
 
 export function generateComparisonItem(mode: 'integer' | 'decimal' = 'integer'): ComparisonItem {
+    // génération d'items uniques avec la méthode unique
   if (mode === 'integer') {
-    // Générer deux nombres entiers différents pour la comparaison
-    let firstNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
-    let secondNumber;
-
-    do {
-      secondNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
-    } while (secondNumber === firstNumber);
+    const firstNumber = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
+    // ~30% de cas d'égalité : dupliquer le premier nombre
+    const secondNumber = Math.random() < 0.3 ? firstNumber :
+      (() => {
+        let n: number;
+        do {
+          n = Math.floor(Math.random() * INTEGER_RANGE.comparison.max);
+        } while (n === firstNumber);
+        return n;
+      })();
 
     return {
       id: nanoid(),
@@ -245,7 +250,7 @@ function generateDecimalComparisonItem(forcedType?: number): ComparisonItem {
     correctAnswer,
     type: type,
     errorTypes,
-    rule // Associer directement la règle à l'item
+    rule // Ensure unique comparison items returned.
   };
 }
 
@@ -266,7 +271,11 @@ export function createComparisonTest(numberOfItems: number = ITEMS_COUNT_COMPARI
     id: nanoid(),
     type: 'comparison',
     mode,
-    items: Array.from({ length: numberOfItems }, () => generateComparisonItem(mode)),
+    items: generateUniqueItems(
+      numberOfItems,
+          (index) => generateComparisonItem('integer'),
+      (item) => `${item.firstNumber}|${item.secondNumber}`
+    ),
     currentItemIndex: 0,
     startTime: new Date(),
     status: 'not_started'
@@ -274,14 +283,28 @@ export function createComparisonTest(numberOfItems: number = ITEMS_COUNT_COMPARI
 }
 
 function generateDistributedComparisonItems(count: number): ComparisonItem[] {
-  const items: ComparisonItem[] = [];
   const itemsPerType = Math.floor(count / DECIMAL_COMPARISON_TYPES);
-  
-  for (let type = 0; type < DECIMAL_COMPARISON_TYPES; type++) {
-    for (let i = 0; i < itemsPerType; i++) {
-      items.push(generateDecimalComparisonItem(type));
+  const remainder = count % DECIMAL_COMPARISON_TYPES;
+
+  // Build a shuffled list of types with exact quotas
+  const typeList: number[] = [];
+  for (let i = 0; i < DECIMAL_COMPARISON_TYPES; i++) {
+    const quota = itemsPerType + (i < remainder ? 1 : 0);
+    for (let j = 0; j < quota; j++) {
+      typeList.push(i);
     }
   }
+  // Shuffle type list
+  for (let i = typeList.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [typeList[i], typeList[j]] = [typeList[j], typeList[i]];
+  }
+
+  const items = generateUniqueItems(
+    count,
+    (index) => generateDecimalComparisonItem(typeList[index]),
+    (item) => `${item.firstNumber}_${item.secondNumber}|${item.type}`
+  );
 
   // Shuffle items
   for (let i = items.length - 1; i > 0; i--) {
