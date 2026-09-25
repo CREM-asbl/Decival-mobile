@@ -32,7 +32,12 @@ import Button from "./common/Button.astro";
 </div>
 
 <script>
-  let deferredPrompt;
+  interface BeforeInstallPromptEvent extends Event {
+    prompt: () => Promise<void>;
+    userChoice: Promise<{ outcome: string }>;
+  }
+
+  let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
   const isStandalone = () => {
     return (
@@ -60,7 +65,7 @@ import Button from "./common/Button.astro";
   // Handle browser's beforeinstallprompt
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
-    deferredPrompt = e;
+    deferredPrompt = e as BeforeInstallPromptEvent;
     showPrompt();
   });
 

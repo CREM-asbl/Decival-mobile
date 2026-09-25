@@ -8,7 +8,7 @@ import { completeTest, currentTest } from '../stores/testStore'
  */
 export interface MathTestConfig {
     /** Fonction pour créer un nouveau test */
-    createTest: (numberOfItems: number, mode: 'integer' | 'decimal') => any
+    createTest: (numberOfItems: number | undefined, mode: 'integer' | 'decimal') => any
     /** Fonction pour analyser les erreurs */
     analyzeError: (item: any, userAnswer: any) => any
     /** Type de test pour l'affichage */

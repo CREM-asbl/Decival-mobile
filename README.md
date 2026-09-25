@@ -1,6 +1,15 @@
 Portage du vieux projet Decival accessible dans le dossier ./old pour le rendre mobile.
 Le portage sera en HTML5 dans l'architecture Astro.
 
+[![CI/CD](https://github.com/CREM-asbl/Decival-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/CREM-asbl/Decival-mobile/actions/workflows/ci.yml)
+
+## CI/CD
+- `check` : `pnpm check` (astro check, 0 erreur).
+- `test` : `pnpm test` (Vitest).
+- `build` : `pnpm build`.
+- PR : build de preview + URL auto via intégration GitHub App Hosting.
+- `main` : rollout App Hosting backend `decival` (secret `FIREBASE_TOKEN` requis).
+
 ## Étapes de développement avec l'approche TDD (Test-Driven Development)
 
 ### 1. Analyse préliminaire
