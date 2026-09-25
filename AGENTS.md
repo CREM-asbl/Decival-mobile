@@ -67,5 +67,5 @@ Tout agent doit respecter ces règles techniques impératives :
 ## 🧠 Mémoire de l'Agent
 Les agents doivent mettre à jour cette section après chaque changement majeur pour conserver le contexte entre les sessions.
 
-- **Dernière mise à jour** : 07/09/2026
-- **État actuel** : Correction du bug d'affichage/sélection persistante sur mobile dans le test de comparaison. Ajout de la directive `:key="currentQuestionIndex"` sur le conteneur des boutons de réponse de `ComparisonTest.vue` afin de réinitialiser complètement le DOM des boutons entre les questions et éviter la persistance d'états tactiles/focus natifs. 69/69 tests Vitest passés avec succès.
+- **Dernière mise à jour** : 25/09/2026
+- **État actuel** : Audit CI/CD implémenté. Workflow `ci.yml` réécrit : pnpm (frozen lockfile), jobs `check` (`astro check`, 0 erreur), `test` (81/81 Vitest), `build`, `preview` PR, `deploy-production` via rollout App Hosting backend `decival`. Ajout deps `@astrojs/check` + `typescript@6`, script `pnpm check`, correction 12 erreurs TS pré-existantes (InstallPWA, Toast, useMathTest, index/MrComma).

@@ -22,11 +22,11 @@ const typeStyles = {
 </div>
 
 <script>
-  function createShowToast(toastId) {
-    let timeoutId;
-    let animationFrame;
+  function createShowToast(toastId: string) {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let animationFrame: number | undefined;
 
-    return function (message, duration = 3000) {
+    return function (message: string, duration: number = 3000) {
       const toast = document.getElementById(toastId);
       if (!toast) return;
 
@@ -63,7 +63,7 @@ const typeStyles = {
     toasts.forEach((toast) => {
       const id = toast.id;
       if (id) {
-        window[`showToast_${id}`] = createShowToast(id);
+        (window as unknown as Record<string, unknown>)[`showToast_${id}`] = createShowToast(id);
       }
     });
   });
