@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "check": "astro check"
+    "check": "astro check",
+    "version:bump": "node scripts/bump-version.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.5",

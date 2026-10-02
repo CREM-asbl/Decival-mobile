@@ -8,7 +8,8 @@ Le portage sera en HTML5 dans l'architecture Astro.
 - `test` : `pnpm test` (Vitest).
 - `build` : `pnpm build`.
 - PR : build de preview + URL auto via intégration GitHub App Hosting.
-- `main` : rollout App Hosting backend `decival` (secret `FIREBASE_TOKEN` requis).
+- `main` : bump patch automatique de `package.json`, commit + tag `vX.Y.Z`, puis rollout App Hosting backend `decival` (secret `FIREBASE_TOKEN` requis).
+- Règle de bump : une version stable `X.Y.Z` devient `X.Y.(Z+1)` ; une pré-release `X.Y.Z-suffix` est normalisée en `X.Y.(Z+1)`.
 
 ## Étapes de développement avec l'approche TDD (Test-Driven Development)
 
