@@ -1,5 +1,6 @@
 ---
 import Button from "../../components/common/Button.astro";
+import Icon from "../../components/common/Icon.astro";
 import Layout from "../../layouts/Layout.astro";
 
 const testTypes = [
@@ -7,27 +8,35 @@ const testTypes = [
     id: "comparison",
     title: "Comparaisons",
     description: "Comparer des nombres",
+    icon: "compare",
+    accent: "bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400",
     href: "/tests/comparison",
   },
   {
     id: "addition",
     title: "Additions",
     description: "Pratiquer les additions",
+    icon: "plus",
+    accent: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400",
     href: "/tests/addition",
   },
   {
     id: "subtraction",
     title: "Soustractions",
     description: "Pratiquer les soustractions",
+    icon: "minus",
+    accent: "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
     href: "/tests/subtraction",
   },
   {
     id: "multiplication",
     title: "Multiplications",
     description: "Pratiquer les multiplications",
+    icon: "times",
+    accent: "bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400",
     href: "/tests/multiplication",
   },
-];
+] as const;
 ---
 
 <Layout title="Tests - Decival" currentPage="tests">
@@ -38,12 +47,18 @@ const testTypes = [
       {
         testTypes.map((test) => (
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
-            <h2 class="text-xl font-semibold mb-2 dark:text-white">
-              {test.title}
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-4">
-              {test.description}
-            </p>
+            <div class="flex items-center gap-4 mb-4">
+              <span
+                class={`shrink-0 rounded-xl p-3 ${test.accent}`}
+                aria-hidden="true"
+              >
+                <Icon name={test.icon} class="w-7 h-7" />
+              </span>
+              <h2 class="text-xl font-semibold dark:text-white">
+                {test.title}
+              </h2>
+              <span class="sr-only">{test.description}</span>
+            </div>
             <div class="flex justify-end">
               <a href={test.href} class="no-underline">
                 <Button variant="primary" size="md" type="link">
