@@ -67,5 +67,14 @@ Tout agent doit respecter ces règles techniques impératives :
 ## 🧠 Mémoire de l'Agent
 Les agents doivent mettre à jour cette section après chaque changement majeur pour conserver le contexte entre les sessions.
 
-- **Dernière mise à jour** : 25/09/2026
-- **État actuel** : Audit CI/CD implémenté. Workflow `ci.yml` réécrit : pnpm (frozen lockfile), jobs `check` (`astro check`, 0 erreur), `test` (81/81 Vitest), `build`, `preview` PR, `deploy-production` via rollout App Hosting backend `decival`. Ajout deps `@astrojs/check` + `typescript@6`, script `pnpm check`, correction 12 erreurs TS pré-existantes (InstallPWA, Toast, useMathTest, index/MrComma).
+- **Dernière mise à jour** : 30/09/2026
+- **État actuel (lot 1 carte Trello `2s5fj5bO`)** : Lot rédactionnel livré sur la branche `geoffrey-pliez-lot1-redactionnel-ui`, 3 commits :
+  - `2edcb70` — `tests/index.astro` : les périphrases sous les opérations sont remplacées par une **icône d'opération** (`Icon.astro` étendu : `compare`, `plus`, `minus`, `times`) + `sr-only` conservant le texte accessible. Ajouter une icône impose de toucher **l'union `Props.name` ET la map `icons`**.
+  - `8d670e9` — « types d'opération maîtrisés » → « **sous-compétences maîtrisées** » (`ProgressPanel.vue`, 7 descriptions de `badgeStore.ts`, commentaires `typeMasteryStore.ts`). Vocabulaire enseignant (« type d'item ») laissé intact.
+  - `9341f6c` — tutoiement de l'élève (7 chaînes : `progress/index.astro`, `ProgressChartClient.vue`, `ErrorAnalysisPanel.vue`, `ProgressPanel.vue`, `additionLogic.ts`, `subtractionLogic.ts` ×2). Le vouvoiement restant concerne l'enseignant ou la page Paramètres, hors périmètre.
+  - Validation : `pnpm test` 13 fichiers / 83 tests, `pnpm check` 0 erreur, `pnpm build` OK (warnings pré-existants : `getStaticPaths` ignoré sur `progress/feedback/[id].astro`, import dynamique `firebase/analytics`).
+  - Reporté : refonte de l'encouragement / de l'indicateur de progression → **issue GitHub #5** (`enhancement`), traçabilité commentée sur la carte Trello.
+  - **Investigations (lot 2, aucun code modifié)** : (1) la série d'exercices **n'est pas adaptative** — les items sont générés une seule fois à la création du test (`create*Test` → `generateDistributed*Items`), distribution uniforme par type puis shuffle, sans lecture de l'historique ni de la maîtrise ; la maîtrise n'est consommée qu'en affichage/badges. (2) Il n'existe **pas de route `/profile`** : le profil de facto est **`/progress`** (nav « Progrès », `Footer.astro:14`) ; `TestCompleteModal.vue:25` parle de « ton profil » alors que le lien pointe vers `/progress` → libellé à harmoniser.
+  - **À signaler, hors périmètre** : `test/logic/decimalGeneration.test.js` (« Multiplication avec décimaux > items uniques ») est **flaky** (`expected 0.75 to be close to 0.8`) — aléatoire + incohérence interne l.130-141 vs l.158-168.
+
+- **État antérieur** : Audit CI/CD implémenté. Workflow `ci.yml` réécrit : pnpm (frozen lockfile), jobs `check` (`astro check`, 0 erreur), `test` (81/81 Vitest), `build`, `preview` PR, `deploy-production` via rollout App Hosting backend `decival`. Ajout deps `@astrojs/check` + `typescript@6`, script `pnpm check`, correction 12 erreurs TS pré-existantes (InstallPWA, Toast, useMathTest, index/MrComma).
