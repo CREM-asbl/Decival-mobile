@@ -31,7 +31,7 @@ typeMastery.subscribe(state => {
 });
 
 /**
- * Met à jour la maîtrise d'un type spécifique.
+ * Met à jour la maîtrise d'une sous-compétence spécifique.
  */
 export function updateTypeMastery(category: string, type: number, isMastered: boolean, score: number) {
   const key = `${category}-${type}`;
@@ -55,14 +55,14 @@ export function updateTypeMastery(category: string, type: number, isMastered: bo
 }
 
 /**
- * Retourne le nombre total de types maîtrisés.
+ * Retourne le nombre total de sous-compétences maîtrisées.
  */
 export function getMasteredCount(): number {
   return Object.values(typeMastery.get().mastery).filter(m => m.mastered).length;
 }
 
 /**
- * Vérifie si tous les types d'une catégorie sont maîtrisés.
+ * Vérifie si toutes les sous-compétences d'une catégorie sont maîtrisées.
  */
 export function isCategoryMastered(category: string, totalTypes: number): boolean {
   const masteries = Object.values(typeMastery.get().mastery).filter(m => m.category === category && m.mastered);

@@ -33,43 +33,43 @@ export const BADGES: Record<BadgeId, Badge> = {
     MASTERY_REACHED: {
         id: 'MASTERY_REACHED',
         title: 'Maître',
-        description: 'Maîtrise ton premier type d\'opération',
+        description: 'Maîtrise ta première sous-compétence',
         icon: '👑'
     },
     MASTERY_5: {
         id: 'MASTERY_5',
         title: 'Petit Génie',
-        description: 'Maîtrise 5 types d\'opérations différents',
+        description: 'Maîtrise 5 sous-compétences différentes',
         icon: '🎓'
     },
     MASTERY_10: {
         id: 'MASTERY_10',
         title: 'Savant',
-        description: 'Maîtrise 10 types d\'opérations différents',
+        description: 'Maîtrise 10 sous-compétences différentes',
         icon: '💡'
     },
     MASTERY_ADDITION: {
         id: 'MASTERY_ADDITION',
         title: 'As de l\'Addition',
-        description: 'Maîtrise tous les types d\'addition de base',
+        description: 'Maîtrise toutes les sous-compétences d\'addition de base',
         icon: '➕'
     },
     MASTERY_SUBTRACTION: {
         id: 'MASTERY_SUBTRACTION',
         title: 'Pro de la Soustraction',
-        description: 'Maîtrise tous les types de soustraction de base',
+        description: 'Maîtrise toutes les sous-compétences de soustraction de base',
         icon: '➖'
     },
     MASTERY_MULTIPLICATION: {
         id: 'MASTERY_MULTIPLICATION',
         title: 'Crack de la Multiplication',
-        description: 'Maîtrise tous les types de multiplication de base',
+        description: 'Maîtrise toutes les sous-compétences de multiplication de base',
         icon: '✖️'
     },
     MASTERY_COMPARISON: {
         id: 'MASTERY_COMPARISON',
         title: 'Expert des Comparaisons',
-        description: 'Maîtrise tous les types de comparaison',
+        description: 'Maîtrise toutes les sous-compétences de comparaison',
         icon: '⚖️'
     },
     LEVEL_5: {
