@@ -23,7 +23,7 @@
                 {{ formatQuestion(item, test.type) }}
               </div>
               <div class="text-sm mb-1">
-                <span class="text-gray-700 dark:text-gray-300">Votre réponse : </span>
+                <span class="text-gray-700 dark:text-gray-300">Ta réponse : </span>
                 <span class="font-mono dark:text-white">{{ formatAnswer(item.userAnswer, test.type) }}</span>
               </div>
               <div class="text-sm mb-2">

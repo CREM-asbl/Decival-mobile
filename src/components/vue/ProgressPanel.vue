@@ -346,7 +346,7 @@ function getCorrectAnswersCount(test) {
 
 // Fonction pour réinitialiser les données (pour déboguer)
 function resetData() {
-  if (confirm("Voulez-vous réinitialiser toutes les données de progression ? Cette action est irréversible.")) {
+  if (confirm("Veux-tu réinitialiser toutes les données de progression ? Cette action est irréversible.")) {
     resetTestData()
     resetTypeMastery()
     alert("Données réinitialisées avec succès")
