@@ -325,7 +325,7 @@ export function analyzeError(item: AdditionItem, userAnswer: number): {
     if (carryError) {
       return {
         errorType: 'carry',
-        feedback: "N'oubliez pas la retenue lors de l'addition des décimales",
+        feedback: "N'oublie pas la retenue lors de l'addition des décimales",
         rule: item.rule // Utiliser la règle associée à l'item lors de sa génération
       };
     }

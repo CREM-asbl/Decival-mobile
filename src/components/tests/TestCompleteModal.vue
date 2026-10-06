@@ -22,7 +22,7 @@
 
         <div v-if="gamificationResults?.teacherFeedback" class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4 mb-6 border border-indigo-100 dark:border-indigo-800/50">
           <p class="text-sm text-indigo-800 dark:text-indigo-300 font-medium">
-            Une analyse pédagogique de tes résultats est disponible dans ton profil.
+            Une analyse pédagogique de tes résultats est disponible dans tes progrès.
           </p>
         </div>
 

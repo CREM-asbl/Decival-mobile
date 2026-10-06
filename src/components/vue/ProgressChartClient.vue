@@ -91,7 +91,7 @@
 
     <div v-else class="text-center py-8 text-gray-500">
       <p>Pas assez de données pour afficher la progression.</p>
-      <p class="text-sm mt-2">Continuez à pratiquer pour voir votre évolution!</p>
+      <p class="text-sm mt-2">Continue à pratiquer pour voir ton évolution !</p>
     </div>
   </div>
 </template>

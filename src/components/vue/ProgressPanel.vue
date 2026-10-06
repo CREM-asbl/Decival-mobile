@@ -113,17 +113,17 @@
       </div>
     </div>
 
-    <!-- Maîtrise des concepts -->
+    <!-- Maîtrise des sous-compétences -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8 border border-transparent dark:border-gray-700 overflow-hidden">
       <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-        <h2 class="text-xl font-semibold dark:text-white">Maîtrise des concepts</h2>
+        <h2 class="text-xl font-semibold dark:text-white">Maîtrise des sous-compétences</h2>
         <span class="text-xs font-bold px-2 py-1 bg-green-100 text-green-700 rounded-full">
-          {{ masteredTypes.length }} types maîtrisés
+          {{ masteredTypes.length }} sous-compétences maîtrisées
         </span>
       </div>
       <div class="p-6">
         <p v-if="masteredTypes.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8 bg-gray-50 dark:bg-gray-900/50 rounded-lg border-2 border-dashed dark:border-gray-700">
-          Continue à t'entraîner pour maîtriser tes premiers types d'exercices !
+          Continue à t'entraîner pour maîtriser tes premières sous-compétences !
         </p>
         <div v-else class="space-y-6">
           <div v-for="category in categories" :key="category.id" class="space-y-3">
@@ -346,7 +346,7 @@ function getCorrectAnswersCount(test) {
 
 // Fonction pour réinitialiser les données (pour déboguer)
 function resetData() {
-  if (confirm("Voulez-vous réinitialiser toutes les données de progression ? Cette action est irréversible.")) {
+  if (confirm("Veux-tu réinitialiser toutes les données de progression ? Cette action est irréversible.")) {
     resetTestData()
     resetTypeMastery()
     alert("Données réinitialisées avec succès")

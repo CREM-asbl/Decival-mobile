@@ -280,7 +280,7 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
   if (hasBorrowingError) {
     return {
       errorType: 'borrowing',
-      feedback: "N'oubliez pas de gérer les emprunts correctement dans la soustraction",
+      feedback: "N'oublie pas de gérer les emprunts correctement dans la soustraction",
       rule: item.rule || {
         id: 'sub-2',
         name: 'Soustraction avec emprunt'
@@ -297,7 +297,7 @@ export function analyzeError(item: SubtractionItem, userAnswer: number): {
     if (decimalAlignmentError) {
       return {
         errorType: 'decimalAlignment',
-        feedback: "Assurez-vous d'aligner correctement les virgules avant de soustraire",
+        feedback: "Assure-toi d'aligner correctement les virgules avant de soustraire",
         rule: item.rule || {
           id: 'sub-dec-4',
           name: 'Soustraction avec précisions différentes'
