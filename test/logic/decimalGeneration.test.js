@@ -128,10 +128,11 @@ describe('Génération de nombres décimaux', () => {
         expect(item).toHaveProperty('correctAnswer');
 
         // Vérifier la précision du calcul selon le type
-        let precision = 1;
-        if (item.type === 2 || item.type === 3) {
-          precision = 2;
-        } else if (item.type === 4) {
+        // (même convention que la génération : 0 décimale pour le type 1, 3 pour les types en 0,01)
+        let precision = 2;
+        if (item.type === 1) {
+          precision = 0;
+        } else if (item.type === 3 || item.type === 5) {
           precision = 3;
         }
 
