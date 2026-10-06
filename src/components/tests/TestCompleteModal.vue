@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100 overflow-y-auto">
+  <div v-if="show" class="test-complete-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100 overflow-y-auto">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl p-6 border border-transparent dark:border-gray-700 animate-bounce-in my-8">
       <div class="text-center py-4">
         <div class="text-6xl mb-4">🎉</div>
@@ -125,4 +125,14 @@ watch(() => props.show, (newVal) => {
   }
 });
 </script>
+
+<style scoped>
+/* Célébration volontaire (apparition unique du modal, pill niveau, badges) : animations coupées si prefers-reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+
+  .test-complete-modal * {
+    animation: none;
+  }
+}
+</style>
 
