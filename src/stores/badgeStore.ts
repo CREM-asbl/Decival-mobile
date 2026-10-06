@@ -86,6 +86,14 @@ export const BADGES: Record<BadgeId, Badge> = {
     }
 };
 
+// Source unique des icônes d'opération : les mêmes emoji que les badges de maîtrise
+export const OPERATION_ICONS = {
+    addition: BADGES.MASTERY_ADDITION.icon,
+    subtraction: BADGES.MASTERY_SUBTRACTION.icon,
+    multiplication: BADGES.MASTERY_MULTIPLICATION.icon,
+    comparison: BADGES.MASTERY_COMPARISON.icon
+} as const;
+
 export const unlockedBadges = atom<BadgeId[]>([]);
 
 // Initialisation
