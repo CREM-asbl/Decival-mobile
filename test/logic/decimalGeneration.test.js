@@ -199,26 +199,35 @@ describe('Génération de nombres décimaux', () => {
       });
 
     test('Les comparaisons de nombres décimaux doivent être correctes', () => {
-      // Tester spécifiquement le cas d'égalité (type 6)
+      // Cas d'égalité avec zéros non significatifs : types 1 et 5
       for (let i = 0; i < 10; i++) {
         const test = createComparisonTest(7, 'decimal');
         const equalityItem = test.items.find(item => item.type === 1 || item.type === 5);
 
-        if (equalityItem) {
-          // Pour ce type, les nombres doivent être égaux malgré des formats différents
-          // L'un a un zéro après la virgule, l'autre non
-          expect(equalityItem.correctAnswer).toBe('=');
+        // Avec 7 items répartis sur les 7 types, les types 1 et 5 sont toujours présents
+        expect(equalityItem).toBeDefined();
 
-          // Vérifier que les nombres sont numériquement égaux mais textuellement différents
-          expect(equalityItem.firstNumber).toBeCloseTo(equalityItem.secondNumber, 5);
+        // Les nombres doivent être égaux malgré des affichages différents :
+        // l'un porte un zéro après la virgule, l'autre non
+        expect(equalityItem.correctAnswer).toBe('=');
+        expect(equalityItem.firstNumber).toBeCloseTo(equalityItem.secondNumber, 5);
+        expect(equalityItem.firstNumber).toBe(equalityItem.secondNumber);
 
-          // Vérifier que l'un des nombres a un format avec 0 à droite
-          const firstStr = equalityItem.firstNumber.toString();
-          const secondStr = equalityItem.secondNumber.toString();
+        const firstDisplay = equalityItem.firstNumberDisplay;
+        const secondDisplay = equalityItem.secondNumberDisplay;
 
-          // Au moins un des deux nombres doit avoir une décimale non vide
-          expect(firstStr.includes('.') || secondStr.includes('.')).toBe(true);
-        }
+        // Les deux affichages sont numériquement identiques...
+        expect(parseFloat(firstDisplay.replace(',', '.'))).toBe(equalityItem.firstNumber);
+        expect(parseFloat(secondDisplay.replace(',', '.'))).toBe(equalityItem.secondNumber);
+
+        // ...mais textuellement différents : le zéro final est ajouté d'un seul côté
+        expect(firstDisplay).not.toBe(secondDisplay);
+        expect(firstDisplay === secondDisplay + '0' || secondDisplay === firstDisplay + '0').toBe(true);
+        expect(firstDisplay.endsWith('0')).not.toBe(secondDisplay.endsWith('0'));
+
+        // L'affichage respecte la convention française (virgule décimale)
+        expect(firstDisplay).toContain(',');
+        expect(secondDisplay).toContain(',');
       }
     });
   });
