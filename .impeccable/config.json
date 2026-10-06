@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "bounce-easing",
+        "value": "animate-bounce",
+        "createdAt": "2026-10-06T12:32:56.612Z",
+        "reason": "User confirmed animate-bounce celebration in TestCompleteModal intentional; prefers-reduced-motion guard added"
+      }
+    ]
+  }
+}
