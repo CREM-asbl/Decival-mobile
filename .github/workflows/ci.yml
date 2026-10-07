@@ -113,7 +113,7 @@ jobs:
   deploy-production:
     runs-on: ubuntu-latest
     needs: [check, test, build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'ci: bump version')
+    if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'ci: bump version') }}"
     steps:
       - uses: actions/checkout@v4
         with:
