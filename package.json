@@ -17,31 +17,31 @@
     "version:bump": "node scripts/bump-version.mjs"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.5",
-    "@astrojs/vue": "^7.0.2",
+    "@astrojs/node": "^11.1.6",
+    "@astrojs/vue": "^7.0.3",
     "@heroicons/react": "^2.2.0",
     "@nanostores/vue": "^1.1.0",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.2",
-    "astrojs-service-worker": "^2.0.2",
+    "astro": "^7.3.5",
+    "astrojs-service-worker": "^2.0.3",
     "canvas-confetti": "^1.9.4",
-    "firebase": "^12.18.0",
-    "firebase-admin": "^14.3.0",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.5.0",
     "nanoid": "^6.0.1",
-    "nanostores": "^1.5.3",
-    "nodemailer": "^10.0.1",
+    "nanostores": "^1.5.4",
+    "nodemailer": "^10.0.14",
     "tailwindcss": "^4.3.3",
-    "vue": "^3.5.42"
+    "vue": "^3.5.43"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@testing-library/dom": "^10.4.1",
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@types/canvas-confetti": "^1.9.0",
     "firebase-tools": "^15.32.1",
-    "jsdom": "^30.0.1",
+    "jsdom": "^30.1.1",
     "rimraf": "^6.1.3",
     "typescript": "^6.0.3",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.3"
   }
 }
