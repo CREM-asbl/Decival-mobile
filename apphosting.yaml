@@ -24,4 +24,4 @@ env:
     # Token GitHub (scope repo) pour créer les issues de signalement d'erreurs
     # Ne JAMAIS commit la valeur du token.
     - variable: GITHUB_TOKEN
-      secret: github-token
+      secret: GITHUB_TOKEN
