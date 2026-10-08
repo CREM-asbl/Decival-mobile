@@ -4,6 +4,8 @@ import { initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
 import nodemailer from 'nodemailer';
 
+import { reportBug } from './reportBug';
+
 const app = initializeApp({
   projectId: import.meta.env.FIREBASE_PROJECT_ID,
 })
@@ -147,5 +149,6 @@ export const server = {
       }
     },
   }),
-};
+      reportBug,
+    };
 

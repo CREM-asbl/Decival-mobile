@@ -77,6 +77,46 @@ const { title, currentPage = "home" } = Astro.props;
        * Les sons sont synthétisés via Web Audio API (voir src/utils/soundEffects.ts)
        * donc pas de préchargement de fichiers nécessaire.
        */
+
+      // Signalement automatique des erreurs JS non capturées (inspiré du POC Site-CREM)
+      function fingerprintFor(err: Error | Event | string | null | undefined) {
+              const message = err instanceof Error ? err.message : (err as any)?.message || String(err);
+              const stack = err instanceof Error ? err.stack : (err as any)?.stack || '';
+              const raw = (stack || message) +
+                window.location.pathname + APP_VERSION + navigator.userAgent;
+        let hash = 0;
+        for (let i = 0; i < raw.length; i++) {
+          hash = (hash * 31 + raw.charCodeAt(i)) | 0;
+        }
+        return Math.abs(hash).toString(36);
+      }
+
+      let reportInFlight = false;
+      async function reportError(err: unknown, source: string) {
+        if (reportInFlight) return;
+        reportInFlight = true;
+        const errObj = err instanceof Error ? err : new Error(String(err));
+        try {
+          const { actions } = await import('astro:actions');
+          await actions.reportBug({
+            message: errObj.message || String(err),
+            stack: errObj.stack || "",
+            page: window.location.pathname,
+            appVersion: APP_VERSION,
+            userAgent: navigator.userAgent,
+            fingerprint: fingerprintFor(errObj),
+            context: { source, href: window.location.href, referrer: document.referrer },
+          });
+        } catch {}
+        finally { reportInFlight = false; }
+      }
+
+      window.addEventListener("error", (event: ErrorEvent) => {
+        reportError(event.error || event.message, "window.onerror");
+      });
+      window.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
+        reportError(event.reason, "unhandledrejection");
+      });
     </script>
   </body>
 </html>
