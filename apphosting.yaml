@@ -20,3 +20,8 @@ env:
   # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
   - variable: EMAIL_PASSWORD
     secret: smtp-password
+
+    # Token GitHub (scope repo) pour créer les issues de signalement d'erreurs
+    # Ne JAMAIS commit la valeur du token.
+    - variable: GITHUB_TOKEN
+      secret: GITHUB_TOKEN

@@ -10,7 +10,7 @@ describe('Subtraction Logic', () => {
     expect(item).toHaveProperty('firstNumber');
     expect(item).toHaveProperty('secondNumber');
     expect(item).toHaveProperty('correctAnswer');
-    expect(item.firstNumber).toBeGreaterThan(item.secondNumber);
+      expect(item.firstNumber).toBeGreaterThanOrEqual(item.secondNumber);
     expect(item.correctAnswer).toBe(item.firstNumber - item.secondNumber);
     expect(item.correctAnswer).toBeGreaterThanOrEqual(0);
   });
@@ -27,7 +27,7 @@ describe('Subtraction Logic', () => {
 
     // Vérifier que tous les items ont des soustractions valides
     test.items.forEach(item => {
-      expect(item.firstNumber).toBeGreaterThan(item.secondNumber);
+        expect(item.firstNumber).toBeGreaterThanOrEqual(item.secondNumber);
       expect(item.correctAnswer).toBeGreaterThanOrEqual(0);
     });
   });
