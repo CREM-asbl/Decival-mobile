@@ -137,7 +137,7 @@ jobs:
       - name: Bump version (patch)
         id: version
         run: |
-                NEW_VERSION=$(node scripts/bump-version.mjs patch)
+            NEW_VERSION=$(node scripts/bump-version.mjs patch)
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit version bump
