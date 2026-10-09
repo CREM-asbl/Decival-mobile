@@ -2,7 +2,7 @@
   <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100 overflow-y-auto">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl p-6 border border-transparent dark:border-gray-700 animate-bounce-in my-8">
       <div class="text-center py-4">
-        <div class="text-6xl mb-4">🎉</div>
+        <IconGlyph name="star" class="w-16 h-16 text-yellow-500 mb-4" aria-label="Célébration" />
         <h3 class="text-2xl font-bold mb-2 dark:text-white">Félicitations !</h3>
         <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testType }}.</p>
         
@@ -12,7 +12,7 @@
           
           <div v-if="gamificationResults" class="flex flex-col gap-1">
             <div class="text-green-600 dark:text-green-400 font-black flex items-center justify-center gap-2">
-              <span class="text-xl">✨</span> +{{ gamificationResults.xpGained }} XP
+              <IconGlyph name="flame" class="w-5 h-5" aria-hidden="true" /> +{{ gamificationResults.xpGained }} XP
             </div>
             <div v-if="gamificationResults.leveledUp" class="mt-2 bg-yellow-400 text-yellow-900 text-xs font-black py-1 px-3 rounded-full self-center uppercase tracking-wider animate-bounce shadow-lg">
               NIVEAU SUPÉRIEUR : {{ gamificationResults.newLevel }} !
@@ -29,8 +29,8 @@
         <div v-if="gamificationResults?.newlyUnlockedBadges?.length" class="mt-6 mb-6">
           <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Badge débloqué !</p>
           <div class="flex justify-center gap-2">
-            <div v-for="badgeId in gamificationResults.newlyUnlockedBadges" :key="badgeId" class="text-4xl animate-bounce">
-              {{ getBadgeIcon(badgeId) }}
+            <div v-for="badgeId in gamificationResults.newlyUnlockedBadges" :key="badgeId" class="w-12 h-12 animate-bounce">
+              <IconGlyph :name="getBadgeIconName(badgeId)" class="w-full h-full" :aria-label="getBadgeTitle(badgeId)" />
             </div>
           </div>
         </div>
@@ -63,6 +63,7 @@ import { watch } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
+import IconGlyph from '../common/IconGlyph.vue';
 
 const props = defineProps({
   show: {
@@ -92,8 +93,12 @@ function onRestart() {
   emit('restart');
 }
 
-function getBadgeIcon(id) {
-  return BADGES[id]?.icon || '🏆';
+function getBadgeIconName(id: string) {
+  return BADGES[id as keyof typeof BADGES]?.icon || 'crown';
+}
+
+function getBadgeTitle(id: string) {
+  return BADGES[id as keyof typeof BADGES]?.title || 'Badge';
 }
 
 // Déclencher les confettis quand la modal s'affiche
