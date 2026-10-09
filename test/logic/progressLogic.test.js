@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   clampPercent,
+  getInTestEncouragement,
   getLevelProgress,
   getLevelTitle,
   getProgressEncouragement,
@@ -176,6 +177,28 @@ describe('progressLogic — getTestEncouragement', () => {
     expect(getTestEncouragement('division', 10).message).toContain('10');
     expect(getTestEncouragement('addition', -5).itemCount).toBe(0);
     expect(getTestEncouragement('addition', Number.NaN).itemCount).toBe(0);
+  });
+});
+
+describe('progressLogic — getInTestEncouragement', () => {
+  it('encourage au démarrage', () => {
+    expect(getInTestEncouragement(0, 10)).toBe("C'est parti, tu peux le faire !");
+    expect(getInTestEncouragement(1, 10)).toBe("C'est parti, tu peux le faire !");
+  });
+
+  it('encourage à mi-parcours', () => {
+    expect(getInTestEncouragement(5, 10)).toBe('Bien, continue comme ça !');
+  });
+
+  it('encourage en fin de test', () => {
+    expect(getInTestEncouragement(8, 10)).toBe('Plus que quelques questions, courage !');
+    expect(getInTestEncouragement(10, 10)).toBe('Plus que quelques questions, courage !');
+  });
+
+  it('borne les cas limites', () => {
+    expect(getInTestEncouragement(-3, 10)).toBe("C'est parti, tu peux le faire !");
+    expect(getInTestEncouragement(99, 10)).toBe('Plus que quelques questions, courage !');
+    expect(getInTestEncouragement(0, 0)).toBe("C'est parti, tu peux le faire !");
   });
 });
 

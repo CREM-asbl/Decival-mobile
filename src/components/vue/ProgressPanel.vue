@@ -21,7 +21,7 @@
           </div>
               <div class="h-6 bg-black/20 rounded-full overflow-hidden border border-white/10 shadow-inner p-1" role="progressbar" :aria-valuenow="levelProgress.percent" aria-valuemin="0" aria-valuemax="100" aria-label="Progression vers le niveau suivant" aria-live="polite">
             <div 
-                            class="h-full bg-yellow-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(250,204,21,0.5)] @media (prefers-reduced-motion: reduce) { transition: none; }"
+                            class="h-full bg-yellow-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(250,204,21,0.5)] motion-reduce:transition-none"
                   :style="{ width: `${levelProgress.percent}%` }"
             ></div>
           </div>

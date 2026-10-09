@@ -103,6 +103,17 @@ export function getTestEncouragement(
   };
 }
 
+export function getInTestEncouragement(currentIndex: number, totalItems: number): string {
+  if (!Number.isFinite(currentIndex) || !Number.isFinite(totalItems) || totalItems <= 0) {
+    return "C'est parti, tu peux le faire !";
+  }
+  const clamped = Math.min(Math.max(currentIndex, 0), totalItems);
+  const ratio = clamped / totalItems;
+  if (ratio >= 0.75) return 'Plus que quelques questions, courage !';
+  if (ratio >= 0.4) return 'Bien, continue comme ça !';
+  return "C'est parti, tu peux le faire !";
+}
+
 export function summarizeMastery(mastery: Record<string, { mastered: boolean }> | undefined | null): {
   masteredCount: number;
   totalCount: number;

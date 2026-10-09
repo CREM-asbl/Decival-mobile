@@ -7,15 +7,19 @@
       @modeSelected="startTestWithMode"
     />
 
-    <div v-if="testStarted" class="mb-6">
+    <div v-if="testStarted" class="mb-6 sticky top-[120px] z-30 bg-gray-50/95 dark:bg-gray-900/95 py-2">
       <div class="flex items-center justify-between">
         <div class="text-sm text-gray-600 dark:text-gray-400">
           Question {{ currentQuestionIndex + 1 }}/{{ test.items.length }}
+        </div>
+        <div class="text-sm font-bold text-accent" aria-hidden="true">
+          {{ Math.round(progress) }} %
         </div>
       </div>
       <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mt-2" role="progressbar" :aria-valuenow="Math.round(progress)" aria-valuemin="0" aria-valuemax="100" aria-label="Progression du test" aria-live="polite">
               <div class="bg-accent h-4 rounded-full transition-all duration-300 motion-reduce:transition-none" :style="{ width: `${progress}%` }"></div>
       </div>
+      <p class="text-sm font-medium text-accent mt-2 text-center" aria-live="polite">{{ inTestMessage }}</p>
     </div>
 
     <div v-if="testStarted" class="mt-8">
@@ -96,6 +100,8 @@
 
 <script setup lang="ts">
 import { useMathTest } from '../../composables/useMathTest'
+import { getInTestEncouragement } from '../../logic/progressLogic'
+import { computed } from 'vue'
 import { playSound } from '../../stores/soundStore'
 import { clearActiveElementFocus } from '../../utils/clearActiveElementFocus'
 import TestCompleteModal from '../tests/TestCompleteModal.vue'
@@ -163,6 +169,10 @@ const {
 })
 
 // Expose handleComparisonSubmit for comparison tests
+const inTestMessage = computed(() =>
+  getInTestEncouragement(currentQuestionIndex.value, test.value.items.length)
+)
+
 const handleComparisonSubmit = (answer: string) => {
   if (!['<', '=', '>'].includes(answer)) return
 
