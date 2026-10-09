@@ -6,9 +6,9 @@
         ? 'bg-white dark:bg-gray-800 border-accent shadow-md scale-100' 
         : 'bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 opacity-50 grayscale scale-95'
     ]"
-    :title="badge.description"
+    :aria-label="badge.description"
   >
-    <div class="text-4xl mb-2">{{ badge.icon }}</div>
+    <IconGlyph :name="badge.icon" class="w-10 h-10 mb-2" :aria-label="badge.title" />
     <div class="text-sm font-bold text-center dark:text-white">{{ badge.title }}</div>
     <div v-if="showDescription" class="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
       {{ badge.description }}
@@ -16,10 +16,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import IconGlyph from '../common/IconGlyph.vue';
+import type { Badge } from '../../stores/badgeStore';
+
 defineProps({
   badge: {
-    type: Object,
+    type: Object as () => Badge,
     required: true
   },
   unlocked: {
