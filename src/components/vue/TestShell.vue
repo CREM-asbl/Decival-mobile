@@ -21,7 +21,7 @@
     <div v-if="testStarted" class="mt-8">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto border border-transparent dark:border-gray-700">
         <!-- Operation-specific content slot -->
-        <slot name="question" :currentItem="currentItem" :formatNumber="formatNumber" :test="test" :answer="answer" :inputStep="inputStep" :answerInput="answerInput" :handleSubmit="handleSubmit" :isComparison="isComparison" :handleComparisonSubmit="handleComparisonSubmit">
+        <slot name="question" :currentItem="currentItem" :formatNumber="formatNumber" :test="test" :answer="answer" :inputStep="inputStep" :answerInput="answerInput" :handleSubmit="handleSubmit" :isComparison="isComparison" :handleComparisonSubmit="handleComparisonSubmit" :handleContinue="handleContinueWithFocusReset">
           <!-- Default fallback for non-comparison tests -->
           <div v-if="!isComparison" class="text-center mb-8">
             <div class="text-4xl font-bold mb-6 flex items-center justify-center gap-4 dark:text-white">
@@ -94,12 +94,12 @@
   </div>
 </template>
 
-<script setup>
-import { computed } from 'vue'
+<script setup lang="ts">
 import { useMathTest } from '../../composables/useMathTest'
+import { playSound } from '../../stores/soundStore'
+import { clearActiveElementFocus } from '../../utils/clearActiveElementFocus'
 import TestCompleteModal from '../tests/TestCompleteModal.vue'
 import TestModeSelector from '../tests/TestModeSelector.vue'
-import MrComma from './MrComma.vue'
 
 const props = defineProps({
   testType: {
@@ -177,16 +177,11 @@ const handleComparisonSubmit = (answer: string) => {
   }
 
   playSound('click')
-  handleContinue()
+  handleContinueWithFocusReset()
 }
 
-import { playSound } from '../../stores/soundStore'
-import { clearActiveElementFocus } from '../../utils/clearActiveElementFocus'
-
-// Override handleContinue to clear focus
-const originalHandleContinue = handleContinue
-handleContinue = () => {
+function handleContinueWithFocusReset() {
   clearActiveElementFocus()
-  originalHandleContinue()
+  handleContinue()
 }
 </script>
