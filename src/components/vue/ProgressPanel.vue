@@ -6,42 +6,53 @@
       <div class="flex flex-col sm:flex-row justify-between items-center gap-6 relative z-10">
         <div class="flex items-center gap-4">
           <div class="bg-white/20 p-2 rounded-2xl backdrop-blur-md border border-white/30 shadow-inner">
-            <MrComma :variant="commaVariant" :class="commaClass" :level="testStats.level || 1" class="w-20 h-20" />
+                <MrComma :variant="commaVariant" :class="commaClass" :level="levelProgress.level" class="w-20 h-20" />
           </div>
           <div>
-            <div class="text-white/80 text-sm font-bold uppercase tracking-wider">{{ rpgTitle }}</div>
-            <div class="text-5xl font-black">Niveau {{ testStats.level || 1 }}</div>
+                <div class="text-white/80 text-sm font-bold uppercase tracking-wider">{{ getLevelTitle(levelProgress.level) }}</div>
+                <div class="text-5xl font-black">Niveau {{ levelProgress.level }}</div>
           </div>
         </div>
         
         <div class="flex-1 w-full max-w-md">
           <div class="flex justify-between items-end mb-2">
             <div class="text-sm font-bold uppercase tracking-wider text-white/80">Progression XP</div>
-            <div class="font-black">{{ testStats.xp % 100 }} / 100</div>
+                <div class="font-black">{{ levelProgress.xpIntoLevel }} / {{ levelProgress.xpForNextLevel }}</div>
           </div>
-          <div class="h-4 bg-black/20 rounded-full overflow-hidden border border-white/10 shadow-inner p-1">
+              <div class="h-4 bg-black/20 rounded-full overflow-hidden border border-white/10 shadow-inner p-1" role="progressbar" :aria-valuenow="levelProgress.percent" aria-valuemin="0" aria-valuemax="100" aria-label="Progression vers le niveau suivant">
             <div 
               class="h-full bg-yellow-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(250,204,21,0.5)]"
-              :style="{ width: `${testStats.xp % 100}%` }"
+                  :style="{ width: `${levelProgress.percent}%` }"
             ></div>
           </div>
-          <div class="mt-2 text-xs text-center text-white/60">Encore {{ 100 - (testStats.xp % 100) }} XP pour le niveau {{ (testStats.level || 1) + 1 }} !</div>
+              <div class="mt-2 text-xs text-center text-white/60">
+                <span class="sr-only">Progression : {{ levelProgress.percent }} pour cent</span>
+                Encore {{ levelProgress.remainingXp }} XP pour le niveau {{ levelProgress.nextLevel }} !
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
     <!-- Encouragement section with Mr Comma -->
     <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-indigo-100 dark:border-indigo-800/50">
-      <MrComma :variant="encouragementVariant" animate class="w-16 h-16 sm:w-24 sm:h-24" />
+          <MrComma :variant="progressEncouragement.variant" animate class="w-16 h-16 sm:w-24 sm:h-24" />
       <div>
         <h2 class="text-xl font-bold text-indigo-900 dark:text-indigo-100 mb-2">
-          {{ encouragementTitle }}
+              {{ progressEncouragement.title }}
         </h2>
         <p class="text-indigo-700 dark:text-indigo-300">
-          {{ encouragementMessage }}
-        </p>
-      </div>
-    </div>
+              {{ progressEncouragement.title === "C'est parti !" 
+                ? "Commence ton premier exercice pour voir ta progression s'afficher ici."
+                : progressEncouragement.title === "Excellent travail !"
+                  ? "Tes résultats sont impressionnants. Tu maîtrises vraiment bien les concepts !"
+                  : progressEncouragement.title === "Tu progresses bien !"
+                    ? "Tes efforts portent leurs fruits. Continue comme ça pour atteindre le sommet !"
+                    : progressEncouragement.title === "Continue tes efforts !"
+                      ? "Tu es sur la bonne voie. Pratique encore un peu pour gagner en assurance."
+                      : "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !" }}
+            </p>
+          </div>
+        </div>
 
     <!-- Mes Badges -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-transparent dark:border-gray-700 overflow-hidden">
@@ -118,7 +129,7 @@
       <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-xl font-semibold dark:text-white">Maîtrise des sous-compétences</h2>
         <span class="text-xs font-bold px-2 py-1 bg-green-100 text-green-700 rounded-full">
-          {{ masteredTypes.length }} sous-compétences maîtrisées
+              {{ masterySummary.masteredCount }} / {{ masterySummary.totalCount }} sous-compétences maîtrisées ({{ masterySummary.percent }}%)
         </span>
       </div>
       <div class="p-6">
@@ -203,6 +214,7 @@ import { typeMastery, resetTypeMastery } from '../../stores/typeMasteryStore'
 import { BADGES, unlockedBadges } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, summarizeMastery } from '../../logic/progressLogic'
 
 // Données réactives dérivées des stores
 const testStats = computed(() => stats.get())
@@ -211,6 +223,14 @@ const masteryState = computed(() => typeMastery.get())
 
 const formattedAvgScore = computed(() => `${Math.round(testStats.value.averageScore)}%`)
 const formattedBestScore = computed(() => `${Math.round(testStats.value.bestScore)}%`)
+
+// Nouvelle logique de progression
+const levelProgress = computed(() => getLevelProgress(testStats.value.xp))
+const masterySummary = computed(() => summarizeMastery(masteryState.value.mastery))
+const progressEncouragement = computed(() => getProgressEncouragement({
+  totalTests: testStats.value.totalTests,
+  averageScore: testStats.value.averageScore
+}))
 
 const categories = [
   { id: 'addition', name: 'Addition' },
@@ -276,27 +296,17 @@ function getMasteredTypesByCategory(category) {
 }
 
 const commaVariant = computed(() => {
-  const level = testStats.value.level || 1
+  const level = levelProgress.value.level
   if (level >= 15) return 'happy'
   if (level >= 5) return 'pointing'
   return 'default'
 })
 
 const commaClass = computed(() => {
-  const level = testStats.value.level || 1
+  const level = levelProgress.value.level
   let classes = 'transition-all duration-500 '
   if (level >= 50) classes += 'scale-110'
   return classes
-})
-
-const rpgTitle = computed(() => {
-  const level = testStats.value.level || 1
-  if (level >= 50) return 'Légende Vivante'
-  if (level >= 35) return 'Grand Maître'
-  if (level >= 20) return 'Chevalier Décimal'
-  if (level >= 10) return 'Érudit des Chiffres'
-  if (level >= 5) return 'Apprenti'
-  return 'Novice'
 })
 
 // Récupération des tests récents
@@ -343,39 +353,6 @@ function calculateScore(test) {
 function getCorrectAnswersCount(test) {
   return test.items.filter(item => item.isCorrect).length
 }
-
-// Fonction pour réinitialiser les données (pour déboguer)
-function resetData() {
-  if (confirm("Veux-tu réinitialiser toutes les données de progression ? Cette action est irréversible.")) {
-    resetTestData()
-    resetTypeMastery()
-    alert("Données réinitialisées avec succès")
-  }
-}
-
-// Logique d'encouragement dynamique
-const encouragementVariant = computed(() => {
-  if (testStats.value.averageScore >= 80) return 'happy'
-  if (testStats.value.totalTests === 0) return 'pointing'
-  if (testStats.value.averageScore < 50) return 'pointing'
-  return 'default'
-})
-
-const encouragementTitle = computed(() => {
-  if (testStats.value.totalTests === 0) return "C'est parti !"
-  if (testStats.value.averageScore >= 90) return "Excellent travail !"
-  if (testStats.value.averageScore >= 70) return "Tu progresses bien !"
-  if (testStats.value.averageScore >= 50) return "Continue tes efforts !"
-  return "N'abandonne pas !"
-})
-
-const encouragementMessage = computed(() => {
-  if (testStats.value.totalTests === 0) return "Commence ton premier exercice pour voir ta progression s'afficher ici."
-  if (testStats.value.averageScore >= 90) return "Tes résultats sont impressionnants. Tu maîtrises vraiment bien les concepts !"
-  if (testStats.value.averageScore >= 70) return "Tes efforts portent leurs fruits. Continue comme ça pour atteindre le sommet !"
-  if (testStats.value.averageScore >= 50) return "Tu es sur la bonne voie. Pratique encore un peu pour gagner en assurance."
-  return "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !"
-})
 
 // Initialisation
 onMounted(() => {
