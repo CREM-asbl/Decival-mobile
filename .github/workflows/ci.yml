@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -109,5 +109,49 @@ jobs:
         run: |
           echo "Build OK for PR #${{ github.event.pull_request.number }}."
           echo "La preview URL est fournie automatiquement par l'intégration GitHub du backend App Hosting 'decival'."
-          # Versioning (optionnel, non implémenté) : si un bump version auto est
-          # voulu, le proposer en commentaire de PR plutôt qu'en push/commit bot.
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [check, test, build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Bump version (patch)
+        id: version
+        run: |
+                NEW_VERSION=$(node scripts/bump-version.mjs patch)
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }} [skip ci]"
+          git push
+
+      - name: Deploy to Firebase App Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: decival
+          channelId: live

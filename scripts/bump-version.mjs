@@ -13,7 +13,21 @@ if (!match) {
 }
 
 const [, major, minor, patch] = match;
-const nextVersion = `${major}.${minor}.${Number(patch) + 1}`;
+const bumpType = process.argv[2] || 'patch';
+
+let nextVersion;
+switch (bumpType) {
+  case 'major':
+    nextVersion = `${Number(major) + 1}.0.0`;
+    break;
+  case 'minor':
+    nextVersion = `${major}.${Number(minor) + 1}.0`;
+    break;
+  case 'patch':
+  default:
+    nextVersion = `${major}.${minor}.${Number(patch) + 1}`;
+    break;
+}
 
 packageJson.version = nextVersion;
 fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
