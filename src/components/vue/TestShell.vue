@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mt-2" role="progressbar" :aria-valuenow="Math.round(progress)" aria-valuemin="0" aria-valuemax="100" aria-label="Progression du test" aria-live="polite">
-        <div class="bg-accent h-4 rounded-full transition-all duration-300 @media (prefers-reduced-motion: reduce) { transition: none; }" :style="{ width: `${progress}%` }"></div>
+              <div class="bg-accent h-4 rounded-full transition-all duration-300 motion-reduce:transition-none" :style="{ width: `${progress}%` }"></div>
       </div>
     </div>
 
@@ -46,7 +46,7 @@
               <button
                 type="button"
                 @click="handleComparisonSubmit('>')"
-                class="flex-1 py-6 px-2 sm:px-4 text-3xl sm:text-4xl font-bold rounded-xl transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-accent dark:hover:border-accent hover:bg-white dark:hover:bg-gray-600 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-accent/30 @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }"
+                              class="flex-1 py-6 px-2 sm:px-4 text-3xl sm:text-4xl font-bold rounded-xl transition-all duration-300 motion-reduce:transition-none motion-reduce:transform-none bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-accent dark:hover:border-accent hover:bg-white dark:hover:bg-gray-600 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-accent/30"
                 aria-label="Sélectionner le premier nombre"
               >
                 {{ currentItem.firstNumberDisplay }}
@@ -55,7 +55,7 @@
               <button
                 type="button"
                 @click="handleComparisonSubmit('=')"
-                class="w-14 h-14 sm:w-16 sm:h-16 shrink-0 text-3xl font-mono font-bold rounded-full flex items-center justify-center transition-all duration-300 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-2 border-transparent hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-accent/30 @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }"
+                              class="w-14 h-14 sm:w-16 sm:h-16 shrink-0 text-3xl font-mono font-bold rounded-full flex items-center justify-center transition-all duration-300 motion-reduce:transition-none motion-reduce:transform-none bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-2 border-transparent hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-white hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-accent/30"
                 aria-label="Ils sont égaux"
               >
                 =
@@ -64,7 +64,7 @@
               <button
                 type="button"
                 @click="handleComparisonSubmit('<')"
-                class="flex-1 py-6 px-2 sm:px-4 text-3xl sm:text-4xl font-bold rounded-xl transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-accent dark:hover:border-accent hover:bg-white dark:hover:bg-gray-600 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-accent/30 @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }"
+                              class="flex-1 py-6 px-2 sm:px-4 text-3xl sm:text-4xl font-bold rounded-xl transition-all duration-300 motion-reduce:transition-none motion-reduce:transform-none bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-accent dark:hover:border-accent hover:bg-white dark:hover:bg-gray-600 hover:shadow-lg hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-accent/30"
                 aria-label="Sélectionner le deuxième nombre"
               >
                 {{ currentItem.secondNumberDisplay }}
@@ -76,7 +76,7 @@
         <!-- Submit button for non-comparison tests -->
         <div v-if="!isComparison" class="flex flex-col items-center gap-4 mt-6">
           <button type="submit" :form="`${testType}-form`"
-                class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-transform active:scale-95 @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }">
+                          class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
             Suivant
           </button>
         </div>
