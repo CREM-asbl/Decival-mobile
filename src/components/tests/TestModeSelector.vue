@@ -1,16 +1,16 @@
 <template>
   <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border border-transparent dark:border-gray-700">
     <!-- Encouragement banner before test start -->
-    <div class="mb-6 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/50">
+        <div class="mb-6 p-4 bg-violet-50 dark:bg-violet-900/20 rounded-lg border border-violet-100 dark:border-violet-800/50">
       <div class="flex items-center gap-3">
-        <div class="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg">
-          <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-violet-100 dark:bg-violet-900/30 p-2 rounded-lg">
+              <svg class="w-6 h-6 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div>
-          <h3 class="text-lg font-bold text-indigo-900 dark:text-indigo-100">{{ testEncouragement.title }}</h3>
-          <p class="text-indigo-700 dark:text-indigo-300 text-sm">{{ testEncouragement.message }}</p>
+              <h3 class="text-lg font-bold text-violet-900 dark:text-violet-100">{{ testEncouragement.title }}</h3>
+              <p class="text-violet-700 dark:text-violet-300 text-sm">{{ testEncouragement.message }}</p>
         </div>
       </div>
     </div>

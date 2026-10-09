@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
     <!-- XP and Level Section -->
-    <div class="bg-linear-to-r from-accent to-indigo-600 rounded-2xl p-6 text-white shadow-lg overflow-hidden relative">
+        <div class="bg-linear-to-r from-accent to-violet-600 rounded-2xl p-6 text-white shadow-lg overflow-hidden relative">
       <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
       <div class="flex flex-col sm:flex-row justify-between items-center gap-6 relative z-10">
         <div class="flex items-center gap-4">
@@ -19,9 +19,9 @@
             <div class="text-sm font-bold uppercase tracking-wider text-white/80">Progression XP</div>
                 <div class="font-black">{{ levelProgress.xpIntoLevel }} / {{ levelProgress.xpForNextLevel }}</div>
           </div>
-              <div class="h-4 bg-black/20 rounded-full overflow-hidden border border-white/10 shadow-inner p-1" role="progressbar" :aria-valuenow="levelProgress.percent" aria-valuemin="0" aria-valuemax="100" aria-label="Progression vers le niveau suivant">
+              <div class="h-6 bg-black/20 rounded-full overflow-hidden border border-white/10 shadow-inner p-1" role="progressbar" :aria-valuenow="levelProgress.percent" aria-valuemin="0" aria-valuemax="100" aria-label="Progression vers le niveau suivant" aria-live="polite">
             <div 
-              class="h-full bg-yellow-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(250,204,21,0.5)]"
+                            class="h-full bg-yellow-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(250,204,21,0.5)] @media (prefers-reduced-motion: reduce) { transition: none; }"
                   :style="{ width: `${levelProgress.percent}%` }"
             ></div>
           </div>
@@ -34,13 +34,13 @@
         </div>
 
     <!-- Encouragement section with Mr Comma -->
-    <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-indigo-100 dark:border-indigo-800/50">
+        <div class="bg-violet-50 dark:bg-violet-900/20 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-violet-100 dark:border-violet-800/50">
           <MrComma :variant="progressEncouragement.variant" animate class="w-16 h-16 sm:w-24 sm:h-24" />
       <div>
-        <h2 class="text-xl font-bold text-indigo-900 dark:text-indigo-100 mb-2">
+            <h2 class="text-xl font-bold text-violet-900 dark:text-violet-100 mb-2">
               {{ progressEncouragement.title }}
         </h2>
-        <p class="text-indigo-700 dark:text-indigo-300">
+            <p class="text-violet-700 dark:text-violet-300">
               {{ progressEncouragement.title === "C'est parti !" 
                 ? "Commence ton premier exercice pour voir ta progression s'afficher ici."
                 : progressEncouragement.title === "Excellent travail !"
@@ -84,43 +84,43 @@
           </div>
           <h2 class="text-lg font-semibold dark:text-gray-100">Série</h2>
         </div>
-        <p class="text-3xl font-black text-orange-600 dark:text-orange-400">{{ testStats.dailyStreak || 0 }}j</p>
+        <p class="text-3xl font-black text-amber-600 dark:text-amber-400">{{ testStats.dailyStreak || 0 }}j</p>
       </div>
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-3 mb-2">
-          <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
-            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-violet-100 dark:bg-violet-900/30 p-2 rounded-lg">
+                      <svg class="w-5 h-5 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
           <h2 class="text-lg font-semibold dark:text-gray-100">Tests</h2>
         </div>
-        <p class="text-3xl font-black text-blue-600 dark:text-blue-400">{{ testStats.totalTests }}</p>
+        <p class="text-3xl font-black text-violet-600 dark:text-violet-400">{{ testStats.totalTests }}</p>
       </div>
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-3 mb-2">
-          <div class="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
-            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg">
+                      <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
           <h2 class="text-lg font-semibold dark:text-gray-100">Moyenne</h2>
         </div>
-        <p class="text-3xl font-black text-green-600 dark:text-green-400">{{ formattedAvgScore }}</p>
+        <p class="text-3xl font-black text-emerald-600 dark:text-emerald-400">{{ formattedAvgScore }}</p>
       </div>
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-3 mb-2">
-          <div class="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-lg">
-            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-amber-100 dark:bg-amber-900/30 p-2 rounded-lg">
+            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
           <h2 class="text-lg font-semibold dark:text-gray-100">Record</h2>
         </div>
-        <p class="text-3xl font-black text-yellow-600 dark:text-yellow-400">{{ formattedBestScore }}</p>
+        <p class="text-3xl font-black text-amber-600 dark:text-amber-400">{{ formattedBestScore }}</p>
       </div>
     </div>
 
@@ -128,31 +128,31 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8 border border-transparent dark:border-gray-700 overflow-hidden">
       <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-xl font-semibold dark:text-white">Maîtrise des sous-compétences</h2>
-        <span class="text-xs font-bold px-2 py-1 bg-green-100 text-green-700 rounded-full">
+        <span class="text-xs font-bold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">
               {{ masterySummary.masteredCount }} / {{ masterySummary.totalCount }} sous-compétences maîtrisées ({{ masterySummary.percent }}%)
         </span>
       </div>
       <div class="p-6">
-        <p v-if="masteredTypes.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8 bg-gray-50 dark:bg-gray-900/50 rounded-lg border-2 border-dashed dark:border-gray-700">
+        <p v-if="masteredTypes.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8 bg-violet-50 dark:bg-violet-900/20 rounded-lg border-2 border-dashed dark:border-violet-800/50">
           Continue à t'entraîner pour maîtriser tes premières sous-compétences !
         </p>
         <div v-else class="space-y-6">
           <div v-for="category in categories" :key="category.id" class="space-y-3">
-            <h3 class="font-black text-sm uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
+            <h3 class="font-black text-sm uppercase tracking-widest text-violet-500 dark:text-violet-400 flex items-center gap-2">
               {{ category.name }}
-              <span class="h-px flex-1 bg-gray-100 dark:bg-gray-700"></span>
+              <span class="h-px flex-1 bg-violet-100 dark:bg-violet-800/50"></span>
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div v-for="type in getMasteredTypesByCategory(category.id)" :key="type.type" 
-                   class="border dark:border-gray-700 rounded-xl p-3 bg-gray-50 dark:bg-gray-900/30 flex items-center gap-3">
-                <div class="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full shrink-0">
-                  <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="border dark:border-gray-700 rounded-xl p-3 bg-violet-50 dark:bg-violet-900/20 flex items-center gap-3">
+                <div class="bg-emerald-100 dark:bg-emerald-900/30 p-1.5 rounded-full shrink-0">
+                                  <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <div>
                   <h4 class="font-bold dark:text-white text-sm">{{ getTypeLabel(category.id, type.type) }}</h4>
-                  <p class="text-xs text-gray-500">Dernier score : {{ Math.round(type.lastScore) }}%</p>
+                  <p class="text-xs text-violet-500 dark:text-violet-400">Dernier score : {{ Math.round(type.lastScore) }}%</p>
                 </div>
               </div>
             </div>
@@ -167,18 +167,18 @@
         <h2 class="text-xl font-semibold dark:text-white">Historique des tests</h2>
       </div>
       <div class="p-4">
-        <p v-if="recentTests.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8">
+        <p v-if="recentTests.length === 0" class="text-violet-500 dark:text-violet-400 text-center py-8">
           Aucun test complété pour le moment
         </p>
         <div v-else class="space-y-4">
-          <div v-for="test in recentTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-900/30">
+          <div v-for="test in recentTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-violet-50 dark:hover:bg-violet-900/20">
             <div class="flex items-center justify-between mb-2">
               <div class="font-bold dark:text-white text-lg">{{ getTestTypeName(test.type) }}</div>
-              <div class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
+              <div class="text-xs font-medium text-violet-500 dark:text-violet-400 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="text-sm text-gray-500">Mode: {{ getModeName(test.mode) }}</span>
+                <span class="text-sm text-violet-500 dark:text-violet-400">Mode: {{ getModeName(test.mode) }}</span>
                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                 <span class="text-sm font-bold text-accent">{{ calculateScore(test) }}%</span>
               </div>
@@ -190,7 +190,7 @@
                   </svg>
                   Analyser
                 </a>
-                <div class="text-sm font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
+                <div class="text-sm font-medium px-2 py-0.5 bg-violet-100 dark:bg-violet-900/30 rounded text-violet-700 dark:text-violet-300">
                   {{ getCorrectAnswersCount(test) }}/{{ test.items.length }} vrais
                 </div>
               </div>
@@ -201,7 +201,7 @@
     </div>
 
     <!-- Bouton pour réinitialiser les données (pour déboguer) -->
-    <button @click="resetData" class="px-6 py-3 mt-6 text-gray-400 hover:text-red-500 text-sm font-medium transition-colors self-center">
+    <button @click="resetData" class="px-6 py-3 mt-6 text-violet-400 hover:text-red-500 text-sm font-medium transition-colors self-center">
       Réinitialiser ma progression
     </button>
   </div>

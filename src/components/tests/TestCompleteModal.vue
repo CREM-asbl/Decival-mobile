@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="test-complete-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100 overflow-y-auto">
+  <dialog ref="dialogRef" v-if="show" class="test-complete-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100 overflow-y-auto" @close="onClose">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl p-6 border border-transparent dark:border-gray-700 animate-bounce-in my-8">
       <div class="text-center py-4">
         <div class="text-6xl mb-4">🎉</div>
@@ -40,26 +40,26 @@
         </p>
       </div>
       <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 mt-6">
-        <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium transition-transform active:scale-95">
+        <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium transition-transform active:scale-95 @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }">
           Recommencer
         </button>
         <a href="/progress" class="no-underline w-full sm:w-auto">
-          <button class="w-full px-6 py-3 bg-gray-500 dark:bg-gray-600 text-white rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 font-medium transition-transform active:scale-95">
+                  <button class="w-full px-6 py-3 bg-gray-500 dark:bg-gray-600 text-white rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 font-medium transition-transform active:scale-95 @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }">
             Voir progrès
           </button>
         </a>
         <a href="/tests" class="no-underline w-full sm:w-auto">
-          <button class="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95">
+                  <button class="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95 @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }">
             Fermer
           </button>
         </a>
       </div>
     </div>
-  </div>
+  </dialog>
 </template>
 
 <script setup>
-import { watch } from 'vue';
+import { watch, onMounted, ref } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
@@ -92,9 +92,33 @@ function onRestart() {
   emit('restart');
 }
 
+function onClose() {
+  emit('restart'); // or just close without action
+}
+
 function getBadgeIcon(id) {
   return BADGES[id]?.icon || '🏆';
 }
+
+// Focus management for dialog
+const dialogRef = ref(null)
+
+onMounted(() => {
+  if (dialogRef.value && props.show) {
+    dialogRef.value.showModal()
+  }
+})
+
+watch(() => props.show, (newVal) => {
+  if (newVal && dialogRef.value) {
+    dialogRef.value.showModal()
+    // Focus first focusable element
+    const firstButton = dialogRef.value.querySelector('button')
+    if (firstButton) firstButton.focus()
+  } else if (!newVal && dialogRef.value) {
+    dialogRef.value.close()
+  }
+})
 
 // Déclencher les confettis quand la modal s'affiche
 watch(() => props.show, (newVal) => {
