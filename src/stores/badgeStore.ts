@@ -1,6 +1,6 @@
 import { atom } from 'nanostores';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
-import { ICON_PATHS, type IconName } from '../config/icons';
+import type { IconName } from '../config/icons';
 
 export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'MASTERY_5' | 'MASTERY_10' | 'MASTERY_ADDITION' | 'MASTERY_SUBTRACTION' | 'MASTERY_MULTIPLICATION' | 'MASTERY_COMPARISON' | 'LEVEL_5' | 'LEVEL_50';
 
@@ -34,43 +34,43 @@ export const BADGES: Record<BadgeId, Badge> = {
     MASTERY_REACHED: {
         id: 'MASTERY_REACHED',
         title: 'Maître',
-        description: 'Maîtrise ta première sous-compétence',
+        description: 'Maîtrise ton premier type d\'opération',
         icon: 'crown'
     },
     MASTERY_5: {
         id: 'MASTERY_5',
         title: 'Petit Génie',
-        description: 'Maîtrise 5 sous-compétences différentes',
+        description: 'Maîtrise 5 types d\'opérations différents',
         icon: 'graduation'
     },
     MASTERY_10: {
         id: 'MASTERY_10',
         title: 'Savant',
-        description: 'Maîtrise 10 sous-compétences différentes',
+        description: 'Maîtrise 10 types d\'opérations différents',
         icon: 'lightbulb'
     },
     MASTERY_ADDITION: {
         id: 'MASTERY_ADDITION',
         title: 'As de l\'Addition',
-        description: 'Maîtrise toutes les sous-compétences d\'addition de base',
+        description: 'Maîtrise tous les types d\'addition de base',
         icon: 'plus'
     },
     MASTERY_SUBTRACTION: {
         id: 'MASTERY_SUBTRACTION',
         title: 'Pro de la Soustraction',
-        description: 'Maîtrise toutes les sous-compétences de soustraction de base',
+        description: 'Maîtrise tous les types de soustraction de base',
         icon: 'minus'
     },
     MASTERY_MULTIPLICATION: {
         id: 'MASTERY_MULTIPLICATION',
         title: 'Crack de la Multiplication',
-        description: 'Maîtrise toutes les sous-compétences de multiplication de base',
+        description: 'Maîtrise tous les types de multiplication de base',
         icon: 'times'
     },
     MASTERY_COMPARISON: {
         id: 'MASTERY_COMPARISON',
         title: 'Expert des Comparaisons',
-        description: 'Maîtrise toutes les sous-compétences de comparaison',
+        description: 'Maîtrise tous les types de comparaison',
         icon: 'scale'
     },
     LEVEL_5: {

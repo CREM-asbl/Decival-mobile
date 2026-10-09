@@ -2,7 +2,7 @@
 import Button from "../../components/common/Button.astro";
 import Layout from "../../layouts/Layout.astro";
 import { OPERATION_ICONS } from "../../stores/badgeStore";
-import { ICON_PATHS, type IconName } from "../../config/icons";
+import { ICON_PATHS } from "../../config/icons";
 
 const testTypes = [
   {
@@ -51,8 +51,14 @@ const testTypes = [
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 aria-hidden="true"
-                set:html={ICON_PATHS[test.icon]}
-              />
+              >
+                <path
+                  d={ICON_PATHS[test.icon]}
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
               <h2 class="text-xl font-semibold dark:text-white">
                 {test.title}
               </h2>
