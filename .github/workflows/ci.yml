@@ -15,7 +15,7 @@ concurrency:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '10'
+  PNPM_VERSION: '11'
 
 jobs:
   check:
@@ -149,9 +149,10 @@ jobs:
           git push
 
       - name: Deploy to Firebase App Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+        uses: FirebaseExtended/app-hosting-deploy@v1
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: decival
+          backendId: decival
           channelId: live
