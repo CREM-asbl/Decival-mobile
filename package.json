@@ -25,7 +25,7 @@
     "astro": "^7.3.8",
     "astrojs-service-worker": "^2.0.3",
     "canvas-confetti": "^1.9.4",
-    "firebase": "^12.19.0",
+    "firebase": "^13.0.0",
     "firebase-admin": "^14.5.0",
     "nanoid": "^6.0.2",
     "nanostores": "^1.5.5",
