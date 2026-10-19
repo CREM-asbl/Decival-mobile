@@ -187,6 +187,9 @@ export function useMathTest(config: MathTestConfig) {
             const numberStr = cleanNumber.toString()
             const decimalPart = numberStr.includes('.') ? numberStr.split('.')[1] : ''
 
+            // Nombre entier : pas de décimale forcée (ex: 6 + 0,1, pas 6,0 + 0,1)
+            if (decimalPart.length === 0) return cleanNumber
+
             // Au moins une décimale pour les nombres décimaux
             const precision = Math.max(1, decimalPart.length)
 
