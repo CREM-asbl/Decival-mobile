@@ -1,7 +1,7 @@
 <template>
-  <dialog ref="dialogRef" v-if="show" class="test-complete-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-100 overflow-y-auto" @close="onClose">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl p-6 border border-transparent dark:border-gray-700 animate-bounce-in my-8">
-      <div class="text-center py-4">
+  <dialog ref="dialogRef" v-if="show" class="test-complete-modal fixed inset-0 w-full max-w-none max-h-none bg-black bg-opacity-50 flex items-center justify-center p-4 z-100" @close="onClose">
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl border border-transparent dark:border-gray-700 animate-bounce-in my-8 max-h-[calc(100dvh-6rem)] flex flex-col">
+      <div class="text-center p-6 pb-0 overflow-y-auto flex-1 min-h-0">
         <div class="text-6xl mb-4">🎉</div>
         <h3 class="text-2xl font-bold mb-2 dark:text-white">Félicitations !</h3>
         <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testType }}.</p>
@@ -39,7 +39,7 @@
           Consulte tes progrès pour voir tes badges et ton niveau !
         </p>
       </div>
-      <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 mt-6">
+      <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 p-6">
         <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
           Recommencer
         </button>
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { watch, onMounted, ref } from 'vue';
+import { watch, ref } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
@@ -103,22 +103,18 @@ function getBadgeIcon(id) {
 // Focus management for dialog
 const dialogRef = ref(null)
 
-onMounted(() => {
-  if (dialogRef.value && props.show) {
-    dialogRef.value.showModal()
-  }
-})
-
+// `v-if` sur le <dialog> racine : l'instance monte avec show=false et le nœud
+// n'existe qu'une fois show à true → le watcher doit s'exécuter après le rendu.
 watch(() => props.show, (newVal) => {
-  if (newVal && dialogRef.value) {
-    dialogRef.value.showModal()
+  if (newVal) {
+    dialogRef.value?.showModal()
     // Focus first focusable element
-    const firstButton = dialogRef.value.querySelector('button')
+    const firstButton = dialogRef.value?.querySelector('button')
     if (firstButton) firstButton.focus()
-  } else if (!newVal && dialogRef.value) {
-    dialogRef.value.close()
+  } else {
+    dialogRef.value?.close()
   }
-})
+}, { immediate: true, flush: 'post' })
 
 // Déclencher les confettis quand la modal s'affiche
 watch(() => props.show, (newVal) => {
