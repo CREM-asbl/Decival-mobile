@@ -7,7 +7,7 @@
       @modeSelected="startTestWithMode"
     />
 
-    <div v-if="testStarted" class="mb-6 sticky top-[120px] z-30 bg-gray-50/95 dark:bg-gray-900/95 py-2">
+    <div v-if="testStarted" class="mb-6 sticky top-[var(--app-subnav-h)] z-30 bg-gray-50/95 dark:bg-gray-900/95 py-2">
       <div class="flex items-center justify-between">
         <div class="text-sm text-gray-600 dark:text-gray-400">
           Question {{ currentQuestionIndex + 1 }}/{{ test.items.length }}
