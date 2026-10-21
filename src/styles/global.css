@@ -2,6 +2,22 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Coque applicative : le viewport est figé (header + contenu + footer),
+ * seule la zone de contenu défile. `100dvh` suit le viewport dynamique
+ * (barre d'UI mobile, clavier) avec repli sur `100vh`.
+ */
+html,
+body {
+  height: 100vh;
+  height: 100dvh;
+}
+
+:root {
+  /* Hauteur réservée par la coque : sous-navigation des tests. */
+  --app-subnav-h: 3.3125rem;
+}
+
 @theme inline {
   --color-accent: rgb(var(--accent));
   --color-accent-hover: rgb(var(--accent-hover));

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border border-transparent dark:border-gray-700">
+  <div class="w-full max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 sm:p-8 mb-8 border border-transparent dark:border-gray-700">
     <!-- Encouragement banner before test start -->
         <div class="mb-6 p-4 bg-violet-50 dark:bg-violet-900/20 rounded-lg border border-violet-100 dark:border-violet-800/50">
       <div class="flex items-center gap-3">
@@ -15,13 +15,13 @@
       </div>
     </div>
 
-    <h2 class="text-xl font-bold mb-4 text-center dark:text-white">Choisis un mode</h2>
-    <div class="flex flex-col md:flex-row gap-4 justify-center">
+    <h2 class="text-xl font-bold mt-2 mb-5 text-center dark:text-white">Choisis un mode</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <button
         @click="selectMode('integer')"
-        class="px-6 py-4 rounded-lg transition-all flex-1"
+        class="px-6 py-5 rounded-xl transition-all min-h-32"
         :class="selectedMode === 'integer'
-          ? 'bg-accent text-white shadow-lg scale-105'
+          ? 'bg-accent text-white shadow-lg scale-[1.02]'
           : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200'"
       >
         <div class="flex flex-col items-center">
@@ -32,9 +32,9 @@
 
       <button
         @click="selectMode('decimal')"
-        class="px-6 py-4 rounded-lg transition-all flex-1"
+        class="px-6 py-5 rounded-xl transition-all min-h-32"
         :class="selectedMode === 'decimal'
-          ? 'bg-accent text-white shadow-lg scale-105'
+          ? 'bg-accent text-white shadow-lg scale-[1.02]'
           : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200'"
       >
         <div class="flex flex-col items-center">
