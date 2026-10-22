@@ -1,10 +1,11 @@
-import type { TeacherFeedbackSummary, TypeMasteryResult, ComparisonProfileResult, TestCategory } from '../types/diagnostic';
+import type { TeacherFeedbackSummary, TypeMasteryResult, ComparisonProfileResult, IntegerMasteryResult, TestCategory } from '../types/diagnostic';
 import type { ComparisonTest } from '../types/comparison';
 import type { AdditionTest } from '../types/addition';
 import type { SubtractionTest } from '../types/subtraction';
 import type { MultiplicationTest } from '../types/multiplication';
 import { detectComparisonProfile, getComparisonResultsByType } from './diagnosticProfiles';
 import { analyzeAdditionError, analyzeSubtractionError, analyzeMultiplicationError } from './fineErrorAnalysis';
+import { INTEGER_MASTERY_THRESHOLD } from '../config/constants';
 
 type AnyTest = ComparisonTest | AdditionTest | SubtractionTest | MultiplicationTest;
 
@@ -18,9 +19,15 @@ export function generateTeacherFeedback(test: AnyTest): TeacherFeedbackSummary {
 
   let resultsByType: TypeMasteryResult[] = [];
   let comparisonProfile: ComparisonProfileResult | undefined;
+  let integerMastery: IntegerMasteryResult | undefined;
   let feedbackText = '';
 
-  if (test.type === 'comparison') {
+  if (test.mode === 'integer') {
+    integerMastery = getIntegerMastery(test.items);
+    feedbackText = integerMastery.mastered
+      ? `Entiers maîtrisés : ${integerMastery.correct} réponses correctes sur ${integerMastery.total} (${Math.round(integerMastery.score)} %). Tu peux travailler les nombres décimaux.`
+      : `Entiers non maîtrisés : ${integerMastery.correct} réponses correctes sur ${integerMastery.total} (${Math.round(integerMastery.score)} %). Les nombres décimaux exigent d'abord la maîtrise des entiers : reprends l'entraînement sur les entiers.`;
+  } else if (test.type === 'comparison') {
     comparisonProfile = detectComparisonProfile(test.items);
     resultsByType = getComparisonResultsByType(test.items);
     feedbackText = comparisonProfile.description;
@@ -32,11 +39,29 @@ export function generateTeacherFeedback(test: AnyTest): TeacherFeedbackSummary {
 
   return {
     comparisonProfile,
+    integerMastery,
     resultsByType,
     feedbackText,
     globalScore,
     totalItems,
     correctAnswers
+  };
+}
+
+/**
+ * Verdict binaire de maîtrise des entiers (prérequis décimaux).
+ * Seuil unique : 80% de réussite sur l'ensemble du test.
+ */
+export function getIntegerMastery(items: { isCorrect?: boolean }[]): IntegerMasteryResult {
+  const total = items.length;
+  const correct = items.filter(i => i.isCorrect).length;
+  const score = total > 0 ? (correct / total) * 100 : 0;
+  return {
+    mastered: total > 0 && (correct / total) >= INTEGER_MASTERY_THRESHOLD,
+    correct,
+    total,
+    score,
+    threshold: INTEGER_MASTERY_THRESHOLD
   };
 }
 

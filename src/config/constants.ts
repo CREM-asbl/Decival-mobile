@@ -27,6 +27,9 @@ export const XP_PER_LEVEL = 100
 /** Number of consecutive successes required to master a rule */
 export const MASTERY_THRESHOLD = 3
 
+/** Seuil de maîtrise des entiers (verdict binaire, prérequis décimaux) : 80% */
+export const INTEGER_MASTERY_THRESHOLD = 0.8
+
 // ============================================================================
 // Test Generation Constants
 // ============================================================================

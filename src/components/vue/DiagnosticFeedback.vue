@@ -7,8 +7,19 @@
       </h4>
     </div>
 
-    <!-- Profil Diagnostique (Comparaison uniquement) -->
-    <div v-if="feedback.comparisonProfile" class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4" :style="{ borderColor: feedback.comparisonProfile.color }">
+    <!-- Verdict binaire entiers (prérequis décimaux) -->
+    <div v-if="feedback.integerMastery" class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4" :style="{ borderColor: feedback.integerMastery.mastered ? '#4caf50' : '#ff9800' }">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-2xl">{{ feedback.integerMastery.mastered ? '🟢' : '🟠' }}</span>
+        <h5 class="text-md font-bold dark:text-white">{{ feedback.integerMastery.mastered ? 'Entiers maîtrisés' : 'Entiers non maîtrisés' }}</h5>
+      </div>
+      <p class="text-sm text-gray-700 dark:text-gray-300 italic leading-relaxed">
+        {{ feedback.feedbackText }}
+      </p>
+    </div>
+
+    <!-- Profil Diagnostique (Comparaison décimale uniquement) -->
+    <div v-else-if="feedback.comparisonProfile" class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4" :style="{ borderColor: feedback.comparisonProfile.color }">
       <div class="flex items-center gap-3 mb-2">
         <span class="text-2xl">{{ feedback.comparisonProfile.icon }}</span>
         <h5 class="text-md font-bold dark:text-white">{{ feedback.comparisonProfile.label }}</h5>

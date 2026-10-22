@@ -5,7 +5,7 @@ import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
 import { unlockBadge } from './badgeStore';
-import { updateTypeMastery, getMasteredCount, isCategoryMastered } from './typeMasteryStore';
+import { updateTypeMastery, updateIntegerMastery, getMasteredCount, isCategoryMastered } from './typeMasteryStore';
 import { type ComparisonTest } from '../types/comparison';
 import { generateTeacherFeedback } from '../logic/teacherFeedback';
 
@@ -159,9 +159,13 @@ export function completeTest(test: Test) {
 
   // Mettre à jour la maîtrise des types via le feedback diagnostique
   const teacherFeedback = generateTeacherFeedback(test);
-  teacherFeedback.resultsByType.forEach(res => {
-    updateTypeMastery(test.type, res.type, res.mastered, (res.correct / res.total) * 100);
-  });
+  if (teacherFeedback.integerMastery) {
+    updateIntegerMastery(test.type, teacherFeedback.integerMastery.mastered, teacherFeedback.integerMastery.score);
+  } else {
+    teacherFeedback.resultsByType.forEach(res => {
+      updateTypeMastery(test.type, res.type, res.mastered, (res.correct / res.total) * 100, test.mode ?? 'decimal');
+    });
+  }
 
   // Badges
   const newlyUnlockedBadges = [];
