@@ -148,11 +148,6 @@ jobs:
           git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }} [skip ci]"
           git push
 
-      - name: Deploy to Firebase App Hosting
-        uses: FirebaseExtended/app-hosting-deploy@v1
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: decival
-          backendId: decival
-          channelId: live
+      # Pas d'étape de déploiement ici : le backend App Hosting 'decival'
+      # (alwaysDeployFromSource) déploie automatiquement via son intégration
+      # GitHub à chaque push sur main, y compris le commit de bump ci-dessus.
