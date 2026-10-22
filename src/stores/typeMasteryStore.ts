@@ -21,7 +21,25 @@ export const typeMastery = atom<TypeMasteryState>({
 // Initialisation
 if (typeof window !== 'undefined') {
   const saved = loadFromStorage<TypeMasteryState>(STORAGE_KEYS.TYPE_MASTERY || 'decival_type_mastery');
-  if (saved) typeMastery.set(saved);
+  if (saved) typeMastery.set(migrateTypeMasteryKeys(saved));
+}
+
+/**
+ * Migre les anciennes clés "category-type" vers "category-decimal-type".
+ * L'historique existant concerne les décimaux (seul mode avec sous-compétences).
+ */
+export function migrateTypeMasteryKeys(state: TypeMasteryState): TypeMasteryState {
+  const migrated: TypeMasteryState = { mastery: {} };
+  for (const [key, entry] of Object.entries(state.mastery ?? {})) {
+    const parts = key.split('-');
+    if (parts.length === 2 && (entry.mode === undefined || entry.mode === null)) {
+      const [category, type] = parts;
+      migrated.mastery[`${category}-decimal-${type}`] = { ...entry, mode: 'decimal' };
+    } else {
+      migrated.mastery[key] = entry;
+    }
+  }
+  return migrated;
 }
 
 // Persistance
