@@ -75,6 +75,14 @@
         </div>
       </div>
 
+      <!-- Demande aide à ton enseignant -->
+      <div class="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-200 dark:border-amber-800/50 flex items-center gap-3 shadow-sm">
+        <span class="text-2xl" aria-hidden="true">🧑‍🏫</span>
+        <p class="text-sm text-amber-800 dark:text-amber-300 font-medium">
+          Montre cette analyse à ton enseignant : demande-lui de t'expliquer tes erreurs et de t'aider à y remédier.
+        </p>
+      </div>
+
       <!-- Détail par item (Optionnel mais utile pour l'enseignant) -->
       <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm">
         <button 

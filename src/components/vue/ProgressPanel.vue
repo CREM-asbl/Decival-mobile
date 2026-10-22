@@ -200,6 +200,14 @@
       </div>
     </div>
 
+    <!-- Demande aide à ton enseignant -->
+    <div class="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800/50 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🧑‍🏫</span>
+      <p class="text-sm text-amber-800 dark:text-amber-300 font-medium">
+        Montre ces résultats à ton enseignant : demande-lui de t'expliquer tes erreurs et de t'aider à progresser.
+      </p>
+    </div>
+
     <!-- Bouton pour réinitialiser les données (pour déboguer) -->
     <button @click="resetData" class="px-6 py-3 mt-6 text-violet-400 hover:text-red-500 text-sm font-medium transition-colors self-center">
       Réinitialiser ma progression

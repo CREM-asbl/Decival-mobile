@@ -36,7 +36,7 @@
         </div>
 
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-4">
-          Consulte tes progrès pour voir tes badges et ton niveau !
+          Consulte tes progrès pour voir tes badges et ton niveau ! Montre tes résultats à ton enseignant : demande-lui de t'expliquer tes erreurs et de t'aider à progresser.
         </p>
       </div>
       <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 p-6">
