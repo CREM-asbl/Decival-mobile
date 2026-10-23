@@ -1,4 +1,4 @@
-import { XP_PER_LEVEL } from '../config/constants';
+import { XP_PER_LEVEL, CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../config/constants';
 
 export const LEVEL_TITLES: Record<number, string> = {
   1: 'Novice',
@@ -127,4 +127,104 @@ export function summarizeMastery(mastery: Record<string, { mastered: boolean }> 
   const masteredCount = entries.filter(e => e?.mastered === true).length;
   const percent = totalCount > 0 ? clampPercent(Math.round((masteredCount / totalCount) * 100)) : 0;
   return { masteredCount, totalCount, percent };
+}
+
+export interface BadgeProgressContext {
+  level?: number;
+  xpIntoLevel?: number;
+  xpForNextLevel?: number;
+  masteredCount?: number;
+  masteredInCategory?: number;
+  categoryTotal?: number;
+  dailyStreak?: number;
+  totalTests?: number;
+  bestScore?: number;
+}
+
+const LEVEL_BADGE_TARGETS: Record<string, number> = {
+  LEVEL_5: 5,
+  LEVEL_10: 10,
+  LEVEL_20: 20,
+  LEVEL_35: 35,
+  LEVEL_50: 50
+};
+
+const MASTERY_BADGE_TARGETS: Record<string, number> = {
+  MASTERY_REACHED: 1,
+  MASTERY_5: 5,
+  MASTERY_10: 10
+};
+
+export interface EarnedBadgesContext extends BadgeProgressContext {
+  categories?: Record<string, { mastered: number; total: number }>;
+}
+
+const ALL_BADGE_IDS = [
+  ...Object.keys(LEVEL_BADGE_TARGETS),
+  ...Object.keys(MASTERY_BADGE_TARGETS),
+  'STREAK_3',
+  'FIRST_TEST',
+  'PERFECT_SCORE',
+  ...(CATEGORY_BADGES as readonly string[])
+];
+
+export function getEarnedBadges(ctx: EarnedBadgesContext = {}): string[] {
+  return ALL_BADGE_IDS.filter((badgeId) => {
+    const badgeCtx: BadgeProgressContext = { ...ctx };
+    if ((CATEGORY_BADGES as readonly string[]).includes(badgeId)) {
+      const category = badgeId.replace('MASTERY_', '').toLowerCase();
+      const cat = ctx.categories?.[category];
+      badgeCtx.masteredInCategory = cat?.mastered ?? 0;
+      badgeCtx.categoryTotal = cat?.total ?? 0;
+    }
+    return getBadgeProgress(badgeId, badgeCtx) >= 100;
+  });
+}
+
+export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}): number {
+  const levelTarget = LEVEL_BADGE_TARGETS[badgeId];
+  if (levelTarget !== undefined) {
+    const level = ctx.level ?? 0;
+    if (!Number.isFinite(level) || level <= 0) return 0;
+    if (level >= levelTarget) return 100;
+    const xpInto = Number.isFinite(ctx.xpIntoLevel) && (ctx.xpIntoLevel as number) > 0 ? (ctx.xpIntoLevel as number) : 0;
+    const xpFor = Number.isFinite(ctx.xpForNextLevel) && (ctx.xpForNextLevel as number) > 0 ? (ctx.xpForNextLevel as number) : 0;
+    const fractional = xpFor > 0 ? Math.min(1, Math.max(0, xpInto / xpFor)) : 0;
+    const effective = Math.min(levelTarget, Math.max(0, (level - 1) + fractional));
+    return clampPercent(Math.round((effective / levelTarget) * 100));
+  }
+
+  const masteryTarget = MASTERY_BADGE_TARGETS[badgeId];
+  if (masteryTarget !== undefined) {
+    const count = ctx.masteredCount ?? 0;
+    if (!Number.isFinite(count) || count <= 0) return 0;
+    if (count >= masteryTarget) return 100;
+    return clampPercent(Math.round((count / masteryTarget) * 100));
+  }
+
+  if (badgeId === 'STREAK_3') {
+    const streak = ctx.dailyStreak ?? 0;
+    if (!Number.isFinite(streak) || streak <= 0) return 0;
+    if (streak >= 3) return 100;
+    return clampPercent(Math.round((streak / 3) * 100));
+  }
+
+  if (badgeId === 'FIRST_TEST') {
+    return (ctx.totalTests ?? 0) >= 1 ? 100 : 0;
+  }
+
+  if (badgeId === 'PERFECT_SCORE') {
+    return (ctx.bestScore ?? 0) >= 100 ? 100 : 0;
+  }
+
+  if ((CATEGORY_BADGES as readonly string[]).includes(badgeId)) {
+    const inCategory = ctx.masteredInCategory ?? 0;
+    const total = ctx.categoryTotal ?? 0;
+    if (!Number.isFinite(inCategory) || !Number.isFinite(total) || total <= 0) return 0;
+    if (inCategory <= 0) return 0;
+    if (inCategory >= total) return 100;
+    return clampPercent(Math.round((inCategory / total) * 100));
+  }
+
+  return 0;
 }

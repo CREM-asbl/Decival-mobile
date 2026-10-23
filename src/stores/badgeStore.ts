@@ -1,7 +1,7 @@
 import { atom } from 'nanostores';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
 
-export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'MASTERY_5' | 'MASTERY_10' | 'MASTERY_ADDITION' | 'MASTERY_SUBTRACTION' | 'MASTERY_MULTIPLICATION' | 'MASTERY_COMPARISON' | 'LEVEL_5' | 'LEVEL_50';
+export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'MASTERY_5' | 'MASTERY_10' | 'MASTERY_ADDITION' | 'MASTERY_SUBTRACTION' | 'MASTERY_MULTIPLICATION' | 'MASTERY_COMPARISON' | 'LEVEL_5' | 'LEVEL_10' | 'LEVEL_20' | 'LEVEL_35' | 'LEVEL_50';
 
 export interface Badge {
     id: BadgeId;
@@ -78,11 +78,29 @@ export const BADGES: Record<BadgeId, Badge> = {
         description: 'Atteins le niveau 5',
         icon: '🚀'
     },
+    LEVEL_10: {
+        id: 'LEVEL_10',
+        title: 'Érudit',
+        description: 'Atteins le niveau 10',
+        icon: '🤓'
+    },
+    LEVEL_20: {
+        id: 'LEVEL_20',
+        title: 'Chevalier',
+        description: 'Atteins le niveau 20',
+        icon: '🛡️'
+    },
+    LEVEL_35: {
+        id: 'LEVEL_35',
+        title: 'Grand Maître',
+        description: 'Atteins le niveau 35',
+        icon: '🥇'
+    },
     LEVEL_50: {
         id: 'LEVEL_50',
         title: 'Légende de Decival',
         description: 'Atteins le niveau ultra-secret 50',
-        icon: '👑'
+        icon: '🏆'
     }
 };
 

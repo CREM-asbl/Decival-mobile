@@ -46,6 +46,22 @@ export const DECIMAL_ADDITION_TYPES = 7
 export const DECIMAL_MULTIPLICATION_TYPES = 7
 export const DECIMAL_COMPARISON_TYPES = 7
 
+/** Nombre de sous-compétences décimales par catégorie (badges + maîtrise) */
+export const CATEGORY_TYPE_COUNTS = {
+  addition: DECIMAL_ADDITION_TYPES,
+  subtraction: DECIMAL_SUBTRACTION_TYPES,
+  multiplication: DECIMAL_MULTIPLICATION_TYPES,
+  comparison: DECIMAL_COMPARISON_TYPES
+} as const
+
+/** Badges de catégorie (progression réelle par catégorie) */
+export const CATEGORY_BADGES = [
+  'MASTERY_ADDITION',
+  'MASTERY_SUBTRACTION',
+  'MASTERY_MULTIPLICATION',
+  'MASTERY_COMPARISON'
+] as const
+
 // ============================================================================
 // Numerical Precision Constants
 // ============================================================================

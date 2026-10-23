@@ -1,5 +1,5 @@
 import { atom } from 'nanostores';
-import { XP_PER_CORRECT_ANSWER, XP_BONUS_PERFECT_SCORE, XP_PER_LEVEL } from '../config/constants';
+import { XP_PER_CORRECT_ANSWER, XP_BONUS_PERFECT_SCORE, XP_PER_LEVEL, CATEGORY_TYPE_COUNTS } from '../config/constants';
 import { type AdditionTest } from '../types/addition';
 import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
@@ -178,6 +178,15 @@ export function completeTest(test: Test) {
   if (newLevel >= 5) {
     if (unlockBadge('LEVEL_5')) newlyUnlockedBadges.push('LEVEL_5');
   }
+  if (newLevel >= 10) {
+    if (unlockBadge('LEVEL_10')) newlyUnlockedBadges.push('LEVEL_10');
+  }
+  if (newLevel >= 20) {
+    if (unlockBadge('LEVEL_20')) newlyUnlockedBadges.push('LEVEL_20');
+  }
+  if (newLevel >= 35) {
+    if (unlockBadge('LEVEL_35')) newlyUnlockedBadges.push('LEVEL_35');
+  }
   if (newLevel >= 50) {
     if (unlockBadge('LEVEL_50')) newlyUnlockedBadges.push('LEVEL_50');
   }
@@ -200,22 +209,22 @@ export function completeTest(test: Test) {
 
   // Vérifier la maîtrise des catégories (nombres de types basés sur constants.ts)
   // Addition: 7 types
-  if (isCategoryMastered('addition', 7)) {
+  if (isCategoryMastered('addition', CATEGORY_TYPE_COUNTS.addition)) {
     if (unlockBadge('MASTERY_ADDITION')) newlyUnlockedBadges.push('MASTERY_ADDITION');
   }
 
   // Soustraction: 7 types
-  if (isCategoryMastered('subtraction', 7)) {
+  if (isCategoryMastered('subtraction', CATEGORY_TYPE_COUNTS.subtraction)) {
     if (unlockBadge('MASTERY_SUBTRACTION')) newlyUnlockedBadges.push('MASTERY_SUBTRACTION');
   }
 
-  // Multiplication: 7 types
-  if (isCategoryMastered('multiplication', 7)) {
+  // Multiplication: 4 types
+  if (isCategoryMastered('multiplication', CATEGORY_TYPE_COUNTS.multiplication)) {
     if (unlockBadge('MASTERY_MULTIPLICATION')) newlyUnlockedBadges.push('MASTERY_MULTIPLICATION');
   }
 
-  // Comparaison: 7 types
-  if (isCategoryMastered('comparison', 7)) {
+  // Comparaison: 4 types
+  if (isCategoryMastered('comparison', CATEGORY_TYPE_COUNTS.comparison)) {
     if (unlockBadge('MASTERY_COMPARISON')) newlyUnlockedBadges.push('MASTERY_COMPARISON');
   }
 

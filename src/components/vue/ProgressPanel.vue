@@ -1,22 +1,21 @@
 <template>
   <div class="flex flex-col gap-6">
     <!-- XP and Level Section -->
-        <div class="bg-linear-to-r from-accent to-violet-600 rounded-2xl p-6 text-white shadow-lg overflow-hidden relative">
-      <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-6 relative z-10">
+        <div class="bg-linear-to-r from-accent to-violet-600 rounded-2xl p-5 sm:p-6 text-white shadow-lg shadow-indigo-900/20 overflow-hidden relative">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-6 relative z-10">
         <div class="flex items-center gap-4">
           <div class="bg-white/20 p-2 rounded-2xl backdrop-blur-md border border-white/30 shadow-inner">
                 <MrComma :variant="commaVariant" :class="commaClass" :level="levelProgress.level" class="w-20 h-20" />
           </div>
           <div>
-                <div class="text-white/80 text-sm font-bold uppercase tracking-wider">{{ getLevelTitle(levelProgress.level) }}</div>
+                <div class="text-white/90 text-sm font-bold uppercase tracking-wider">{{ getLevelTitle(levelProgress.level) }}</div>
                 <div class="text-5xl font-black">Niveau {{ levelProgress.level }}</div>
           </div>
         </div>
         
         <div class="flex-1 w-full max-w-md">
           <div class="flex justify-between items-end mb-2">
-            <div class="text-sm font-bold uppercase tracking-wider text-white/80">Progression XP</div>
+            <div class="text-sm font-bold uppercase tracking-wider text-white/90">Progression XP</div>
                 <div class="font-black">{{ levelProgress.xpIntoLevel }} / {{ levelProgress.xpForNextLevel }}</div>
           </div>
               <div class="h-6 bg-black/20 rounded-full overflow-hidden border border-white/10 shadow-inner p-1" role="progressbar" :aria-valuenow="levelProgress.percent" aria-valuemin="0" aria-valuemax="100" aria-label="Progression vers le niveau suivant" aria-live="polite">
@@ -25,7 +24,7 @@
                   :style="{ width: `${levelProgress.percent}%` }"
             ></div>
           </div>
-              <div class="mt-2 text-xs text-center text-white/60">
+              <div class="mt-2 text-xs text-center text-white/80">
                 <span class="sr-only">Progression : {{ levelProgress.percent }} pour cent</span>
                 Encore {{ levelProgress.remainingXp }} XP pour le niveau {{ levelProgress.nextLevel }} !
               </div>
@@ -69,6 +68,7 @@
             :key="badge.id"
             :badge="badge"
             :unlocked="unlockedBadgesIds.includes(badge.id)"
+            :progress="getProgressForBadge(badge.id)"
             showDescription
           />
         </div>
@@ -77,7 +77,7 @@
 
     <!-- Statistiques globales -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
         <div class="flex items-center gap-3 mb-2">
           <div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg">
             <span class="text-xl">🔥</span>
@@ -87,7 +87,7 @@
         <p class="text-3xl font-black text-amber-600 dark:text-amber-400">{{ testStats.dailyStreak || 0 }}j</p>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
         <div class="flex items-center gap-3 mb-2">
           <div class="bg-violet-100 dark:bg-violet-900/30 p-2 rounded-lg">
                       <svg class="w-5 h-5 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,7 +99,7 @@
         <p class="text-3xl font-black text-violet-600 dark:text-violet-400">{{ testStats.totalTests }}</p>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
         <div class="flex items-center gap-3 mb-2">
           <div class="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg">
                       <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@
         <p class="text-3xl font-black text-emerald-600 dark:text-emerald-400">{{ formattedAvgScore }}</p>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700 transition-transform hover:scale-[1.02]">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
         <div class="flex items-center gap-3 mb-2">
           <div class="bg-amber-100 dark:bg-amber-900/30 p-2 rounded-lg">
             <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,17 +128,25 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8 border border-transparent dark:border-gray-700 overflow-hidden">
       <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-xl font-semibold dark:text-white">Maîtrise des sous-compétences</h2>
-        <span class="text-xs font-bold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">
+        <span
+          class="text-xs font-bold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full"
+          role="progressbar"
+          :aria-valuenow="masterySummary.percent"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          :aria-label="`${masterySummary.masteredCount} sur ${masterySummary.totalCount} sous-compétences maîtrisées`"
+          :style="{ background: `linear-gradient(to right, #a7f3d0 ${masterySummary.percent}%, #ecfdf5 ${masterySummary.percent}%)` }"
+        >
               {{ masterySummary.masteredCount }} / {{ masterySummary.totalCount }} sous-compétences maîtrisées ({{ masterySummary.percent }}%)
         </span>
       </div>
       <div class="p-6">
-        <p v-if="masteredTypes.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8 bg-violet-50 dark:bg-violet-900/20 rounded-lg border-2 border-dashed dark:border-violet-800/50">
+        <p v-if="masteredTypes.length === 0" class="text-violet-700 dark:text-violet-300 text-center py-8 bg-violet-50 dark:bg-violet-900/20 rounded-lg border-2 border-dashed dark:border-violet-800/50">
           Continue à t'entraîner pour maîtriser tes premières sous-compétences !
         </p>
         <div v-else class="space-y-6">
           <div v-for="category in categories" :key="category.id" class="space-y-3">
-            <h3 class="font-black text-sm uppercase tracking-widest text-violet-500 dark:text-violet-400 flex items-center gap-2">
+            <h3 class="font-black text-sm uppercase tracking-widest text-violet-700 dark:text-violet-300 flex items-center gap-2">
               {{ category.name }}
               <span class="h-px flex-1 bg-violet-100 dark:bg-violet-800/50"></span>
               <span
@@ -160,7 +168,7 @@
                 </div>
                 <div>
                   <h4 class="font-bold dark:text-white text-sm">{{ getTypeLabel(category.id, type.type) }}</h4>
-                  <p class="text-xs text-violet-500 dark:text-violet-400">Dernier score : {{ Math.round(type.lastScore) }}%</p>
+                  <p class="text-xs text-violet-700 dark:text-violet-300">Dernier score : {{ Math.round(type.lastScore) }}%</p>
                 </div>
               </div>
             </div>
@@ -175,18 +183,18 @@
         <h2 class="text-xl font-semibold dark:text-white">Historique des tests</h2>
       </div>
       <div class="p-4">
-        <p v-if="recentTests.length === 0" class="text-violet-500 dark:text-violet-400 text-center py-8">
+        <p v-if="recentTests.length === 0" class="text-violet-700 dark:text-violet-300 text-center py-8">
           Aucun test complété pour le moment
         </p>
         <div v-else class="space-y-4">
           <div v-for="test in recentTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-violet-50 dark:hover:bg-violet-900/20">
             <div class="flex items-center justify-between mb-2">
               <div class="font-bold dark:text-white text-lg">{{ getTestTypeName(test.type) }}</div>
-              <div class="text-xs font-medium text-violet-500 dark:text-violet-400 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
+              <div class="text-xs font-medium text-violet-700 dark:text-violet-300 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="text-sm text-violet-500 dark:text-violet-400">Mode: {{ getModeName(test.mode) }}</span>
+                <span class="text-sm text-violet-700 dark:text-violet-300">Mode: {{ getModeName(test.mode) }}</span>
                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                 <span class="text-sm font-bold text-accent">{{ calculateScore(test) }}%</span>
               </div>
@@ -217,7 +225,7 @@
     </div>
 
     <!-- Bouton pour réinitialiser les données (pour déboguer) -->
-    <button @click="resetData" class="px-6 py-3 mt-6 text-violet-400 hover:text-red-500 text-sm font-medium transition-colors self-center">
+    <button @click="resetData" class="px-6 py-3 mt-6 text-violet-600 hover:text-red-500 dark:text-violet-300 text-sm font-medium transition-colors self-center">
       Réinitialiser ma progression
     </button>
   </div>
@@ -227,15 +235,52 @@
 import { computed, onMounted } from 'vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
-import { BADGES, unlockedBadges } from '../../stores/badgeStore'
+import { BADGES, unlockedBadges, unlockBadge } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
-import { getLevelProgress, getLevelTitle, getProgressEncouragement, summarizeMastery } from '../../logic/progressLogic'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
+import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
 
 // Données réactives dérivées des stores
 const testStats = computed(() => stats.get())
 const unlockedBadgesIds = computed(() => unlockedBadges.get())
 const masteryState = computed(() => typeMastery.get())
+
+const CATEGORY_BADGE_MAP = {
+  MASTERY_ADDITION: 'addition',
+  MASTERY_SUBTRACTION: 'subtraction',
+  MASTERY_MULTIPLICATION: 'multiplication',
+  MASTERY_COMPARISON: 'comparison'
+}
+
+function countMasteredInCategory(category) {
+  return Object.values(masteryState.value.mastery ?? {}).filter(
+    m => m.category === category && (m.mode ?? 'decimal') === 'decimal' && m.mastered
+  ).length
+}
+
+function getProgressForBadge(badgeId) {
+  if (badgeId.startsWith('LEVEL_')) {
+    return getBadgeProgress(badgeId, {
+      level: levelProgress.value.level,
+      xpIntoLevel: levelProgress.value.xpIntoLevel,
+      xpForNextLevel: levelProgress.value.xpForNextLevel
+    })
+  }
+  const category = CATEGORY_BADGE_MAP[badgeId]
+  if (category && CATEGORY_BADGES.includes(badgeId)) {
+    return getBadgeProgress(badgeId, {
+      masteredInCategory: countMasteredInCategory(category),
+      categoryTotal: CATEGORY_TYPE_COUNTS[category]
+    })
+  }
+  return getBadgeProgress(badgeId, {
+    masteredCount: masterySummary.value.masteredCount,
+    dailyStreak: testStats.value.dailyStreak,
+    totalTests: testStats.value.totalTests,
+    bestScore: testStats.value.bestScore
+  })
+}
 
 const formattedAvgScore = computed(() => `${Math.round(testStats.value.averageScore)}%`)
 const formattedBestScore = computed(() => `${Math.round(testStats.value.bestScore)}%`)
@@ -370,9 +415,27 @@ function getCorrectAnswersCount(test) {
   return test.items.filter(item => item.isCorrect).length
 }
 
-// Initialisation
+// Débloque les badges dont la progression atteint 100 % (aligne le stockage sur l'affichage)
 onMounted(() => {
-  console.log("ProgressPanel monté")
-  console.log("Tests récents:", recentTests.value)
+  const categories = {}
+  for (const badgeId of CATEGORY_BADGES) {
+    const category = badgeId.replace('MASTERY_', '').toLowerCase()
+    categories[category] = {
+      mastered: countMasteredInCategory(category),
+      total: CATEGORY_TYPE_COUNTS[category]
+    }
+  }
+  const earned = getEarnedBadges({
+    level: levelProgress.value.level,
+    xpIntoLevel: levelProgress.value.xpIntoLevel,
+    xpForNextLevel: levelProgress.value.xpForNextLevel,
+    masteredCount: masterySummary.value.masteredCount,
+    dailyStreak: testStats.value.dailyStreak,
+    totalTests: testStats.value.totalTests,
+    bestScore: testStats.value.bestScore,
+    categories
+  })
+  for (const badgeId of earned) unlockBadge(badgeId)
 })
+
 </script>

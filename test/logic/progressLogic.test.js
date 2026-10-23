@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   clampPercent,
+  getBadgeProgress,
+  getEarnedBadges,
   getInTestEncouragement,
   getLevelProgress,
   getLevelTitle,
@@ -199,6 +201,90 @@ describe('progressLogic — getInTestEncouragement', () => {
     expect(getInTestEncouragement(-3, 10)).toBe("C'est parti, tu peux le faire !");
     expect(getInTestEncouragement(99, 10)).toBe('Plus que quelques questions, courage !');
     expect(getInTestEncouragement(0, 0)).toBe("C'est parti, tu peux le faire !");
+  });
+});
+
+describe('progressLogic — getBadgeProgress', () => {
+  it('part de 0 % au niveau 1 (aucune progression vers le palier)', () => {
+    expect(getBadgeProgress('LEVEL_5', { level: 1 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_10', { level: 1 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_50', { level: 1 })).toBe(0);
+  });
+
+  it('progresse vers le prochain palier de niveau', () => {
+    expect(getBadgeProgress('LEVEL_5', { level: 3 })).toBe(40);
+    expect(getBadgeProgress('LEVEL_10', { level: 10 })).toBe(100);
+    expect(getBadgeProgress('LEVEL_20', { level: 10 })).toBe(45);
+    expect(getBadgeProgress('LEVEL_35', { level: 20 })).toBe(54);
+    expect(getBadgeProgress('LEVEL_50', { level: 35 })).toBe(68);
+    expect(getBadgeProgress('LEVEL_50', { level: 50 })).toBe(100);
+  });
+
+  it('intègre la fraction XP dans le niveau courant', () => {
+    expect(getBadgeProgress('LEVEL_5', { level: 1, xpIntoLevel: 0, xpForNextLevel: 100 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_5', { level: 3, xpIntoLevel: 50, xpForNextLevel: 100 })).toBe(50);
+    expect(getBadgeProgress('LEVEL_5', { level: 4, xpIntoLevel: 100, xpForNextLevel: 100 })).toBe(80);
+  });
+
+  it('progresse sur la maîtrise des sous-compétences', () => {
+    expect(getBadgeProgress('MASTERY_5', { masteredCount: 0 })).toBe(0);
+    expect(getBadgeProgress('MASTERY_5', { masteredCount: 3 })).toBe(60);
+    expect(getBadgeProgress('MASTERY_5', { masteredCount: 5 })).toBe(100);
+    expect(getBadgeProgress('MASTERY_10', { masteredCount: 7 })).toBe(70);
+  });
+
+  it('progresse sur les badges de catégorie (addition/soustraction/…)', () => {
+    expect(getBadgeProgress('MASTERY_ADDITION', { masteredInCategory: 0, categoryTotal: 7 })).toBe(0);
+    expect(getBadgeProgress('MASTERY_ADDITION', { masteredInCategory: 3, categoryTotal: 7 })).toBe(43);
+    expect(getBadgeProgress('MASTERY_ADDITION', { masteredInCategory: 7, categoryTotal: 7 })).toBe(100);
+    expect(getBadgeProgress('MASTERY_COMPARISON', {})).toBe(0);
+  });
+
+  it('progresse sur la série de jours', () => {
+    expect(getBadgeProgress('STREAK_3', { dailyStreak: 0 })).toBe(0);
+    expect(getBadgeProgress('STREAK_3', { dailyStreak: 1 })).toBeGreaterThan(30);
+    expect(getBadgeProgress('STREAK_3', { dailyStreak: 3 })).toBe(100);
+  });
+
+  it('retourne 0 ou 100 pour les badges binaires', () => {
+    expect(getBadgeProgress('FIRST_TEST', { totalTests: 0 })).toBe(0);
+    expect(getBadgeProgress('FIRST_TEST', { totalTests: 1 })).toBe(100);
+    expect(getBadgeProgress('PERFECT_SCORE', { bestScore: 80 })).toBe(0);
+    expect(getBadgeProgress('PERFECT_SCORE', { bestScore: 100 })).toBe(100);
+  });
+
+  it('borne les entrées invalides', () => {
+    expect(getBadgeProgress('LEVEL_10', {})).toBe(0);
+    expect(getBadgeProgress('UNKNOWN_BADGE', { level: 5 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_10', { level: Number.NaN })).toBe(0);
+  });
+});
+
+describe('progressLogic — getEarnedBadges', () => {
+  it('retourne les badges dont la progression atteint 100 %', () => {
+    const earned = getEarnedBadges({
+      level: 10,
+      xpIntoLevel: 0,
+      xpForNextLevel: 100,
+      masteredCount: 5,
+      dailyStreak: 3,
+      totalTests: 1,
+      bestScore: 100,
+      categories: { addition: { mastered: 7, total: 7 } }
+    });
+    expect(earned).toContain('LEVEL_5');
+    expect(earned).toContain('LEVEL_10');
+    expect(earned).toContain('MASTERY_5');
+    expect(earned).toContain('STREAK_3');
+    expect(earned).toContain('FIRST_TEST');
+    expect(earned).toContain('PERFECT_SCORE');
+    expect(earned).toContain('MASTERY_ADDITION');
+    expect(earned).not.toContain('LEVEL_20');
+    expect(earned).not.toContain('MASTERY_10');
+  });
+
+  it('retourne un tableau vide sans progression', () => {
+    expect(getEarnedBadges({})).toEqual([]);
   });
 });
 
