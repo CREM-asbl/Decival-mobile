@@ -1,0 +1,21 @@
+[WARN] [router][39m getStaticPaths() ignored in dynamic page [1m/src/pages/progress/feedback/[id].astro[22m. Add `export const prerender = true;` to prerender the page as static HTML during the build process.
+[2m10:33:33[22m [34m[vite][39m [32m✓ built in 1.49s[39m
+10:33:33 [ERROR] [vite] ✗ Build failed in 314ms
+[vue/compiler-sfc] Unexpected token, expected "," (38:35)
+
+C:/Users/gunbl/Dev/copilot-worktrees/Decival-mobile/geoffrey-pliez-fluffy-tribble/src/components/vue/ProgressPanel.vue
+262|    }
+263|    const category = CATEGORY_BADGE_MAP[badgeId]
+264|    if (category && (CATEGORY_BADGES as readonly string[]).includes(badgeId)) {
+   |                                     ^
+265|      return getBadgeProgress(badgeId, {
+266|        masteredInCategory: countMasteredInCategory(category),
+  Location:
+    undefined:38:35
+  Stack trace:
+    at constructor (C:\Users\gunbl\Dev\copilot-worktrees\Decival-mobile\geoffrey-pliez-fluffy-tribble\node_modules\.pnpm\@babel+parser@7.29.9\node_modules\@babel\parser\lib\index.js:369:19)
+    at Parser.unexpected (C:\Users\gunbl\Dev\copilot-worktrees\Decival-mobile\geoffrey-pliez-fluffy-tribble\node_modules\.pnpm\@babel+parser@7.29.9\node_modules\@babel\parser\lib\index.js:6642:16)
+    at Parser.parseParenAndDistinguishExpression (C:\Users\gunbl\Dev\copilot-worktrees\Decival-mobile\geoffrey-pliez-fluffy-tribble\node_modules\.pnpm\@babel+parser@7.29.9\node_modules\@babel\parser\lib\index.js:11692:14)
+    at Parser.parseExprSubscripts (C:\Users\gunbl\Dev\copilot-worktrees\Decival-mobile\geoffrey-pliez-fluffy-tribble\node_modules\.pnpm\@babel+parser@7.29.9\node_modules\@babel\parser\lib\index.js:11107:23)
+    at Parser.parseMaybeUnary (C:\Users\gunbl\Dev\copilot-worktrees\Decival-mobile\geoffrey-pliez-fluffy-tribble\node_modules\.pnpm\@babel+parser@7.29.9\node_modules\@babel\parser\lib\index.js:11072:23)
+[ELIFECYCLE] Command failed with exit code 1.

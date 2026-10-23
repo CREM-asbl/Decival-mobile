@@ -239,7 +239,7 @@ const testStats = computed(() => stats.get())
 const unlockedBadgesIds = computed(() => unlockedBadges.get())
 const masteryState = computed(() => typeMastery.get())
 
-const CATEGORY_BADGE_MAP: Record<string, keyof typeof CATEGORY_TYPE_COUNTS> = {
+const CATEGORY_BADGE_MAP = {
   MASTERY_ADDITION: 'addition',
   MASTERY_SUBTRACTION: 'subtraction',
   MASTERY_MULTIPLICATION: 'multiplication',
@@ -261,7 +261,7 @@ function getProgressForBadge(badgeId) {
     })
   }
   const category = CATEGORY_BADGE_MAP[badgeId]
-  if (category && (CATEGORY_BADGES as readonly string[]).includes(badgeId)) {
+  if (category && CATEGORY_BADGES.includes(badgeId)) {
     return getBadgeProgress(badgeId, {
       masteredInCategory: countMasteredInCategory(category),
       categoryTotal: CATEGORY_TYPE_COUNTS[category]
