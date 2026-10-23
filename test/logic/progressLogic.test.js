@@ -204,14 +204,25 @@ describe('progressLogic — getInTestEncouragement', () => {
 });
 
 describe('progressLogic — getBadgeProgress', () => {
+  it('part de 0 % au niveau 1 (aucune progression vers le palier)', () => {
+    expect(getBadgeProgress('LEVEL_5', { level: 1 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_10', { level: 1 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_50', { level: 1 })).toBe(0);
+  });
+
   it('progresse vers le prochain palier de niveau', () => {
-    expect(getBadgeProgress('LEVEL_10', { level: 1 })).toBe(10);
-    expect(getBadgeProgress('LEVEL_10', { level: 5 })).toBe(50);
+    expect(getBadgeProgress('LEVEL_5', { level: 3 })).toBe(40);
     expect(getBadgeProgress('LEVEL_10', { level: 10 })).toBe(100);
-    expect(getBadgeProgress('LEVEL_20', { level: 10 })).toBe(50);
-    expect(getBadgeProgress('LEVEL_35', { level: 20 })).toBeGreaterThan(50);
-    expect(getBadgeProgress('LEVEL_35', { level: 20 })).toBeLessThan(60);
-    expect(getBadgeProgress('LEVEL_50', { level: 35 })).toBe(70);
+    expect(getBadgeProgress('LEVEL_20', { level: 10 })).toBe(45);
+    expect(getBadgeProgress('LEVEL_35', { level: 20 })).toBe(54);
+    expect(getBadgeProgress('LEVEL_50', { level: 35 })).toBe(68);
+    expect(getBadgeProgress('LEVEL_50', { level: 50 })).toBe(100);
+  });
+
+  it('intègre la fraction XP dans le niveau courant', () => {
+    expect(getBadgeProgress('LEVEL_5', { level: 1, xpIntoLevel: 0, xpForNextLevel: 100 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_5', { level: 3, xpIntoLevel: 50, xpForNextLevel: 100 })).toBe(50);
+    expect(getBadgeProgress('LEVEL_5', { level: 4, xpIntoLevel: 100, xpForNextLevel: 100 })).toBe(80);
   });
 
   it('progresse sur la maîtrise des sous-compétences', () => {
@@ -219,6 +230,13 @@ describe('progressLogic — getBadgeProgress', () => {
     expect(getBadgeProgress('MASTERY_5', { masteredCount: 3 })).toBe(60);
     expect(getBadgeProgress('MASTERY_5', { masteredCount: 5 })).toBe(100);
     expect(getBadgeProgress('MASTERY_10', { masteredCount: 7 })).toBe(70);
+  });
+
+  it('progresse sur les badges de catégorie (addition/soustraction/…)', () => {
+    expect(getBadgeProgress('MASTERY_ADDITION', { masteredInCategory: 0, categoryTotal: 7 })).toBe(0);
+    expect(getBadgeProgress('MASTERY_ADDITION', { masteredInCategory: 3, categoryTotal: 7 })).toBe(43);
+    expect(getBadgeProgress('MASTERY_ADDITION', { masteredInCategory: 7, categoryTotal: 7 })).toBe(100);
+    expect(getBadgeProgress('MASTERY_COMPARISON', {})).toBe(0);
   });
 
   it('progresse sur la série de jours', () => {

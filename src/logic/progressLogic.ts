@@ -131,7 +131,11 @@ export function summarizeMastery(mastery: Record<string, { mastered: boolean }> 
 
 export interface BadgeProgressContext {
   level?: number;
+  xpIntoLevel?: number;
+  xpForNextLevel?: number;
   masteredCount?: number;
+  masteredInCategory?: number;
+  categoryTotal?: number;
   dailyStreak?: number;
   totalTests?: number;
   bestScore?: number;
@@ -157,7 +161,11 @@ export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}
     const level = ctx.level ?? 0;
     if (!Number.isFinite(level) || level <= 0) return 0;
     if (level >= levelTarget) return 100;
-    return clampPercent(Math.round((level / levelTarget) * 100));
+    const xpInto = Number.isFinite(ctx.xpIntoLevel) && (ctx.xpIntoLevel as number) > 0 ? (ctx.xpIntoLevel as number) : 0;
+    const xpFor = Number.isFinite(ctx.xpForNextLevel) && (ctx.xpForNextLevel as number) > 0 ? (ctx.xpForNextLevel as number) : 0;
+    const fractional = xpFor > 0 ? Math.min(1, Math.max(0, xpInto / xpFor)) : 0;
+    const effective = Math.min(levelTarget, Math.max(0, (level - 1) + fractional));
+    return clampPercent(Math.round((effective / levelTarget) * 100));
   }
 
   const masteryTarget = MASTERY_BADGE_TARGETS[badgeId];
@@ -183,8 +191,13 @@ export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}
     return (ctx.bestScore ?? 0) >= 100 ? 100 : 0;
   }
 
-  if (badgeId.startsWith('MASTERY_')) {
-    return (ctx.masteredCount ?? 0) >= 1 ? 100 : 0;
+  if (badgeId.startsWith('MASTERY_') && badgeId !== 'MASTERY_REACHED' && badgeId !== 'MASTERY_5' && badgeId !== 'MASTERY_10') {
+    const inCategory = ctx.masteredInCategory ?? 0;
+    const total = ctx.categoryTotal ?? 0;
+    if (!Number.isFinite(inCategory) || !Number.isFinite(total) || total <= 0) return 0;
+    if (inCategory <= 0) return 0;
+    if (inCategory >= total) return 100;
+    return clampPercent(Math.round((inCategory / total) * 100));
   }
 
   return 0;

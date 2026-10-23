@@ -1,7 +1,7 @@
 <template>
   <div
     class="badge-card"
-    :class="{ 'badge-unlocked': unlocked, 'badge-locked': !unlocked }"
+    :class="{ 'badge-unlocked': effectivelyUnlocked, 'badge-locked': !effectivelyUnlocked }"
     :title="badge.description"
     role="progressbar"
     :aria-valuenow="displayProgress"
@@ -23,7 +23,7 @@
     <div v-if="showDescription" class="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
       {{ badge.description }}
     </div>
-    <div v-if="!unlocked" class="badge-percent">{{ displayProgress }}%</div>
+    <div v-if="!effectivelyUnlocked" class="badge-percent">{{ displayProgress }}%</div>
   </div>
 </template>
 
@@ -54,6 +54,8 @@ const displayProgress = computed(() => {
   if (!Number.isFinite(props.progress)) return 0
   return Math.min(100, Math.max(0, Math.round(props.progress)))
 })
+
+const effectivelyUnlocked = computed(() => props.unlocked || displayProgress.value >= 100)
 </script>
 
 <style scoped>

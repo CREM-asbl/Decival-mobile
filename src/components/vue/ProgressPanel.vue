@@ -69,7 +69,7 @@
             :key="badge.id"
             :badge="badge"
             :unlocked="unlockedBadgesIds.includes(badge.id)"
-            :progress="getBadgeProgress(badge.id, badgeProgressCtx)"
+            :progress="getProgressForBadge(badge.id)"
             showDescription
           />
         </div>
@@ -237,13 +237,49 @@ import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProg
 const testStats = computed(() => stats.get())
 const unlockedBadgesIds = computed(() => unlockedBadges.get())
 const masteryState = computed(() => typeMastery.get())
-const badgeProgressCtx = computed(() => ({
-  level: testStats.value.level,
-  masteredCount: masterySummary.value.masteredCount,
-  dailyStreak: testStats.value.dailyStreak,
-  totalTests: testStats.value.totalTests,
-  bestScore: testStats.value.bestScore
-}))
+
+const CATEGORY_TOTALS = {
+  addition: 7,
+  subtraction: 7,
+  multiplication: 7,
+  comparison: 7
+}
+
+const CATEGORY_BADGE_MAP = {
+  MASTERY_ADDITION: 'addition',
+  MASTERY_SUBTRACTION: 'subtraction',
+  MASTERY_MULTIPLICATION: 'multiplication',
+  MASTERY_COMPARISON: 'comparison'
+}
+
+function countMasteredInCategory(category) {
+  return Object.values(masteryState.value.mastery ?? {}).filter(
+    m => m.category === category && (m.mode ?? 'decimal') === 'decimal' && m.mastered
+  ).length
+}
+
+function getProgressForBadge(badgeId) {
+  if (badgeId.startsWith('LEVEL_')) {
+    return getBadgeProgress(badgeId, {
+      level: levelProgress.value.level,
+      xpIntoLevel: levelProgress.value.xpIntoLevel,
+      xpForNextLevel: levelProgress.value.xpForNextLevel
+    })
+  }
+  const category = CATEGORY_BADGE_MAP[badgeId]
+  if (category) {
+    return getBadgeProgress(badgeId, {
+      masteredInCategory: countMasteredInCategory(category),
+      categoryTotal: CATEGORY_TOTALS[category]
+    })
+  }
+  return getBadgeProgress(badgeId, {
+    masteredCount: masterySummary.value.masteredCount,
+    dailyStreak: testStats.value.dailyStreak,
+    totalTests: testStats.value.totalTests,
+    bestScore: testStats.value.bestScore
+  })
+}
 
 const formattedAvgScore = computed(() => `${Math.round(testStats.value.averageScore)}%`)
 const formattedBestScore = computed(() => `${Math.round(testStats.value.bestScore)}%`)
