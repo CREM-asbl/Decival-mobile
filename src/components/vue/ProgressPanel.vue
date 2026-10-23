@@ -240,10 +240,12 @@
       </p>
     </div>
 
-    <!-- Bouton pour réinitialiser les données (pour déboguer) -->
-    <button @click="resetData" class="px-6 py-3 mt-6 text-violet-600 hover:text-red-500 dark:text-violet-300 text-sm font-medium transition-colors self-center">
-      Réinitialiser ma progression
-    </button>
+    <!-- Zone dangereuse : réinitialisation, séparée et confirmée -->
+    <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6 flex justify-center">
+      <button @click="resetData" class="px-4 py-2 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors underline underline-offset-2">
+        Réinitialiser ma progression
+      </button>
+    </div>
   </div>
 </template>
 
@@ -440,6 +442,12 @@ function calculateScore(test) {
 
 function getCorrectAnswersCount(test) {
   return test.items.filter(item => item.isCorrect).length
+}
+
+function resetData() {
+  if (!window.confirm('Effacer toute ta progression ? Cette action est définitive.')) return
+  resetTestData()
+  resetTypeMastery()
 }
 
 // Débloque les badges dont la progression atteint 100 % (aligne le stockage sur l'affichage)
