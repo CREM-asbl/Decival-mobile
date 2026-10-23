@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   clampPercent,
+  getBadgeProgress,
   getInTestEncouragement,
   getLevelProgress,
   getLevelTitle,
@@ -199,6 +200,44 @@ describe('progressLogic — getInTestEncouragement', () => {
     expect(getInTestEncouragement(-3, 10)).toBe("C'est parti, tu peux le faire !");
     expect(getInTestEncouragement(99, 10)).toBe('Plus que quelques questions, courage !');
     expect(getInTestEncouragement(0, 0)).toBe("C'est parti, tu peux le faire !");
+  });
+});
+
+describe('progressLogic — getBadgeProgress', () => {
+  it('progresse vers le prochain palier de niveau', () => {
+    expect(getBadgeProgress('LEVEL_10', { level: 1 })).toBe(10);
+    expect(getBadgeProgress('LEVEL_10', { level: 5 })).toBe(50);
+    expect(getBadgeProgress('LEVEL_10', { level: 10 })).toBe(100);
+    expect(getBadgeProgress('LEVEL_20', { level: 10 })).toBe(50);
+    expect(getBadgeProgress('LEVEL_35', { level: 20 })).toBeGreaterThan(50);
+    expect(getBadgeProgress('LEVEL_35', { level: 20 })).toBeLessThan(60);
+    expect(getBadgeProgress('LEVEL_50', { level: 35 })).toBe(70);
+  });
+
+  it('progresse sur la maîtrise des sous-compétences', () => {
+    expect(getBadgeProgress('MASTERY_5', { masteredCount: 0 })).toBe(0);
+    expect(getBadgeProgress('MASTERY_5', { masteredCount: 3 })).toBe(60);
+    expect(getBadgeProgress('MASTERY_5', { masteredCount: 5 })).toBe(100);
+    expect(getBadgeProgress('MASTERY_10', { masteredCount: 7 })).toBe(70);
+  });
+
+  it('progresse sur la série de jours', () => {
+    expect(getBadgeProgress('STREAK_3', { dailyStreak: 0 })).toBe(0);
+    expect(getBadgeProgress('STREAK_3', { dailyStreak: 1 })).toBeGreaterThan(30);
+    expect(getBadgeProgress('STREAK_3', { dailyStreak: 3 })).toBe(100);
+  });
+
+  it('retourne 0 ou 100 pour les badges binaires', () => {
+    expect(getBadgeProgress('FIRST_TEST', { totalTests: 0 })).toBe(0);
+    expect(getBadgeProgress('FIRST_TEST', { totalTests: 1 })).toBe(100);
+    expect(getBadgeProgress('PERFECT_SCORE', { bestScore: 80 })).toBe(0);
+    expect(getBadgeProgress('PERFECT_SCORE', { bestScore: 100 })).toBe(100);
+  });
+
+  it('borne les entrées invalides', () => {
+    expect(getBadgeProgress('LEVEL_10', {})).toBe(0);
+    expect(getBadgeProgress('UNKNOWN_BADGE', { level: 5 })).toBe(0);
+    expect(getBadgeProgress('LEVEL_10', { level: Number.NaN })).toBe(0);
   });
 });
 

@@ -128,3 +128,64 @@ export function summarizeMastery(mastery: Record<string, { mastered: boolean }> 
   const percent = totalCount > 0 ? clampPercent(Math.round((masteredCount / totalCount) * 100)) : 0;
   return { masteredCount, totalCount, percent };
 }
+
+export interface BadgeProgressContext {
+  level?: number;
+  masteredCount?: number;
+  dailyStreak?: number;
+  totalTests?: number;
+  bestScore?: number;
+}
+
+const LEVEL_BADGE_TARGETS: Record<string, number> = {
+  LEVEL_5: 5,
+  LEVEL_10: 10,
+  LEVEL_20: 20,
+  LEVEL_35: 35,
+  LEVEL_50: 50
+};
+
+const MASTERY_BADGE_TARGETS: Record<string, number> = {
+  MASTERY_REACHED: 1,
+  MASTERY_5: 5,
+  MASTERY_10: 10
+};
+
+export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}): number {
+  const levelTarget = LEVEL_BADGE_TARGETS[badgeId];
+  if (levelTarget !== undefined) {
+    const level = ctx.level ?? 0;
+    if (!Number.isFinite(level) || level <= 0) return 0;
+    if (level >= levelTarget) return 100;
+    return clampPercent(Math.round((level / levelTarget) * 100));
+  }
+
+  const masteryTarget = MASTERY_BADGE_TARGETS[badgeId];
+  if (masteryTarget !== undefined) {
+    const count = ctx.masteredCount ?? 0;
+    if (!Number.isFinite(count) || count <= 0) return 0;
+    if (count >= masteryTarget) return 100;
+    return clampPercent(Math.round((count / masteryTarget) * 100));
+  }
+
+  if (badgeId === 'STREAK_3') {
+    const streak = ctx.dailyStreak ?? 0;
+    if (!Number.isFinite(streak) || streak <= 0) return 0;
+    if (streak >= 3) return 100;
+    return clampPercent(Math.round((streak / 3) * 100));
+  }
+
+  if (badgeId === 'FIRST_TEST') {
+    return (ctx.totalTests ?? 0) >= 1 ? 100 : 0;
+  }
+
+  if (badgeId === 'PERFECT_SCORE') {
+    return (ctx.bestScore ?? 0) >= 100 ? 100 : 0;
+  }
+
+  if (badgeId.startsWith('MASTERY_')) {
+    return (ctx.masteredCount ?? 0) >= 1 ? 100 : 0;
+  }
+
+  return 0;
+}

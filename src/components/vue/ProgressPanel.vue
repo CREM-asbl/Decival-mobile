@@ -69,6 +69,7 @@
             :key="badge.id"
             :badge="badge"
             :unlocked="unlockedBadgesIds.includes(badge.id)"
+            :progress="getBadgeProgress(badge.id, badgeProgressCtx)"
             showDescription
           />
         </div>
@@ -230,12 +231,19 @@ import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/t
 import { BADGES, unlockedBadges } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
-import { getLevelProgress, getLevelTitle, getProgressEncouragement, summarizeMastery } from '../../logic/progressLogic'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProgress, summarizeMastery } from '../../logic/progressLogic'
 
 // Données réactives dérivées des stores
 const testStats = computed(() => stats.get())
 const unlockedBadgesIds = computed(() => unlockedBadges.get())
 const masteryState = computed(() => typeMastery.get())
+const badgeProgressCtx = computed(() => ({
+  level: testStats.value.level,
+  masteredCount: masterySummary.value.masteredCount,
+  dailyStreak: testStats.value.dailyStreak,
+  totalTests: testStats.value.totalTests,
+  bestScore: testStats.value.bestScore
+}))
 
 const formattedAvgScore = computed(() => `${Math.round(testStats.value.averageScore)}%`)
 const formattedBestScore = computed(() => `${Math.round(testStats.value.bestScore)}%`)

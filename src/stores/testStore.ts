@@ -178,6 +178,15 @@ export function completeTest(test: Test) {
   if (newLevel >= 5) {
     if (unlockBadge('LEVEL_5')) newlyUnlockedBadges.push('LEVEL_5');
   }
+  if (newLevel >= 10) {
+    if (unlockBadge('LEVEL_10')) newlyUnlockedBadges.push('LEVEL_10');
+  }
+  if (newLevel >= 20) {
+    if (unlockBadge('LEVEL_20')) newlyUnlockedBadges.push('LEVEL_20');
+  }
+  if (newLevel >= 35) {
+    if (unlockBadge('LEVEL_35')) newlyUnlockedBadges.push('LEVEL_35');
+  }
   if (newLevel >= 50) {
     if (unlockBadge('LEVEL_50')) newlyUnlockedBadges.push('LEVEL_50');
   }
