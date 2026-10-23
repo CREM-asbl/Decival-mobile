@@ -114,6 +114,15 @@ export function getInTestEncouragement(currentIndex: number, totalItems: number)
   return "C'est parti, tu peux le faire !";
 }
 
+export function getTestCompleteCopy(percent: number): { title: string; emoji: string } {
+  const score = clampPercent(Number.isFinite(percent) ? percent : 0);
+  if (score >= 90) return { title: 'Félicitations !', emoji: '🎉' };
+  if (score >= 70) return { title: 'Beau travail !', emoji: '👏' };
+  if (score >= 50) return { title: 'Bien, continue !', emoji: '💪' };
+  if (score >= 25) return { title: 'Courage, tu progresses !', emoji: '🌱' };
+  return { title: 'Test terminé !', emoji: '📝' };
+}
+
 export function summarizeMastery(mastery: Record<string, { mastered: boolean }> | undefined | null): {
   masteredCount: number;
   totalCount: number;

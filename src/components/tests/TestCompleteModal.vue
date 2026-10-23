@@ -2,8 +2,8 @@
   <dialog ref="dialogRef" v-if="show" class="test-complete-modal fixed inset-0 w-full max-w-none max-h-none bg-black bg-opacity-50 flex items-center justify-center p-4 z-100" @close="onClose">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl border border-transparent dark:border-gray-700 animate-bounce-in my-8 max-h-[calc(100dvh-6rem)] flex flex-col">
       <div class="text-center p-6 pb-0 overflow-y-auto flex-1 min-h-0">
-        <div class="text-6xl mb-4">🎉</div>
-        <h3 class="text-2xl font-bold mb-2 dark:text-white">Félicitations !</h3>
+        <div class="text-6xl mb-4">{{ completeCopy.emoji }}</div>
+        <h3 class="text-2xl font-bold mb-2 dark:text-white">{{ completeCopy.title }}</h3>
         <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testType }}.</p>
         
         <div class="bg-accent/10 dark:bg-accent/20 rounded-xl p-6 mb-6 border border-accent/20">
@@ -59,10 +59,11 @@
 </template>
 
 <script setup>
-import { watch, ref } from 'vue';
+import { watch, ref, computed } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
+import { getTestCompleteCopy } from '../../logic/progressLogic';
 
 const props = defineProps({
   show: {
@@ -86,6 +87,8 @@ const props = defineProps({
 
 // Émets des événements pour les actions
 const emit = defineEmits(['restart']);
+
+const completeCopy = computed(() => getTestCompleteCopy(props.score));
 
 // Fonction pour gérer le restart
 function onRestart() {

@@ -8,6 +8,7 @@ import {
   getLevelTitle,
   getProgressEncouragement,
   getScorePercent,
+  getTestCompleteCopy,
   getTestEncouragement,
   summarizeMastery
 } from '../../src/logic/progressLogic';
@@ -201,6 +202,27 @@ describe('progressLogic — getInTestEncouragement', () => {
     expect(getInTestEncouragement(-3, 10)).toBe("C'est parti, tu peux le faire !");
     expect(getInTestEncouragement(99, 10)).toBe('Plus que quelques questions, courage !');
     expect(getInTestEncouragement(0, 0)).toBe("C'est parti, tu peux le faire !");
+  });
+});
+
+describe('progressLogic — getTestCompleteCopy', () => {
+  it('ne félicite pas un score nul', () => {
+    const copy = getTestCompleteCopy(0);
+    expect(copy.title).not.toMatch(/félicitations/i);
+    expect(copy.title).toBe('Test terminé !');
+  });
+
+  it('adapte le titre par palier', () => {
+    expect(getTestCompleteCopy(100).title).toBe('Félicitations !');
+    expect(getTestCompleteCopy(85).title).toBe('Beau travail !');
+    expect(getTestCompleteCopy(60).title).toBe('Bien, continue !');
+    expect(getTestCompleteCopy(30).title).toBe('Courage, tu progresses !');
+  });
+
+  it('borne les entrées invalides', () => {
+    expect(getTestCompleteCopy(Number.NaN).title).toBe('Test terminé !');
+    expect(getTestCompleteCopy(-5).title).toBe('Test terminé !');
+    expect(getTestCompleteCopy(150).title).toBe('Félicitations !');
   });
 });
 
