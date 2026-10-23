@@ -43,7 +43,7 @@
         </p>
       </div>
       <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 p-6">
-        <a href="/progress" class="no-underline w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium text-center transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+        <a href="/progress" data-autofocus class="no-underline w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium text-center transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
           Voir progrès
         </a>
         <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
@@ -91,7 +91,7 @@ const props = defineProps({
 });
 
 // Émets des événements pour les actions
-const emit = defineEmits(['restart']);
+const emit = defineEmits(['restart', 'close']);
 
 const completeCopy = computed(() => getTestCompleteCopy(props.score));
 
@@ -101,7 +101,9 @@ function onRestart() {
 }
 
 function onClose() {
-  emit('restart'); // or just close without action
+  // Esc uniquement : show encore true. Fermeture programmatique (restart/quit)
+  // → show déjà false, ne rien émettre pour éviter handleQuit après handleRestart.
+  if (props.show) emit('close');
 }
 
 function getBadgeIcon(id) {
@@ -116,9 +118,9 @@ const dialogRef = ref(null)
 watch(() => props.show, (newVal) => {
   if (newVal) {
     dialogRef.value?.showModal()
-    // Focus first focusable element
-    const firstButton = dialogRef.value?.querySelector('button')
-    if (firstButton) firstButton.focus()
+    // Focus action primaire (Voir progrès), pas Recommencer
+    const primary = dialogRef.value?.querySelector('[data-autofocus]')
+    if (primary instanceof HTMLElement) primary.focus()
   } else {
     dialogRef.value?.close()
   }

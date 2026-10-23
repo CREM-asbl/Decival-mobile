@@ -104,6 +104,7 @@
       :testType="testTypeLabel"
       :testId="completedTestId"
       @restart="handleRestart"
+      @close="handleQuit"
     />
   </div>
 </template>
