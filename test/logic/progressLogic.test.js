@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   clampPercent,
   getBadgeProgress,
+  getEarnedBadges,
   getInTestEncouragement,
   getLevelProgress,
   getLevelTitle,
@@ -256,6 +257,34 @@ describe('progressLogic — getBadgeProgress', () => {
     expect(getBadgeProgress('LEVEL_10', {})).toBe(0);
     expect(getBadgeProgress('UNKNOWN_BADGE', { level: 5 })).toBe(0);
     expect(getBadgeProgress('LEVEL_10', { level: Number.NaN })).toBe(0);
+  });
+});
+
+describe('progressLogic — getEarnedBadges', () => {
+  it('retourne les badges dont la progression atteint 100 %', () => {
+    const earned = getEarnedBadges({
+      level: 10,
+      xpIntoLevel: 0,
+      xpForNextLevel: 100,
+      masteredCount: 5,
+      dailyStreak: 3,
+      totalTests: 1,
+      bestScore: 100,
+      categories: { addition: { mastered: 7, total: 7 } }
+    });
+    expect(earned).toContain('LEVEL_5');
+    expect(earned).toContain('LEVEL_10');
+    expect(earned).toContain('MASTERY_5');
+    expect(earned).toContain('STREAK_3');
+    expect(earned).toContain('FIRST_TEST');
+    expect(earned).toContain('PERFECT_SCORE');
+    expect(earned).toContain('MASTERY_ADDITION');
+    expect(earned).not.toContain('LEVEL_20');
+    expect(earned).not.toContain('MASTERY_10');
+  });
+
+  it('retourne un tableau vide sans progression', () => {
+    expect(getEarnedBadges({})).toEqual([]);
   });
 });
 

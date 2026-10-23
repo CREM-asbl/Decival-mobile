@@ -232,13 +232,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
-import { BADGES, unlockedBadges } from '../../stores/badgeStore'
+import { BADGES, unlockedBadges, unlockBadge } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
-import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProgress, summarizeMastery } from '../../logic/progressLogic'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
 import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
 
 // Données réactives dérivées des stores
@@ -414,4 +414,28 @@ function calculateScore(test) {
 function getCorrectAnswersCount(test) {
   return test.items.filter(item => item.isCorrect).length
 }
+
+// Débloque les badges dont la progression atteint 100 % (aligne le stockage sur l'affichage)
+onMounted(() => {
+  const categories = {}
+  for (const badgeId of CATEGORY_BADGES) {
+    const category = badgeId.replace('MASTERY_', '').toLowerCase()
+    categories[category] = {
+      mastered: countMasteredInCategory(category),
+      total: CATEGORY_TYPE_COUNTS[category]
+    }
+  }
+  const earned = getEarnedBadges({
+    level: levelProgress.value.level,
+    xpIntoLevel: levelProgress.value.xpIntoLevel,
+    xpForNextLevel: levelProgress.value.xpForNextLevel,
+    masteredCount: masterySummary.value.masteredCount,
+    dailyStreak: testStats.value.dailyStreak,
+    totalTests: testStats.value.totalTests,
+    bestScore: testStats.value.bestScore,
+    categories
+  })
+  for (const badgeId of earned) unlockBadge(badgeId)
+})
+
 </script>

@@ -155,6 +155,32 @@ const MASTERY_BADGE_TARGETS: Record<string, number> = {
   MASTERY_10: 10
 };
 
+export interface EarnedBadgesContext extends BadgeProgressContext {
+  categories?: Record<string, { mastered: number; total: number }>;
+}
+
+const ALL_BADGE_IDS = [
+  ...Object.keys(LEVEL_BADGE_TARGETS),
+  ...Object.keys(MASTERY_BADGE_TARGETS),
+  'STREAK_3',
+  'FIRST_TEST',
+  'PERFECT_SCORE',
+  ...(CATEGORY_BADGES as readonly string[])
+];
+
+export function getEarnedBadges(ctx: EarnedBadgesContext = {}): string[] {
+  return ALL_BADGE_IDS.filter((badgeId) => {
+    const badgeCtx: BadgeProgressContext = { ...ctx };
+    if ((CATEGORY_BADGES as readonly string[]).includes(badgeId)) {
+      const category = badgeId.replace('MASTERY_', '').toLowerCase();
+      const cat = ctx.categories?.[category];
+      badgeCtx.masteredInCategory = cat?.mastered ?? 0;
+      badgeCtx.categoryTotal = cat?.total ?? 0;
+    }
+    return getBadgeProgress(badgeId, badgeCtx) >= 100;
+  });
+}
+
 export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}): number {
   const levelTarget = LEVEL_BADGE_TARGETS[badgeId];
   if (levelTarget !== undefined) {
