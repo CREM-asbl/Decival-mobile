@@ -67,8 +67,9 @@ Tout agent doit respecter ces règles techniques impératives :
 ## 🧠 Mémoire de l'Agent
 Les agents doivent mettre à jour cette section après chaque changement majeur pour conserver le contexte entre les sessions.
 
-- **Dernière mise à jour** : 30/09/2026
-- **État actuel (lot 1 carte Trello `2s5fj5bO`)** : Lot rédactionnel livré sur la branche `geoffrey-pliez-lot1-redactionnel-ui`, 6 commits :
+- **Dernière mise à jour** : 23/10/2026
+- **État actuel (badges progressifs, branche `geoffrey-pliez-badges-progressifs-repartition`, commit `1cab870`)** : 15 badges (12 + LEVEL_10/20/35 alignés MrComma : 🤓 lunettes, 🛡️ cape, 🥇 couronne argent). `getBadgeProgress()` dans `progressLogic.ts` (niveau/maîtrise/streak/binaire). `BadgeIcon.vue` progressif : anneau conic-gradient + remplissage emoji 2 couches + `%` + `role=progressbar`. Unlock seuils dans `testStore.ts`. Validation : 17 fichiers / 128 tests, check 0 erreur, build OK.
+- **État précédent (lot 1 carte Trello `2s5fj5bO`)** : Lot rédactionnel livré sur la branche `geoffrey-pliez-lot1-redactionnel-ui`, 6 commits :
   - `fa30067` — **inversion de décision sur les icônes d'opération**. `2edcb70` les avait dessinées en SVG stroke dans `Icon.astro` ; le rendu **emoji** des badges étant préféré, `tests/index.astro` affiche désormais `OPERATION_ICONS` (nouvelle constante dérivée de `BADGES` dans `badgeStore.ts`, source unique des symboles) en `text-4xl`, **sans pastille teintée** (les emoji ignorent `currentColor`) ; `sr-only` conserve la description accessible. Les 4 SVG `compare|plus|minus|times`, devenus inutiles, sont retirés de l'**union `Props.name` ET de la map `icons`** d'`Icon.astro`. Issue **#6** (« Unifier les icônes de badges avec le jeu SVG d'Icon.astro ») consigne le verdict inversé.
   - `2edcb70` — `tests/index.astro` : les périphrases sous les opérations sont remplacées par une **icône d'opération** + `sr-only` conservant le texte accessible. (Rendu SVG remplacé depuis par `fa30067`.) Ajouter une icône impose de toucher **l'union `Props.name` ET la map `icons`**.
   - `8d670e9` — « types d'opération maîtrisés » → « **sous-compétences maîtrisées** » (`ProgressPanel.vue`, 7 descriptions de `badgeStore.ts`, commentaires `typeMasteryStore.ts`). Vocabulaire enseignant (« type d'item ») laissé intact.
