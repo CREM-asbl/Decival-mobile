@@ -102,6 +102,7 @@
       :score="score"
       :gamificationResults="gamificationResults"
       :testType="testTypeLabel"
+      :testId="completedTestId"
       @restart="handleRestart"
     />
   </div>
@@ -162,6 +163,7 @@ const {
   continueBtn,
   answerInput,
   test,
+  completedTestId,
   progress,
   inputStep,
   currentItem,

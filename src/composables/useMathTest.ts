@@ -39,6 +39,9 @@ export function useMathTest(config: MathTestConfig) {
     // Test en cours
     const test: Ref<any> = ref(null)
 
+    // ID du test terminé (pour lien "pourquoi faux" vers feedback)
+    const completedTestId: Ref<string | null> = ref(null)
+
     // Helper pour donner le focus au champ de saisie
     function focusInput() {
         nextTick(() => {
@@ -211,6 +214,7 @@ export function useMathTest(config: MathTestConfig) {
             // Terminer le test
             const results = completeTest(test.value)
             gamificationResults.value = results
+            completedTestId.value = test.value?.id ?? null
 
             // Afficher la modal de fin
             showCompleteModal.value = true
@@ -262,6 +266,7 @@ export function useMathTest(config: MathTestConfig) {
         continueBtn,
         answerInput,
         test,
+        completedTestId,
 
         // Computed
         progress,

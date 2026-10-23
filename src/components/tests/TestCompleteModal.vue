@@ -24,6 +24,9 @@
           <p class="text-sm text-indigo-800 dark:text-indigo-300 font-medium">
             Une analyse pédagogique de tes résultats est disponible dans tes progrès.
           </p>
+          <a v-if="testId" :href="`/progress/feedback/${testId}`" class="inline-block mt-2 text-sm font-semibold text-indigo-700 dark:text-indigo-200 underline underline-offset-2 hover:text-indigo-900 dark:hover:text-white">
+            Pourquoi me suis-je trompé ?
+          </a>
         </div>
 
         <div v-if="gamificationResults?.newlyUnlockedBadges?.length" class="mt-6 mb-6">
@@ -40,18 +43,16 @@
         </p>
       </div>
       <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 p-6">
-        <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+        <a href="/progress" class="no-underline w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium text-center transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+          Voir progrès
+        </a>
+        <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
           Recommencer
         </button>
-        <a href="/progress" class="no-underline w-full sm:w-auto">
-                  <button class="w-full px-6 py-3 bg-gray-500 dark:bg-gray-600 text-white rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
-            Voir progrès
-          </button>
-        </a>
-        <a href="/tests" class="no-underline w-full sm:w-auto">
-                  <button class="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+        <a href="/tests" class="no-underline w-full sm:w-auto sm:ml-auto self-center text-center">
+          <span class="text-sm text-gray-500 dark:text-gray-400 underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-200">
             Fermer
-          </button>
+          </span>
         </a>
       </div>
     </div>
@@ -82,6 +83,10 @@ const props = defineProps({
   gamificationResults: {
     type: Object,
     default: () => null
+  },
+  testId: {
+    type: String,
+    default: null
   }
 });
 
