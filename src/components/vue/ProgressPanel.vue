@@ -129,7 +129,15 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8 border border-transparent dark:border-gray-700 overflow-hidden">
       <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-xl font-semibold dark:text-white">Maîtrise des sous-compétences</h2>
-        <span class="text-xs font-bold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">
+        <span
+          class="text-xs font-bold px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full"
+          role="progressbar"
+          :aria-valuenow="masterySummary.percent"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          :aria-label="`${masterySummary.masteredCount} sur ${masterySummary.totalCount} sous-compétences maîtrisées`"
+          :style="{ background: `linear-gradient(to right, #a7f3d0 ${masterySummary.percent}%, #ecfdf5 ${masterySummary.percent}%)` }"
+        >
               {{ masterySummary.masteredCount }} / {{ masterySummary.totalCount }} sous-compétences maîtrisées ({{ masterySummary.percent }}%)
         </span>
       </div>
