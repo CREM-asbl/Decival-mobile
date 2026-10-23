@@ -1,5 +1,4 @@
 ---
-import Button from "../components/common/Button.astro";
 import Icon from "../components/common/Icon.astro";
 import MrComma from "../components/vue/MrComma.vue";
 import Layout from "../layouts/Layout.astro";
@@ -43,9 +42,7 @@ const features = [
               client:load
             />
         </div>
-        <a href="/tests" class="no-underline">
-          <Button variant="primary" size="lg"> Lancer l'évaluation diagnostique </Button>
-        </a>
+        <a href="/tests" class="no-underline relative inline-flex items-center justify-center font-medium rounded-md px-6 py-3 text-lg text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all duration-300 ease-out">Lancer l'évaluation diagnostique</a>
       </div>
     </div>
 
@@ -71,7 +68,7 @@ const features = [
           type="button"
           data-dismiss-beta
           aria-label="Masquer le message beta"
-          class="shrink-0 rounded-full px-2 py-1 text-lg leading-none text-indigo-700 hover:bg-white/60 dark:text-indigo-100 dark:hover:bg-indigo-800"
+          class="shrink-0 rounded-full min-w-11 min-h-11 flex items-center justify-center text-lg leading-none text-indigo-700 hover:bg-white/60 dark:text-indigo-100 dark:hover:bg-indigo-800"
         >
           ×
         </button>

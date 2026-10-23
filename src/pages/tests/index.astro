@@ -1,5 +1,4 @@
 ---
-import Button from "../../components/common/Button.astro";
 import Layout from "../../layouts/Layout.astro";
 import { OPERATION_ICONS } from "../../stores/badgeStore";
 
@@ -65,10 +64,8 @@ const testTypes = [
               <span class="sr-only">{test.description}</span>
             </div>
             <div class="flex justify-end">
-              <a href={test.href} class="no-underline">
-                <Button variant="primary" size="md" type="link">
-                  Commencer
-                </Button>
+              <a href={test.href} class="no-underline relative inline-flex items-center justify-center font-medium rounded-md px-4 py-2 text-base text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all duration-300 ease-out">
+                Commencer
               </a>
             </div>
           </div>
