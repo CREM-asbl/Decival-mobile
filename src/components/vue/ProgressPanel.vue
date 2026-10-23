@@ -63,8 +63,8 @@
       </div>
       <div class="p-6">
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          <BadgeIcon 
-            v-for="badge in Object.values(BADGES)" 
+          <BadgeIcon
+            v-for="badge in visibleBadges"
             :key="badge.id"
             :badge="badge"
             :unlocked="unlockedBadgesIds.includes(badge.id)"
@@ -72,6 +72,14 @@
             showDescription
           />
         </div>
+        <button
+          v-if="hiddenBadgeCount > 0 || showAllBadges"
+          @click="showAllBadges = !showAllBadges"
+          class="mt-4 text-sm font-bold text-accent hover:underline"
+          :aria-expanded="showAllBadges"
+        >
+          {{ showAllBadges ? 'Voir moins' : `Voir les ${hiddenBadgeCount} autres` }}
+        </button>
       </div>
     </div>
 
@@ -394,9 +402,17 @@ const recentTests = computed(() => {
   return history.slice(0, 10) // Limiter à 10 tests
 })
 
-// Disclosure progressive : 5 tests visibles, catégories vides masquées
+// Disclosure progressive : 5 tests visibles, catégories vides masquées, badges repliés
 const showAllTests = ref(false)
 const showAllCategories = ref(false)
+const showAllBadges = ref(false)
+const visibleBadges = computed(() => {
+  const all = Object.values(BADGES)
+  const unlocked = all.filter(b => unlockedBadgesIds.value.includes(b.id))
+  if (showAllBadges.value) return all
+  return unlocked.length > 0 ? unlocked : all.slice(0, 5)
+})
+const hiddenBadgeCount = computed(() => Object.keys(BADGES).length - visibleBadges.value.length)
 const visibleTests = computed(() => showAllTests.value ? recentTests.value : recentTests.value.slice(0, 5))
 const visibleCategories = computed(() => {
   const withMastery = categories.filter(c => getMasteredTypesByCategory(c.id).length > 0)
