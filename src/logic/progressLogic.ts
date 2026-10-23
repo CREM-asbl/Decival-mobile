@@ -1,4 +1,4 @@
-import { XP_PER_LEVEL } from '../config/constants';
+import { XP_PER_LEVEL, CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../config/constants';
 
 export const LEVEL_TITLES: Record<number, string> = {
   1: 'Novice',
@@ -191,7 +191,7 @@ export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}
     return (ctx.bestScore ?? 0) >= 100 ? 100 : 0;
   }
 
-  if (badgeId.startsWith('MASTERY_') && badgeId !== 'MASTERY_REACHED' && badgeId !== 'MASTERY_5' && badgeId !== 'MASTERY_10') {
+  if ((CATEGORY_BADGES as readonly string[]).includes(badgeId)) {
     const inCategory = ctx.masteredInCategory ?? 0;
     const total = ctx.categoryTotal ?? 0;
     if (!Number.isFinite(inCategory) || !Number.isFinite(total) || total <= 0) return 0;

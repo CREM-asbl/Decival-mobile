@@ -232,20 +232,14 @@ import { BADGES, unlockedBadges } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
 import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProgress, summarizeMastery } from '../../logic/progressLogic'
+import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
 
 // Données réactives dérivées des stores
 const testStats = computed(() => stats.get())
 const unlockedBadgesIds = computed(() => unlockedBadges.get())
 const masteryState = computed(() => typeMastery.get())
 
-const CATEGORY_TOTALS = {
-  addition: 7,
-  subtraction: 7,
-  multiplication: 7,
-  comparison: 7
-}
-
-const CATEGORY_BADGE_MAP = {
+const CATEGORY_BADGE_MAP: Record<string, keyof typeof CATEGORY_TYPE_COUNTS> = {
   MASTERY_ADDITION: 'addition',
   MASTERY_SUBTRACTION: 'subtraction',
   MASTERY_MULTIPLICATION: 'multiplication',
@@ -267,10 +261,10 @@ function getProgressForBadge(badgeId) {
     })
   }
   const category = CATEGORY_BADGE_MAP[badgeId]
-  if (category) {
+  if (category && (CATEGORY_BADGES as readonly string[]).includes(badgeId)) {
     return getBadgeProgress(badgeId, {
       masteredInCategory: countMasteredInCategory(category),
-      categoryTotal: CATEGORY_TOTALS[category]
+      categoryTotal: CATEGORY_TYPE_COUNTS[category]
     })
   }
   return getBadgeProgress(badgeId, {
