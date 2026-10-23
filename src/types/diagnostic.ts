@@ -69,11 +69,22 @@ export interface TypeMasteryResult {
   mastered: boolean;
 }
 
+/** Résultat de maîtrise des entiers (verdict binaire, prérequis décimaux) */
+export interface IntegerMasteryResult {
+  mastered: boolean;
+  correct: number;
+  total: number;
+  score: number;
+  threshold: number;
+}
+
 /** Résumé de feedback pour l'enseignant */
 export interface TeacherFeedbackSummary {
-  /** Profil diagnostique (comparaison uniquement) */
+  /** Profil diagnostique (comparaison décimale uniquement) */
   comparisonProfile?: ComparisonProfileResult;
-  /** Résultats par type */
+  /** Verdict binaire entiers (mode entier uniquement) */
+  integerMastery?: IntegerMasteryResult;
+  /** Résultats par type (mode décimal uniquement) */
   resultsByType: TypeMasteryResult[];
   /** Texte de feedback détaillé */
   feedbackText: string;

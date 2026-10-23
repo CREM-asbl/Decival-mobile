@@ -45,6 +45,9 @@
     </div>
 
     <div class="mt-6 text-center">
+      <p v-if="showIntegerWarning" class="mb-3 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg px-3 py-2">
+        Maîtrise les entiers d'abord (prérequis) — tu peux quand même continuer.
+      </p>
       <button
         @click="startTest"
         class="px-8 py-3 bg-accent text-white rounded-md hover:bg-accent-hover transition-colors"
@@ -60,6 +63,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { getTestEncouragement } from '../../logic/progressLogic';
+import { isIntegerMastered } from '../../stores/typeMasteryStore';
 import { ITEMS_COUNT_ADDITION, ITEMS_COUNT_SUBTRACTION, ITEMS_COUNT_MULTIPLICATION, ITEMS_COUNT_COMPARISON } from '../../config/constants';
 
 const props = defineProps({
@@ -82,6 +86,8 @@ const itemCounts = {
 };
 
 const testEncouragement = computed(() => getTestEncouragement(props.testType, itemCounts[props.testType] || 0));
+
+const showIntegerWarning = computed(() => selectedMode.value === 'decimal' && !isIntegerMastered(props.testType));
 
 function selectMode(mode) {
   selectedMode.value = mode;

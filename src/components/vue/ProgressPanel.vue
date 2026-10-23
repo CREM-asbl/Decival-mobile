@@ -141,6 +141,14 @@
             <h3 class="font-black text-sm uppercase tracking-widest text-violet-500 dark:text-violet-400 flex items-center gap-2">
               {{ category.name }}
               <span class="h-px flex-1 bg-violet-100 dark:bg-violet-800/50"></span>
+              <span
+                class="text-[11px] font-bold px-2 py-0.5 rounded-full normal-case tracking-normal"
+                :class="isIntegerMastered(category.id)
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                  : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'"
+              >
+                {{ isIntegerMastered(category.id) ? 'Entiers maîtrisés' : 'Entiers à consolider' }}
+              </span>
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div v-for="type in getMasteredTypesByCategory(category.id)" :key="type.type" 
@@ -218,7 +226,7 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
-import { typeMastery, resetTypeMastery } from '../../stores/typeMasteryStore'
+import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
 import { BADGES, unlockedBadges } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
