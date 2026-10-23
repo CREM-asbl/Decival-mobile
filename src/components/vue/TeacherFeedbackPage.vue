@@ -148,7 +148,7 @@ const props = defineProps({
 const test = ref(null);
 const feedback = ref(null);
 const loading = ref(true);
-const showDetails = ref(false);
+const showDetails = ref(true);
 
 onMounted(() => {
   // Petite pause pour laisser Nanostores s'initialiser

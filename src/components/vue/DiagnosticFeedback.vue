@@ -44,7 +44,7 @@
         :aria-expanded="showDetails"
         aria-controls="diagnostic-details"
       >
-        <span>Détail par type d'item</span>
+        <span>Détail par sous-compétence</span>
         <span class="text-xs transition-transform duration-300" :style="{ transform: showDetails ? 'rotate(180deg)' : 'rotate(0)' }" aria-hidden="true">
           ▼
         </span>
@@ -94,7 +94,7 @@ defineProps({
   }
 });
 
-const showDetails = ref(false);
+const showDetails = ref(true);
 </script>
 
 <style scoped>
