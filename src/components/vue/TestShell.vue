@@ -19,7 +19,7 @@
           <button
             type="button"
             @click="handleQuit"
-            class="text-xs text-gray-500 dark:text-gray-400 underline underline-offset-2 hover:text-gray-800 dark:hover:text-gray-200"
+            class="text-xs text-gray-600 dark:text-gray-300 underline underline-offset-2 hover:text-gray-800 dark:hover:text-white"
           >
             Quitter
           </button>
