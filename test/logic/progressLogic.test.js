@@ -166,6 +166,7 @@ describe('progressLogic — getTestEncouragement', () => {
   it("annonce la longueur de la liste et tutoie l'élève", () => {
     const encouragement = getTestEncouragement('addition', 28);
     expect(encouragement.itemCount).toBe(28);
+    expect(encouragement.title).toBeTruthy();
     expect(encouragement.message).toContain('28');
     expect(encouragement.message).toContain('additions');
     expect(encouragement.message.toLowerCase()).toContain('tu');

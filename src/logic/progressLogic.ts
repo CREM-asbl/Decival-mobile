@@ -88,7 +88,7 @@ export function getProgressEncouragement(stats: {
 export function getTestEncouragement(
   testType: string,
   itemCount: number
-): { itemCount: number; message: string } {
+): { itemCount: number; title: string; message: string } {
   const count = Number.isFinite(itemCount) && itemCount > 0 ? itemCount : 0;
   const typeLabels: Record<string, string> = {
     addition: 'additions',
@@ -99,6 +99,7 @@ export function getTestEncouragement(
   const label = typeLabels[testType] ?? 'exercices';
   return {
     itemCount: count,
+    title: 'À toi de jouer !',
     message: `Tu vas faire ${count} ${label}. Tu es prêt ?`
   };
 }
