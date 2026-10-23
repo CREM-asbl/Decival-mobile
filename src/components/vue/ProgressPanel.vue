@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
     <!-- XP and Level Section -->
-        <div class="bg-linear-to-r from-accent to-violet-600 rounded-2xl p-5 sm:p-6 text-white shadow-lg shadow-indigo-900/20 overflow-hidden relative">
+        <div class="bg-linear-to-r from-accent to-accent-active rounded-2xl p-5 sm:p-6 text-white shadow-lg shadow-indigo-900/20 overflow-hidden relative">
       <div class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-6 relative z-10">
         <div class="flex items-center gap-4">
           <div class="bg-white/20 p-2 rounded-2xl backdrop-blur-md border border-white/30 shadow-inner">
@@ -33,22 +33,14 @@
         </div>
 
     <!-- Encouragement section with Mr Comma -->
-        <div class="bg-violet-50 dark:bg-violet-900/20 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-violet-100 dark:border-violet-800/50">
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-gray-200 dark:border-gray-600">
           <MrComma :variant="progressEncouragement.variant" animate class="w-16 h-16 sm:w-24 sm:h-24" />
       <div>
-            <h2 class="text-xl font-bold text-violet-900 dark:text-violet-100 mb-2">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
               {{ progressEncouragement.title }}
         </h2>
-            <p class="text-violet-700 dark:text-violet-300">
-              {{ progressEncouragement.title === "C'est parti !" 
-                ? "Commence ton premier exercice pour voir ta progression s'afficher ici."
-                : progressEncouragement.title === "Excellent travail !"
-                  ? "Tes résultats sont impressionnants. Tu maîtrises vraiment bien les concepts !"
-                  : progressEncouragement.title === "Tu progresses bien !"
-                    ? "Tes efforts portent leurs fruits. Continue comme ça pour atteindre le sommet !"
-                    : progressEncouragement.title === "Continue tes efforts !"
-                      ? "Tu es sur la bonne voie. Pratique encore un peu pour gagner en assurance."
-                      : "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !" }}
+            <p class="text-gray-600 dark:text-gray-300">
+              {{ progressMessage }}
             </p>
           </div>
         </div>
@@ -63,8 +55,8 @@
       </div>
       <div class="p-6">
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          <BadgeIcon 
-            v-for="badge in Object.values(BADGES)" 
+          <BadgeIcon
+            v-for="badge in visibleBadges"
             :key="badge.id"
             :badge="badge"
             :unlocked="unlockedBadgesIds.includes(badge.id)"
@@ -72,6 +64,14 @@
             showDescription
           />
         </div>
+        <button
+          v-if="hiddenBadgeCount > 0 || showAllBadges"
+          @click="showAllBadges = !showAllBadges"
+          class="mt-4 text-sm font-bold text-accent hover:underline"
+          :aria-expanded="showAllBadges"
+        >
+          {{ showAllBadges ? 'Voir moins' : `Voir les ${hiddenBadgeCount} autres` }}
+        </button>
       </div>
     </div>
 
@@ -89,14 +89,14 @@
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
         <div class="flex items-center gap-3 mb-2">
-          <div class="bg-violet-100 dark:bg-violet-900/30 p-2 rounded-lg">
-                      <svg class="w-5 h-5 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-accent/10 p-2 rounded-lg">
+                      <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
           <h2 class="text-lg font-semibold dark:text-gray-100">Tests</h2>
         </div>
-        <p class="text-3xl font-black text-violet-600 dark:text-violet-400">{{ testStats.totalTests }}</p>
+        <p class="text-3xl font-black text-accent">{{ testStats.totalTests }}</p>
       </div>
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
@@ -141,14 +141,14 @@
         </span>
       </div>
       <div class="p-6">
-        <p v-if="masteredTypes.length === 0" class="text-violet-700 dark:text-violet-300 text-center py-8 bg-violet-50 dark:bg-violet-900/20 rounded-lg border-2 border-dashed dark:border-violet-800/50">
+        <p v-if="masteredTypes.length === 0" class="text-gray-600 dark:text-gray-300 text-center py-8 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-dashed dark:border-gray-600">
           Continue à t'entraîner pour maîtriser tes premières sous-compétences !
         </p>
         <div v-else class="space-y-6">
-          <div v-for="category in categories" :key="category.id" class="space-y-3">
-            <h3 class="font-black text-sm uppercase tracking-widest text-violet-700 dark:text-violet-300 flex items-center gap-2">
+          <div v-for="category in visibleCategories" :key="category.id" class="space-y-3">
+            <h3 class="font-black text-sm uppercase tracking-widest text-gray-900 dark:text-white flex items-center gap-2">
               {{ category.name }}
-              <span class="h-px flex-1 bg-violet-100 dark:bg-violet-800/50"></span>
+              <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
               <span
                 class="text-[11px] font-bold px-2 py-0.5 rounded-full normal-case tracking-normal"
                 :class="isIntegerMastered(category.id)
@@ -160,7 +160,7 @@
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div v-for="type in getMasteredTypesByCategory(category.id)" :key="type.type" 
-                   class="border dark:border-gray-700 rounded-xl p-3 bg-violet-50 dark:bg-violet-900/20 flex items-center gap-3">
+                   class="border dark:border-gray-700 rounded-xl p-3 bg-gray-50 dark:bg-gray-700/50 flex items-center gap-3">
                 <div class="bg-emerald-100 dark:bg-emerald-900/30 p-1.5 rounded-full shrink-0">
                                   <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -168,11 +168,19 @@
                 </div>
                 <div>
                   <h4 class="font-bold dark:text-white text-sm">{{ getTypeLabel(category.id, type.type) }}</h4>
-                  <p class="text-xs text-violet-700 dark:text-violet-300">Dernier score : {{ Math.round(type.lastScore) }}%</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-300">Dernier score : {{ Math.round(type.lastScore) }}%</p>
                 </div>
               </div>
             </div>
           </div>
+          <button
+            v-if="hiddenCategoryCount > 0 || showAllCategories"
+            @click="showAllCategories = !showAllCategories"
+            class="mt-4 text-sm font-bold text-accent hover:underline"
+            :aria-expanded="showAllCategories"
+          >
+            {{ showAllCategories ? 'Voir moins' : `Voir les ${hiddenCategoryCount} autres` }}
+          </button>
         </div>
       </div>
     </div>
@@ -183,18 +191,18 @@
         <h2 class="text-xl font-semibold dark:text-white">Historique des tests</h2>
       </div>
       <div class="p-4">
-        <p v-if="recentTests.length === 0" class="text-violet-700 dark:text-violet-300 text-center py-8">
+        <p v-if="recentTests.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8">
           Aucun test complété pour le moment
         </p>
         <div v-else class="space-y-4">
-          <div v-for="test in recentTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-violet-50 dark:hover:bg-violet-900/20">
+          <div v-for="test in visibleTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50">
             <div class="flex items-center justify-between mb-2">
               <div class="font-bold dark:text-white text-lg">{{ getTestTypeName(test.type) }}</div>
-              <div class="text-xs font-medium text-violet-700 dark:text-violet-300 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
+              <div class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="text-sm text-violet-700 dark:text-violet-300">Mode: {{ getModeName(test.mode) }}</span>
+                <span class="text-sm text-gray-600 dark:text-gray-300">Mode: {{ getModeName(test.mode) }}</span>
                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                 <span class="text-sm font-bold text-accent">{{ calculateScore(test) }}%</span>
               </div>
@@ -206,12 +214,20 @@
                   </svg>
                   Analyser
                 </a>
-                <div class="text-sm font-medium px-2 py-0.5 bg-violet-100 dark:bg-violet-900/30 rounded text-violet-700 dark:text-violet-300">
+                <div class="text-sm font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
                   {{ getCorrectAnswersCount(test) }}/{{ test.items.length }} vrais
                 </div>
               </div>
             </div>
           </div>
+          <button
+            v-if="recentTests.length > 5 || showAllTests"
+            @click="showAllTests = !showAllTests"
+            class="mt-4 text-sm font-bold text-accent hover:underline"
+            :aria-expanded="showAllTests"
+          >
+            {{ showAllTests ? 'Voir moins' : `Voir les ${recentTests.length - 5} tests précédents` }}
+          </button>
         </div>
       </div>
     </div>
@@ -224,21 +240,23 @@
       </p>
     </div>
 
-    <!-- Bouton pour réinitialiser les données (pour déboguer) -->
-    <button @click="resetData" class="px-6 py-3 mt-6 text-violet-600 hover:text-red-500 dark:text-violet-300 text-sm font-medium transition-colors self-center">
-      Réinitialiser ma progression
-    </button>
+    <!-- Zone dangereuse : réinitialisation, séparée et confirmée -->
+    <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6 flex justify-center">
+      <button @click="resetData" class="px-4 py-2 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors underline underline-offset-2">
+        Réinitialiser ma progression
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
 import { BADGES, unlockedBadges, unlockBadge } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
-import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, getProgressMessage, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
 import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
 
 // Données réactives dérivées des stores
@@ -292,6 +310,7 @@ const progressEncouragement = computed(() => getProgressEncouragement({
   totalTests: testStats.value.totalTests,
   averageScore: testStats.value.averageScore
 }))
+const progressMessage = computed(() => getProgressMessage(progressEncouragement.value.title))
 
 const categories = [
   { id: 'addition', name: 'Addition' },
@@ -376,6 +395,25 @@ const recentTests = computed(() => {
   return history.slice(0, 10) // Limiter à 10 tests
 })
 
+// Disclosure progressive : 5 tests visibles, catégories vides masquées, badges repliés
+const showAllTests = ref(false)
+const showAllCategories = ref(false)
+const showAllBadges = ref(false)
+const visibleBadges = computed(() => {
+  const all = Object.values(BADGES)
+  const unlocked = all.filter(b => unlockedBadgesIds.value.includes(b.id))
+  if (showAllBadges.value) return all
+  return unlocked.length > 0 ? unlocked : all.slice(0, 5)
+})
+const hiddenBadgeCount = computed(() => Object.keys(BADGES).length - visibleBadges.value.length)
+const visibleTests = computed(() => showAllTests.value ? recentTests.value : recentTests.value.slice(0, 5))
+const visibleCategories = computed(() => {
+  const withMastery = categories.filter(c => getMasteredTypesByCategory(c.id).length > 0)
+  if (showAllCategories.value || withMastery.length === 0) return categories
+  return withMastery
+})
+const hiddenCategoryCount = computed(() => categories.length - visibleCategories.value.length)
+
 // Fonctions utilitaires
 function getTestTypeName(type) {
   const types = {
@@ -413,6 +451,12 @@ function calculateScore(test) {
 
 function getCorrectAnswersCount(test) {
   return test.items.filter(item => item.isCorrect).length
+}
+
+function resetData() {
+  if (!window.confirm('Effacer toute ta progression ? Cette action est définitive.')) return
+  resetTestData()
+  resetTypeMastery()
 }
 
 // Débloque les badges dont la progression atteint 100 % (aligne le stockage sur l'affichage)

@@ -2,9 +2,9 @@
   <dialog ref="dialogRef" v-if="show" class="test-complete-modal fixed inset-0 w-full max-w-none max-h-none bg-black bg-opacity-50 flex items-center justify-center p-4 z-100" @close="onClose">
     <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg mx-auto shadow-xl border border-transparent dark:border-gray-700 animate-bounce-in my-8 max-h-[calc(100dvh-6rem)] flex flex-col">
       <div class="text-center p-6 pb-0 overflow-y-auto flex-1 min-h-0">
-        <div class="text-6xl mb-4">🎉</div>
-        <h3 class="text-2xl font-bold mb-2 dark:text-white">Félicitations !</h3>
-        <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testType }}.</p>
+        <div class="text-6xl mb-4">{{ completeCopy.emoji }}</div>
+        <h3 class="text-2xl font-bold mb-2 dark:text-white">{{ completeCopy.title }}</h3>
+        <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testTypeLabel }}.</p>
         
         <div class="bg-accent/10 dark:bg-accent/20 rounded-xl p-6 mb-6 border border-accent/20">
           <div class="text-sm font-bold text-accent uppercase tracking-widest mb-1">Score final</div>
@@ -24,6 +24,9 @@
           <p class="text-sm text-indigo-800 dark:text-indigo-300 font-medium">
             Une analyse pédagogique de tes résultats est disponible dans tes progrès.
           </p>
+          <a v-if="testId" :href="`/progress/feedback/${testId}`" class="inline-block mt-2 text-sm font-semibold text-indigo-700 dark:text-indigo-200 underline underline-offset-2 hover:text-indigo-900 dark:hover:text-white">
+            Pourquoi me suis-je trompé ?
+          </a>
         </div>
 
         <div v-if="gamificationResults?.newlyUnlockedBadges?.length" class="mt-6 mb-6">
@@ -40,18 +43,16 @@
         </p>
       </div>
       <div class="flex flex-col sm:flex-row-reverse sm:justify-start gap-3 p-6">
-        <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+        <a href="/progress" data-autofocus class="no-underline w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-md hover:bg-accent-hover font-medium text-center transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+          Voir progrès
+        </a>
+        <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
           Recommencer
         </button>
-        <a href="/progress" class="no-underline w-full sm:w-auto">
-                  <button class="w-full px-6 py-3 bg-gray-500 dark:bg-gray-600 text-white rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
-            Voir progrès
-          </button>
-        </a>
-        <a href="/tests" class="no-underline w-full sm:w-auto">
-                  <button class="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+        <a href="/tests" class="no-underline w-full sm:w-auto sm:ml-auto self-center text-center">
+          <span class="text-sm text-gray-500 dark:text-gray-400 underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-200">
             Fermer
-          </button>
+          </span>
         </a>
       </div>
     </div>
@@ -59,10 +60,12 @@
 </template>
 
 <script setup>
-import { watch, ref } from 'vue';
+import { watch, ref, computed } from 'vue';
 import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
+import { getTestCompleteCopy } from '../../logic/progressLogic';
+import { TEST_TYPE_LABELS } from '../../types/test';
 
 const props = defineProps({
   show: {
@@ -76,16 +79,24 @@ const props = defineProps({
   testType: {
     type: String,
     required: true,
-    validator: (value) => ['addition', 'soustraction', 'multiplication', 'comparaison'].includes(value)
+    validator: (value) => value in TEST_TYPE_LABELS
   },
   gamificationResults: {
     type: Object,
     default: () => null
+  },
+  testId: {
+    type: String,
+    default: null
   }
 });
 
 // Émets des événements pour les actions
-const emit = defineEmits(['restart']);
+const emit = defineEmits(['restart', 'close']);
+
+const completeCopy = computed(() => getTestCompleteCopy(props.score));
+
+const testTypeLabel = computed(() => TEST_TYPE_LABELS[props.testType] ?? props.testType);
 
 // Fonction pour gérer le restart
 function onRestart() {
@@ -93,7 +104,9 @@ function onRestart() {
 }
 
 function onClose() {
-  emit('restart'); // or just close without action
+  // Esc uniquement : show encore true. Fermeture programmatique (restart/quit)
+  // → show déjà false, ne rien émettre pour éviter handleQuit après handleRestart.
+  if (props.show) emit('close');
 }
 
 function getBadgeIcon(id) {
@@ -108,9 +121,9 @@ const dialogRef = ref(null)
 watch(() => props.show, (newVal) => {
   if (newVal) {
     dialogRef.value?.showModal()
-    // Focus first focusable element
-    const firstButton = dialogRef.value?.querySelector('button')
-    if (firstButton) firstButton.focus()
+    // Focus action primaire (Voir progrès), pas Recommencer
+    const primary = dialogRef.value?.querySelector('[data-autofocus]')
+    if (primary instanceof HTMLElement) primary.focus()
   } else {
     dialogRef.value?.close()
   }

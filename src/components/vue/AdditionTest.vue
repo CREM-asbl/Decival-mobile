@@ -3,7 +3,6 @@
     testType="addition"
     :createTest="createAdditionTest"
     :analyzeError="analyzeError"
-    testTypeLabel="addition"
     operationSymbol="+"
     answerLabel="Réponse à l'addition"
   />

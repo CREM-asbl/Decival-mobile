@@ -2,40 +2,25 @@
 import AnimationSettings from "../components/common/AnimationSettings.astro";
 import SoundSettings from "../components/common/SoundSettings.astro";
 import Layout from "../layouts/Layout.astro";
-import { APP_VERSION } from "../config/constants";
 ---
 
-<Layout title="Paramètres - Decival">
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6 dark:text-white">Paramètres</h1>
+<Layout title="Paramètres - Decival" currentPage="settings">
+  <div class="max-w-lg mx-auto py-6 px-4">
+    <h1 class="text-2xl font-bold mb-6">Paramètres</h1>
 
-    <div class="space-y-6 max-w-lg">
+    <div class="space-y-4">
       <SoundSettings />
       <AnimationSettings />
-    </div>
 
-    <div class="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-      <h2 class="text-lg font-semibold mb-2 dark:text-white">
-        À propos des paramètres
-      </h2>
-      <p class="text-sm text-gray-600 dark:text-gray-400">
-        Ces paramètres vous permettent de personnaliser votre expérience sur
-        Decival. Les préférences sont automatiquement sauvegardées et appliquées
-        à toutes vos sessions.
-      </p>
-      <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
-        Les sons et animations sont conçus pour renforcer votre apprentissage
-        tout en restant discrets. Vous pouvez les ajuster ou les désactiver
-        selon vos besoins.
-      </p>
-    </div>
-
-    <div
-      class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center"
-    >
-      <p class="text-xs text-gray-400 dark:text-gray-500">
-        Decival version {APP_VERSION}
-      </p>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
+        <h2 class="text-xl font-semibold mb-4 dark:text-white">
+          À propos des paramètres
+        </h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Personnalise ton expérience : tes préférences sont sauvegardées et
+          appliquées à toutes tes sessions.
+        </p>
+      </div>
     </div>
   </div>
 </Layout>

@@ -94,4 +94,15 @@ describe('Diagnostic Profiles Logic', () => {
     const result = detectComparisonProfile(items);
     expect(result.profile).toBe('EXPERT');
   });
+
+  it('should expose a semantic tone for theming (no inline hex in UI)', () => {
+    const items = Array(49).fill(0).map((_, i) => ({
+      type: i % 7,
+      userAnswer: '=',
+      isCorrect: true
+    }));
+
+    const result = detectComparisonProfile(items);
+    expect(['success', 'warning', 'danger', 'info', 'neutral']).toContain(result.tone);
+  });
 });

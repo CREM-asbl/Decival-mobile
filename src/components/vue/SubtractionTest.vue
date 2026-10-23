@@ -3,7 +3,6 @@
     testType="subtraction"
     :createTest="createSubtractionTest"
     :analyzeError="analyzeError"
-    testTypeLabel="soustraction"
     operationSymbol="−"
     answerLabel="Réponse à la soustraction"
   />

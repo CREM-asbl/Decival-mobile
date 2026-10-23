@@ -1,5 +1,4 @@
 ---
-import Button from "../components/common/Button.astro";
 import Icon from "../components/common/Icon.astro";
 import MrComma from "../components/vue/MrComma.vue";
 import Layout from "../layouts/Layout.astro";
@@ -26,41 +25,13 @@ const features = [
 
 <Layout title="Decival - Évaluation et diagnostic des décimaux" currentPage="home">
   <div class="max-w-lg mx-auto px-4 py-8">
-    <section
-      class="mb-8 rounded-2xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 shadow-sm dark:border-indigo-900 dark:bg-indigo-900/40"
-    >
-      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-        <span
-          class="inline-flex w-fit items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700 shadow-sm ring-1 ring-indigo-100 dark:bg-indigo-800/70 dark:text-indigo-100 dark:ring-indigo-700/60"
-        >
-          <span
-            class="h-2 w-2 rounded-full bg-green-500 animate-pulse"
-            aria-hidden="true"></span>
-          Beta
-        </span>
-        <div class="flex-1 space-y-1">
-          <p class="text-sm font-semibold text-indigo-900 dark:text-indigo-50">
-            Outil d'évaluation diagnostique en évolution continue.
-          </p>
-          <p class="text-sm text-indigo-900/80 dark:text-indigo-100/80">
-            Certaines fonctionnalités peuvent changer. Vos retours nous aident à
-            prioriser les améliorations.
-          </p>
-          <p class="text-sm font-semibold text-indigo-900 dark:text-indigo-100">
-            Vos retours comptent : utilisez le bouton <span
-              class="underline underline-offset-2">Retour</span
-            > en haut pour nous aider à améliorer Decival.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <div class="text-center mb-8">
+    <div class="text-center mb-6">
       <h1 class="text-3xl font-bold mb-4">Decival, au service du diagnostic pédagogique</h1>
-      <p class="text-gray-600 mb-6">
-        Évalue les élèves sur les décimaux et fournit à l'enseignant un
-        diagnostic clair pour comprendre les erreurs commises et orienter la
-        remédiation
+      <p class="text-gray-700 dark:text-gray-300 mb-2">
+        Élève ? Entraîne-toi sur les décimaux avec des exercices adaptés.
+      </p>
+      <p class="text-gray-700 dark:text-gray-300 mb-6">
+        Enseignant ? Obtiens un diagnostic clair pour comprendre les erreurs et orienter la remédiation.
       </p>
       <div class="flex flex-col items-center justify-center">
         <div class="mb-4">
@@ -72,11 +43,52 @@ const features = [
               client:load
             />
         </div>
-        <a href="/tests" class="no-underline">
-          <Button variant="primary" size="lg"> Lancer l'évaluation diagnostique </Button>
-        </a>
+        <a href="/tests" class="no-underline relative inline-flex items-center justify-center font-medium rounded-md px-6 py-3 text-lg text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all duration-300 ease-out">Lancer l'évaluation diagnostique</a>
       </div>
     </div>
+
+    <section
+      id="beta-note"
+      class="mb-8 rounded-2xl border border-indigo-100 bg-indigo-50/80 px-4 py-2 shadow-sm dark:border-indigo-900 dark:bg-indigo-900/40"
+    >
+      <div class="flex items-center gap-3">
+        <span
+          class="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700 shadow-sm ring-1 ring-indigo-100 dark:bg-indigo-800/70 dark:text-indigo-100 dark:ring-indigo-700/60"
+        >
+          <span
+            class="h-2 w-2 rounded-full bg-green-500 animate-pulse"
+            aria-hidden="true"></span>
+          Beta
+        </span>
+        <p class="flex-1 text-sm text-indigo-900/80 dark:text-indigo-100/80">
+          Outil en évolution — merci de nous aider à l'améliorer.
+        </p>
+        <button
+          type="button"
+          data-dismiss-beta
+          aria-label="Masquer le message beta"
+          class="shrink-0 rounded-full min-w-11 min-h-11 flex items-center justify-center text-lg leading-none text-indigo-700 hover:bg-white/60 dark:text-indigo-100 dark:hover:bg-indigo-800"
+        >
+          ×
+        </button>
+      </div>
+    </section>
+    <script>
+      const note = document.getElementById("beta-note");
+      try {
+        if (localStorage.getItem("decival-hide-beta") === "1" && note) {
+          note.hidden = true;
+        }
+      } catch {}
+      note
+        ?.querySelector("[data-dismiss-beta]")
+        ?.addEventListener("click", () => {
+          if (note) note.hidden = true;
+          try {
+            localStorage.setItem("decival-hide-beta", "1");
+          } catch {}
+        });
+    </script>
 
     <div class="grid gap-6 mt-12">
       {

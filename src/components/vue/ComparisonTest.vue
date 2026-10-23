@@ -3,7 +3,6 @@
     testType="comparison"
     :createTest="createComparisonTest"
     :analyzeError="analyzeError"
-    testTypeLabel="comparaison"
     operationSymbol=""
     isComparison
   />

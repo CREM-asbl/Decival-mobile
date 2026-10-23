@@ -2,12 +2,15 @@ import { describe, it, expect } from 'vitest';
 import {
   clampPercent,
   getBadgeProgress,
+  getCategorySummary,
   getEarnedBadges,
   getInTestEncouragement,
   getLevelProgress,
   getLevelTitle,
   getProgressEncouragement,
+  getProgressMessage,
   getScorePercent,
+  getTestCompleteCopy,
   getTestEncouragement,
   summarizeMastery
 } from '../../src/logic/progressLogic';
@@ -158,12 +161,22 @@ describe('progressLogic — getProgressEncouragement', () => {
     expect(getProgressEncouragement({ totalTests: 2, averageScore: 400 }).title).toBe('Excellent travail !');
     expect(getProgressEncouragement({}).title).toBe("C'est parti !");
   });
+
+  it('associe chaque titre à son message', () => {
+    expect(getProgressMessage("C'est parti !")).toBe(
+      "Commence ton premier exercice pour voir ta progression s'afficher ici."
+    );
+    expect(getProgressMessage('Titre inconnu')).toBe(
+      "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !"
+    );
+  });
 });
 
 describe('progressLogic — getTestEncouragement', () => {
   it("annonce la longueur de la liste et tutoie l'élève", () => {
     const encouragement = getTestEncouragement('addition', 28);
     expect(encouragement.itemCount).toBe(28);
+    expect(encouragement.title).toBeTruthy();
     expect(encouragement.message).toContain('28');
     expect(encouragement.message).toContain('additions');
     expect(encouragement.message.toLowerCase()).toContain('tu');
@@ -201,6 +214,27 @@ describe('progressLogic — getInTestEncouragement', () => {
     expect(getInTestEncouragement(-3, 10)).toBe("C'est parti, tu peux le faire !");
     expect(getInTestEncouragement(99, 10)).toBe('Plus que quelques questions, courage !');
     expect(getInTestEncouragement(0, 0)).toBe("C'est parti, tu peux le faire !");
+  });
+});
+
+describe('progressLogic — getTestCompleteCopy', () => {
+  it('ne félicite pas un score nul', () => {
+    const copy = getTestCompleteCopy(0);
+    expect(copy.title).not.toMatch(/félicitations/i);
+    expect(copy.title).toBe('Test terminé !');
+  });
+
+  it('adapte le titre par palier', () => {
+    expect(getTestCompleteCopy(100).title).toBe('Félicitations !');
+    expect(getTestCompleteCopy(85).title).toBe('Beau travail !');
+    expect(getTestCompleteCopy(60).title).toBe('Bien, continue !');
+    expect(getTestCompleteCopy(30).title).toBe('Courage, tu progresses !');
+  });
+
+  it('borne les entrées invalides', () => {
+    expect(getTestCompleteCopy(Number.NaN).title).toBe('Test terminé !');
+    expect(getTestCompleteCopy(-5).title).toBe('Test terminé !');
+    expect(getTestCompleteCopy(150).title).toBe('Félicitations !');
   });
 });
 
@@ -305,5 +339,43 @@ describe('progressLogic — summarizeMastery', () => {
     expect(summarizeMastery({})).toEqual({ masteredCount: 0, totalCount: 0, percent: 0 });
     expect(summarizeMastery(undefined)).toEqual({ masteredCount: 0, totalCount: 0, percent: 0 });
     expect(summarizeMastery(null)).toEqual({ masteredCount: 0, totalCount: 0, percent: 0 });
+  });
+});
+
+describe('progressLogic — getCategorySummary', () => {
+  const mastery = {
+    'addition-decimal-0': { mastered: true, category: 'addition', mode: 'decimal' },
+    'addition-decimal-1': { mastered: false, category: 'addition', mode: 'decimal' },
+    'addition-integer--1': { mastered: true, category: 'addition', mode: 'integer' },
+    'subtraction-decimal-0': { mastered: true, category: 'subtraction', mode: 'decimal' }
+  };
+  const tests = [
+    { type: 'addition', items: [{ isCorrect: true }, { isCorrect: false }] },
+    { type: 'addition', items: [{ isCorrect: true }, { isCorrect: true }] }
+  ];
+
+  it('résume tests, moyenne et maîtrise par catégorie', () => {
+    const s = getCategorySummary('addition', tests, mastery);
+    expect(s.testCount).toBe(2);
+    expect(s.averageScore).toBe(75);
+    expect(s.masteredCount).toBe(1);
+    expect(s.integerMastered).toBe(true);
+  });
+
+  it('ignore les tests des autres catégories', () => {
+    const s = getCategorySummary('multiplication', tests, mastery);
+    expect(s.testCount).toBe(0);
+    expect(s.averageScore).toBeNull();
+  });
+
+  it('gère historique et maîtrise vides', () => {
+    const s = getCategorySummary('addition', [], {});
+    expect(s).toEqual({
+      testCount: 0,
+      averageScore: null,
+      masteredCount: 0,
+      totalTypes: 7,
+      integerMastered: false
+    });
   });
 });

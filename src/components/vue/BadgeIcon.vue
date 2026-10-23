@@ -14,9 +14,9 @@
       <div
         class="badge-emoji badge-emoji-fg"
         aria-hidden="true"
-        :style="{ height: `${displayProgress}%` }"
+        :style="{ clipPath: `inset(${100 - displayProgress}% 0 0 0)` }"
       >
-        <span :style="{ height: 'var(--badge-size)' }">{{ badge.icon }}</span>
+        {{ badge.icon }}
       </div>
     </div>
     <div class="text-sm font-bold text-center dark:text-white">{{ badge.title }}</div>
@@ -103,10 +103,10 @@ const effectivelyUnlocked = computed(() => props.unlocked || displayProgress.val
   position: absolute;
   inset: 3px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   font-size: 2.25rem;
-  line-height: var(--badge-size);
+  line-height: 1;
   border-radius: 9999px;
   overflow: hidden;
   background-color: #fff;
@@ -118,16 +118,9 @@ const effectivelyUnlocked = computed(() => props.unlocked || displayProgress.val
 }
 
 .badge-emoji-fg {
-  align-items: flex-end;
+  align-items: center;
   filter: none;
   opacity: 1;
-}
-
-.badge-emoji-fg > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: var(--badge-size);
 }
 
 .badge-unlocked .badge-emoji-bg {

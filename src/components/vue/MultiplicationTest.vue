@@ -3,7 +3,6 @@
     testType="multiplication"
     :createTest="createMultiplicationTest"
     :analyzeError="analyzeError"
-    testTypeLabel="multiplication"
     operationSymbol="×"
     answerLabel="Réponse à la multiplication"
   />
