@@ -47,6 +47,85 @@ body {
   color-scheme: dark;
 }
 
+/* Interrupteurs des réglages (partagés : sons, animations). */
+.toggle-checkbox {
+  appearance: none;
+  flex-shrink: 0;
+  width: 40px;
+  height: 24px;
+  background-color: #e5e7eb;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-checkbox:checked {
+  background-color: rgb(var(--accent));
+}
+
+.toggle-checkbox::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  background-color: white;
+  transition: transform 0.3s;
+}
+
+.toggle-checkbox:checked::before {
+  transform: translateX(16px);
+}
+
+.toggle-checkbox:focus-visible {
+  outline: 2px solid rgba(var(--accent), 0.5);
+  outline-offset: 2px;
+}
+
+.settings-range {
+  height: 24px;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.settings-range:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.settings-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgb(var(--accent));
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.settings-range::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.settings-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgb(var(--accent));
+  cursor: pointer;
+}
+
+.settings-range::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background-color: #e5e7eb;
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
