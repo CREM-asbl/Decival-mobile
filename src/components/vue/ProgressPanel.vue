@@ -145,7 +145,7 @@
           Continue à t'entraîner pour maîtriser tes premières sous-compétences !
         </p>
         <div v-else class="space-y-6">
-          <div v-for="category in categories" :key="category.id" class="space-y-3">
+          <div v-for="category in visibleCategories" :key="category.id" class="space-y-3">
             <h3 class="font-black text-sm uppercase tracking-widest text-violet-700 dark:text-violet-300 flex items-center gap-2">
               {{ category.name }}
               <span class="h-px flex-1 bg-violet-100 dark:bg-violet-800/50"></span>
@@ -173,6 +173,14 @@
               </div>
             </div>
           </div>
+          <button
+            v-if="hiddenCategoryCount > 0 || showAllCategories"
+            @click="showAllCategories = !showAllCategories"
+            class="mt-4 text-sm font-bold text-accent hover:underline"
+            :aria-expanded="showAllCategories"
+          >
+            {{ showAllCategories ? 'Voir moins' : `Voir les ${hiddenCategoryCount} autres` }}
+          </button>
         </div>
       </div>
     </div>
@@ -187,7 +195,7 @@
           Aucun test complété pour le moment
         </p>
         <div v-else class="space-y-4">
-          <div v-for="test in recentTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-violet-50 dark:hover:bg-violet-900/20">
+          <div v-for="test in visibleTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-violet-50 dark:hover:bg-violet-900/20">
             <div class="flex items-center justify-between mb-2">
               <div class="font-bold dark:text-white text-lg">{{ getTestTypeName(test.type) }}</div>
               <div class="text-xs font-medium text-violet-700 dark:text-violet-300 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
@@ -212,6 +220,14 @@
               </div>
             </div>
           </div>
+          <button
+            v-if="recentTests.length > 5 || showAllTests"
+            @click="showAllTests = !showAllTests"
+            class="mt-4 text-sm font-bold text-accent hover:underline"
+            :aria-expanded="showAllTests"
+          >
+            {{ showAllTests ? 'Voir moins' : `Voir les ${recentTests.length - 5} tests précédents` }}
+          </button>
         </div>
       </div>
     </div>
@@ -232,7 +248,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
 import { BADGES, unlockedBadges, unlockBadge } from '../../stores/badgeStore'
@@ -375,6 +391,17 @@ const recentTests = computed(() => {
   const history = testHistory.get()
   return history.slice(0, 10) // Limiter à 10 tests
 })
+
+// Disclosure progressive : 5 tests visibles, catégories vides masquées
+const showAllTests = ref(false)
+const showAllCategories = ref(false)
+const visibleTests = computed(() => showAllTests.value ? recentTests.value : recentTests.value.slice(0, 5))
+const visibleCategories = computed(() => {
+  const withMastery = categories.filter(c => getMasteredTypesByCategory(c.id).length > 0)
+  if (showAllCategories.value || withMastery.length === 0) return categories
+  return withMastery
+})
+const hiddenCategoryCount = computed(() => categories.length - visibleCategories.value.length)
 
 // Fonctions utilitaires
 function getTestTypeName(type) {
