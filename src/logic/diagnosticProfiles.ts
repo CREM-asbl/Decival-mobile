@@ -14,7 +14,7 @@
  */
 
 import type { ComparisonItem } from '../types/comparison';
-import type { ComparisonProfile, ComparisonProfileResult } from '../types/diagnostic';
+import type { ComparisonProfile, ComparisonProfileResult, ProfileTone } from '../types/diagnostic';
 
 const ITEMS_PER_TYPE = 7;
 const TOTAL_ITEMS = 49;
@@ -23,53 +23,53 @@ const TYPE_MASTERY_THRESHOLD = 5;
 const EXPERT_TOTAL_THRESHOLD = 45;
 
 /** Descriptions des profils en français (terminologie FWB) */
-const PROFILE_DESCRIPTIONS: Record<ComparisonProfile, { label: string; description: string; color: string; icon: string }> = {
+const PROFILE_DESCRIPTIONS: Record<ComparisonProfile, { label: string; description: string; tone: ProfileTone; icon: string }> = {
   TOO_MANY_NO_ANSWERS: {
     label: 'Trop de non-réponses',
     description: "L'élève n'a pas répondu à un nombre significatif de questions. Le test ne peut pas être interprété de manière fiable. Il est recommandé de refaire le test en s'assurant que l'élève comprend bien la consigne.",
-    color: '#9e9e9e',
+    tone: 'neutral',
     icon: '⚠️'
   },
   INSTRUCTIONS_NOT_UNDERSTOOD: {
     label: 'Consigne incomprise',
     description: "L'élève semble ne pas avoir compris la consigne du test. Un nombre important d'erreurs est observé même sur les comparaisons les plus simples (type 0). Il est recommandé de vérifier la compréhension de la consigne avant de refaire le test.",
-    color: '#ff9800',
+    tone: 'warning',
     icon: '⚠️'
   },
   NATURAL: {
     label: 'Profil Naturel',
     description: "L'élève traite la partie décimale comme un nombre naturel. Par exemple, il considère que 0,12 > 0,9 car 12 > 9. Cette conception est très répandue et nécessite un travail spécifique sur le sens de la virgule et la valeur positionnelle des chiffres après la virgule.",
-    color: '#f44336',
+    tone: 'danger',
     icon: '🔴'
   },
   LENGTH: {
     label: 'Profil Longueur',
     description: "L'élève choisit systématiquement le nombre décimal qui a le plus de chiffres après la virgule. Par exemple, il considère que 0,123 > 0,9 car 0,123 a plus de chiffres. Ce profil indique une confusion entre la longueur de l'écriture et la grandeur du nombre.",
-    color: '#ff5722',
+    tone: 'danger',
     icon: '🟠'
   },
   EXPERT: {
     label: 'Profil Expert',
     description: "L'élève maîtrise très bien la comparaison de nombres décimaux. Il réussit de manière cohérente tous les types de comparaison, y compris les cas impliquant des zéros non significatifs et l'égalité. Félicitations !",
-    color: '#4caf50',
+    tone: 'success',
     icon: '🟢'
   },
   EXPERT_WITH_ERRORS: {
     label: 'Profil Expert avec erreurs',
     description: "L'élève comprend globalement bien la comparaison de décimaux et réussit la majorité des types, mais commet encore quelques erreurs ponctuelles. Un travail ciblé sur les types d'items échoués permettrait d'atteindre le niveau expert.",
-    color: '#8bc34a',
+    tone: 'success',
     icon: '🟡'
   },
   NEAR_EXPERT: {
     label: 'Profil Presque Expert',
     description: "L'élève maîtrise bien la plupart des comparaisons, mais éprouve des difficultés spécifiques avec les zéros non significatifs à droite (types 5 et 6). Par exemple, il peut hésiter entre 0,2 et 0,20 ou entre 0,1 et 0,10. Un travail ciblé sur l'équivalence des écritures décimales est recommandé.",
-    color: '#03a9f4',
+    tone: 'info',
     icon: '🔵'
   },
   OTHER: {
     label: 'Profil Autre',
     description: "Le profil de l'élève ne correspond à aucun des profils typiques identifiés par la recherche. Les résultats sont hétérogènes et nécessitent une analyse plus approfondie par l'enseignant pour comprendre les conceptions sous-jacentes.",
-    color: '#607d8b',
+    tone: 'neutral',
     icon: '⚪'
   }
 };

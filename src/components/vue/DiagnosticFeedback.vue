@@ -8,8 +8,9 @@
     </div>
 
     <!-- Verdict binaire entiers (prérequis décimaux) -->
-    <div v-if="feedback.integerMastery" class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4" :style="{ borderColor: feedback.integerMastery.mastered ? '#4caf50' : '#ff9800' }">
+    <div v-if="feedback.integerMastery" class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       <div class="flex items-center gap-3 mb-2">
+        <span class="w-2.5 h-2.5 rounded-full shrink-0" :class="feedback.integerMastery.mastered ? 'bg-green-500' : 'bg-amber-500'" aria-hidden="true"></span>
         <span class="text-2xl">{{ feedback.integerMastery.mastered ? '🟢' : '🟠' }}</span>
         <h5 class="text-md font-bold dark:text-white">{{ feedback.integerMastery.mastered ? 'Entiers maîtrisés' : 'Entiers non maîtrisés' }}</h5>
       </div>
@@ -19,8 +20,9 @@
     </div>
 
     <!-- Profil Diagnostique (Comparaison décimale uniquement) -->
-    <div v-else-if="feedback.comparisonProfile" class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4" :style="{ borderColor: feedback.comparisonProfile.color }">
+    <div v-else-if="feedback.comparisonProfile" class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       <div class="flex items-center gap-3 mb-2">
+        <span class="w-2.5 h-2.5 rounded-full shrink-0" :class="toneDotClass(feedback.comparisonProfile.tone)" aria-hidden="true"></span>
         <span class="text-2xl">{{ feedback.comparisonProfile.icon }}</span>
         <h5 class="text-md font-bold dark:text-white">{{ feedback.comparisonProfile.label }}</h5>
       </div>
@@ -30,7 +32,7 @@
     </div>
 
     <!-- Texte de feedback global -->
-    <div v-else class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4 border-accent">
+    <div v-else class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
         {{ feedback.feedbackText }}
       </p>
@@ -93,6 +95,18 @@ defineProps({
     required: true
   }
 });
+
+const TONE_DOT_CLASSES = {
+  success: 'bg-green-500',
+  warning: 'bg-amber-500',
+  danger: 'bg-red-500',
+  info: 'bg-sky-500',
+  neutral: 'bg-gray-400'
+};
+
+function toneDotClass(tone) {
+  return TONE_DOT_CLASSES[tone] ?? TONE_DOT_CLASSES.neutral;
+}
 
 const showDetails = ref(true);
 </script>

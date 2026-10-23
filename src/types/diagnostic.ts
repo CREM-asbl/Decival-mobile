@@ -14,12 +14,14 @@ export type ComparisonProfile =
   | 'NEAR_EXPERT'
   | 'OTHER';
 
+export type ProfileTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+
 export interface ComparisonProfileResult {
   profile: ComparisonProfile;
   label: string;
   description: string;
-  /** Couleur CSS pour l'affichage */
-  color: string;
+  /** Ton sémantique pour l'affichage (l'UI mappe vers des classes, pas de hex inline) */
+  tone: ProfileTone;
   /** Icône emoji */
   icon: string;
   /** Score par type (0-6) : nombre de réponses correctes ou conformes au profil */
