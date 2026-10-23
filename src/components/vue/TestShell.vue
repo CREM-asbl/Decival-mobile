@@ -101,7 +101,7 @@
       :show="showCompleteModal"
       :score="score"
       :gamificationResults="gamificationResults"
-      :testType="testTypeLabel"
+      :testType="testType"
       :testId="completedTestId"
       @restart="handleRestart"
       @close="handleQuit"
@@ -112,6 +112,7 @@
 <script setup lang="ts">
 import { useMathTest } from '../../composables/useMathTest'
 import { getInTestEncouragement } from '../../logic/progressLogic'
+import { TEST_TYPE_IDS } from '../../types/test'
 import { computed } from 'vue'
 import { playSound } from '../../stores/soundStore'
 import { clearActiveElementFocus } from '../../utils/clearActiveElementFocus'
@@ -122,7 +123,7 @@ const props = defineProps({
   testType: {
     type: String,
     required: true,
-    validator: (value) => ['addition', 'subtraction', 'multiplication', 'comparison'].includes(value)
+    validator: (value) => TEST_TYPE_IDS.includes(value)
   },
   createTest: {
     type: Function,
@@ -130,10 +131,6 @@ const props = defineProps({
   },
   analyzeError: {
     type: Function,
-    required: true
-  },
-  testTypeLabel: {
-    type: String,
     required: true
   },
   operationSymbol: {

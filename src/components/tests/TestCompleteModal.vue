@@ -4,7 +4,7 @@
       <div class="text-center p-6 pb-0 overflow-y-auto flex-1 min-h-0">
         <div class="text-6xl mb-4">{{ completeCopy.emoji }}</div>
         <h3 class="text-2xl font-bold mb-2 dark:text-white">{{ completeCopy.title }}</h3>
-        <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testType }}.</p>
+        <p class="mb-4 dark:text-gray-200">Tu as terminé le test de {{ testTypeLabel }}.</p>
         
         <div class="bg-accent/10 dark:bg-accent/20 rounded-xl p-6 mb-6 border border-accent/20">
           <div class="text-sm font-bold text-accent uppercase tracking-widest mb-1">Score final</div>
@@ -65,6 +65,7 @@ import confetti from 'canvas-confetti';
 import { BADGES } from '../../stores/badgeStore';
 import { playSound } from '../../stores/soundStore';
 import { getTestCompleteCopy } from '../../logic/progressLogic';
+import { TEST_TYPE_LABELS } from '../../types/test';
 
 const props = defineProps({
   show: {
@@ -78,7 +79,7 @@ const props = defineProps({
   testType: {
     type: String,
     required: true,
-    validator: (value) => ['addition', 'soustraction', 'multiplication', 'comparaison'].includes(value)
+    validator: (value) => value in TEST_TYPE_LABELS
   },
   gamificationResults: {
     type: Object,
@@ -94,6 +95,8 @@ const props = defineProps({
 const emit = defineEmits(['restart', 'close']);
 
 const completeCopy = computed(() => getTestCompleteCopy(props.score));
+
+const testTypeLabel = computed(() => TEST_TYPE_LABELS[props.testType] ?? props.testType);
 
 // Fonction pour gérer le restart
 function onRestart() {

@@ -63,6 +63,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { getTestEncouragement } from '../../logic/progressLogic';
+import { TEST_TYPE_IDS } from '../../types/test';
 import { isIntegerMastered } from '../../stores/typeMasteryStore';
 import { ITEMS_COUNT_ADDITION, ITEMS_COUNT_SUBTRACTION, ITEMS_COUNT_MULTIPLICATION, ITEMS_COUNT_COMPARISON } from '../../config/constants';
 
@@ -70,7 +71,7 @@ const props = defineProps({
   testType: {
     type: String,
     required: true,
-    validator: (value) => ['addition', 'subtraction', 'multiplication', 'comparison'].includes(value)
+    validator: (value) => TEST_TYPE_IDS.includes(value)
   }
 });
 
