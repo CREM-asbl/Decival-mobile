@@ -8,6 +8,7 @@ const testTypes = [
     id: "comparison",
     title: "Comparaisons",
     description: "Comparer des nombres",
+    hint: "Range des nombres du plus petit au plus grand",
     icon: OPERATION_ICONS.comparison,
     href: "/tests/comparison",
   },
@@ -15,6 +16,7 @@ const testTypes = [
     id: "addition",
     title: "Additions",
     description: "Pratiquer les additions",
+    hint: "Additionne avec et sans virgule",
     icon: OPERATION_ICONS.addition,
     href: "/tests/addition",
   },
@@ -22,6 +24,7 @@ const testTypes = [
     id: "subtraction",
     title: "Soustractions",
     description: "Pratiquer les soustractions",
+    hint: "Soustrais en alignant bien les chiffres",
     icon: OPERATION_ICONS.subtraction,
     href: "/tests/subtraction",
   },
@@ -29,6 +32,7 @@ const testTypes = [
     id: "multiplication",
     title: "Multiplications",
     description: "Pratiquer les multiplications",
+    hint: "Multiplie et place la virgule au bon endroit",
     icon: OPERATION_ICONS.multiplication,
     href: "/tests/multiplication",
   },
@@ -43,16 +47,21 @@ const testTypes = [
       {
         testTypes.map((test) => (
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
-            <div class="flex items-center gap-4 mb-4">
+            <div class="flex items-center gap-4 mb-1">
               <span
                 class="shrink-0 text-4xl leading-none"
                 aria-hidden="true"
               >
                 {test.icon}
               </span>
-              <h2 class="text-xl font-semibold dark:text-white">
-                {test.title}
-              </h2>
+              <div>
+                <h2 class="text-xl font-semibold dark:text-white">
+                  {test.title}
+                </h2>
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                  {test.hint}
+                </p>
+              </div>
               <span class="sr-only">{test.description}</span>
             </div>
             <div class="flex justify-end">
