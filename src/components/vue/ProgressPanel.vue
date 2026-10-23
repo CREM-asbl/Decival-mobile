@@ -33,13 +33,13 @@
         </div>
 
     <!-- Encouragement section with Mr Comma -->
-        <div class="bg-violet-50 dark:bg-violet-900/20 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-violet-100 dark:border-violet-800/50">
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 flex flex-col sm:flex-row items-center gap-6 border border-gray-200 dark:border-gray-600">
           <MrComma :variant="progressEncouragement.variant" animate class="w-16 h-16 sm:w-24 sm:h-24" />
       <div>
-            <h2 class="text-xl font-bold text-violet-900 dark:text-violet-100 mb-2">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
               {{ progressEncouragement.title }}
         </h2>
-            <p class="text-violet-700 dark:text-violet-300">
+            <p class="text-gray-600 dark:text-gray-300">
               {{ progressEncouragement.title === "C'est parti !" 
                 ? "Commence ton premier exercice pour voir ta progression s'afficher ici."
                 : progressEncouragement.title === "Excellent travail !"
@@ -149,14 +149,14 @@
         </span>
       </div>
       <div class="p-6">
-        <p v-if="masteredTypes.length === 0" class="text-violet-700 dark:text-violet-300 text-center py-8 bg-violet-50 dark:bg-violet-900/20 rounded-lg border-2 border-dashed dark:border-violet-800/50">
+        <p v-if="masteredTypes.length === 0" class="text-gray-600 dark:text-gray-300 text-center py-8 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-dashed dark:border-gray-600">
           Continue à t'entraîner pour maîtriser tes premières sous-compétences !
         </p>
         <div v-else class="space-y-6">
           <div v-for="category in visibleCategories" :key="category.id" class="space-y-3">
-            <h3 class="font-black text-sm uppercase tracking-widest text-violet-700 dark:text-violet-300 flex items-center gap-2">
+            <h3 class="font-black text-sm uppercase tracking-widest text-gray-900 dark:text-white flex items-center gap-2">
               {{ category.name }}
-              <span class="h-px flex-1 bg-violet-100 dark:bg-violet-800/50"></span>
+              <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
               <span
                 class="text-[11px] font-bold px-2 py-0.5 rounded-full normal-case tracking-normal"
                 :class="isIntegerMastered(category.id)
@@ -168,7 +168,7 @@
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div v-for="type in getMasteredTypesByCategory(category.id)" :key="type.type" 
-                   class="border dark:border-gray-700 rounded-xl p-3 bg-violet-50 dark:bg-violet-900/20 flex items-center gap-3">
+                   class="border dark:border-gray-700 rounded-xl p-3 bg-gray-50 dark:bg-gray-700/50 flex items-center gap-3">
                 <div class="bg-emerald-100 dark:bg-emerald-900/30 p-1.5 rounded-full shrink-0">
                                   <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -176,7 +176,7 @@
                 </div>
                 <div>
                   <h4 class="font-bold dark:text-white text-sm">{{ getTypeLabel(category.id, type.type) }}</h4>
-                  <p class="text-xs text-violet-700 dark:text-violet-300">Dernier score : {{ Math.round(type.lastScore) }}%</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-300">Dernier score : {{ Math.round(type.lastScore) }}%</p>
                 </div>
               </div>
             </div>
@@ -199,18 +199,18 @@
         <h2 class="text-xl font-semibold dark:text-white">Historique des tests</h2>
       </div>
       <div class="p-4">
-        <p v-if="recentTests.length === 0" class="text-violet-700 dark:text-violet-300 text-center py-8">
+        <p v-if="recentTests.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8">
           Aucun test complété pour le moment
         </p>
         <div v-else class="space-y-4">
-          <div v-for="test in visibleTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-violet-50 dark:hover:bg-violet-900/20">
+          <div v-for="test in visibleTests" :key="test.id" class="border dark:border-gray-700 rounded-lg p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50">
             <div class="flex items-center justify-between mb-2">
               <div class="font-bold dark:text-white text-lg">{{ getTestTypeName(test.type) }}</div>
-              <div class="text-xs font-medium text-violet-700 dark:text-violet-300 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
+              <div class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-tighter">{{ formatDate(test.startTime) }}</div>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="text-sm text-violet-700 dark:text-violet-300">Mode: {{ getModeName(test.mode) }}</span>
+                <span class="text-sm text-gray-600 dark:text-gray-300">Mode: {{ getModeName(test.mode) }}</span>
                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                 <span class="text-sm font-bold text-accent">{{ calculateScore(test) }}%</span>
               </div>
@@ -222,7 +222,7 @@
                   </svg>
                   Analyser
                 </a>
-                <div class="text-sm font-medium px-2 py-0.5 bg-violet-100 dark:bg-violet-900/30 rounded text-violet-700 dark:text-violet-300">
+                <div class="text-sm font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
                   {{ getCorrectAnswersCount(test) }}/{{ test.items.length }} vrais
                 </div>
               </div>
