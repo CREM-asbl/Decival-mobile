@@ -108,7 +108,7 @@ function toneDotClass(tone) {
   return TONE_DOT_CLASSES[tone] ?? TONE_DOT_CLASSES.neutral;
 }
 
-const showDetails = ref(true);
+const showDetails = ref(false);
 </script>
 
 <style scoped>
