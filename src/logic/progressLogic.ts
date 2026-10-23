@@ -237,3 +237,63 @@ export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}
 
   return 0;
 }
+
+export interface CategoryTestLike {
+  type: string;
+  items: Array<{ isCorrect?: boolean }>;
+}
+
+export interface CategoryMasteryLike {
+  mastered?: boolean;
+  category?: string;
+  mode?: string;
+}
+
+export interface CategorySummary {
+  testCount: number;
+  averageScore: number | null;
+  masteredCount: number;
+  totalTypes: number;
+  integerMastered: boolean;
+}
+
+export function getCategorySummary(
+  category: string,
+  tests: CategoryTestLike[] | undefined | null,
+  mastery: Record<string, CategoryMasteryLike> | undefined | null
+): CategorySummary {
+  const list = Array.isArray(tests) ? tests.filter((t) => t?.type === category) : [];
+  const entries = mastery && typeof mastery === 'object' ? Object.values(mastery) : [];
+  const totalTypes = (CATEGORY_TYPE_COUNTS as Record<string, number>)[category] ?? 0;
+
+  if (list.length === 0) {
+    return {
+      testCount: 0,
+      averageScore: null,
+      masteredCount: entries.filter(
+        (m) => m?.category === category && (m?.mode ?? 'decimal') === 'decimal' && m?.mastered === true
+      ).length,
+      totalTypes,
+      integerMastered: entries.some(
+        (m) => m?.category === category && m?.mode === 'integer' && m?.mastered === true
+      )
+    };
+  }
+
+  const scores = list.map((t) => {
+    const items = Array.isArray(t.items) ? t.items : [];
+    if (items.length === 0) return 0;
+    return (items.filter((i) => i?.isCorrect === true).length / items.length) * 100;
+  });
+  return {
+    testCount: list.length,
+    averageScore: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
+    masteredCount: entries.filter(
+      (m) => m?.category === category && (m?.mode ?? 'decimal') === 'decimal' && m?.mastered === true
+    ).length,
+    totalTypes,
+    integerMastered: entries.some(
+      (m) => m?.category === category && m?.mode === 'integer' && m?.mastered === true
+    )
+  };
+}

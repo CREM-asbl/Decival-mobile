@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   clampPercent,
   getBadgeProgress,
+  getCategorySummary,
   getEarnedBadges,
   getInTestEncouragement,
   getLevelProgress,
@@ -327,5 +328,43 @@ describe('progressLogic — summarizeMastery', () => {
     expect(summarizeMastery({})).toEqual({ masteredCount: 0, totalCount: 0, percent: 0 });
     expect(summarizeMastery(undefined)).toEqual({ masteredCount: 0, totalCount: 0, percent: 0 });
     expect(summarizeMastery(null)).toEqual({ masteredCount: 0, totalCount: 0, percent: 0 });
+  });
+});
+
+describe('progressLogic — getCategorySummary', () => {
+  const mastery = {
+    'addition-decimal-0': { mastered: true, category: 'addition', mode: 'decimal' },
+    'addition-decimal-1': { mastered: false, category: 'addition', mode: 'decimal' },
+    'addition-integer--1': { mastered: true, category: 'addition', mode: 'integer' },
+    'subtraction-decimal-0': { mastered: true, category: 'subtraction', mode: 'decimal' }
+  };
+  const tests = [
+    { type: 'addition', items: [{ isCorrect: true }, { isCorrect: false }] },
+    { type: 'addition', items: [{ isCorrect: true }, { isCorrect: true }] }
+  ];
+
+  it('résume tests, moyenne et maîtrise par catégorie', () => {
+    const s = getCategorySummary('addition', tests, mastery);
+    expect(s.testCount).toBe(2);
+    expect(s.averageScore).toBe(75);
+    expect(s.masteredCount).toBe(1);
+    expect(s.integerMastered).toBe(true);
+  });
+
+  it('ignore les tests des autres catégories', () => {
+    const s = getCategorySummary('multiplication', tests, mastery);
+    expect(s.testCount).toBe(0);
+    expect(s.averageScore).toBeNull();
+  });
+
+  it('gère historique et maîtrise vides', () => {
+    const s = getCategorySummary('addition', [], {});
+    expect(s).toEqual({
+      testCount: 0,
+      averageScore: null,
+      masteredCount: 0,
+      totalTypes: 7,
+      integerMastered: false
+    });
   });
 });

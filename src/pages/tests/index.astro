@@ -45,7 +45,7 @@ const testTypes = [
     <div class="space-y-4">
       {
         testTypes.map((test) => (
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
+          <div data-category={test.id} class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
             <div class="flex items-center gap-4 mb-1">
               <span
                 class="shrink-0 text-4xl leading-none"
@@ -60,11 +60,12 @@ const testTypes = [
                 <p class="text-sm text-gray-700 dark:text-gray-300">
                   {test.hint}
                 </p>
+                <p data-meta class="text-xs text-gray-500 dark:text-gray-400 mt-1"></p>
               </div>
               <span class="sr-only">{test.description}</span>
             </div>
             <div class="flex justify-end">
-              <a href={test.href} class="no-underline relative inline-flex items-center justify-center font-medium rounded-md px-4 py-2 text-base text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all duration-300 ease-out">
+              <a data-cta href={test.href} class="no-underline relative inline-flex items-center justify-center font-medium rounded-md px-4 py-2 text-base text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all duration-300 ease-out">
                 Commencer
               </a>
             </div>
@@ -74,3 +75,29 @@ const testTypes = [
     </div>
   </div>
 </Layout>
+
+<script>
+  import { testHistory } from "../../stores/testStore";
+  import { typeMastery } from "../../stores/typeMasteryStore";
+  import { getCategorySummary } from "../../logic/progressLogic";
+
+  function renderHubMeta() {
+    const history = testHistory.get();
+    const mastery = typeMastery.get().mastery ?? {};
+    document.querySelectorAll<HTMLElement>("[data-category]").forEach((card) => {
+      const category = card.dataset.category ?? "";
+      const s = getCategorySummary(category, history, mastery);
+      const meta = card.querySelector("[data-meta]");
+      const cta = card.querySelector("[data-cta]");
+      if (meta) {
+        meta.textContent =
+          s.testCount === 0
+            ? "Aucun test pour l'instant"
+            : `Moyenne ${s.averageScore}% · ${s.testCount} test${s.testCount > 1 ? "s" : ""} · ${s.masteredCount}/${s.totalTypes} maîtrisées${s.integerMastered ? " · entiers ✓" : ""}`;
+      }
+      if (cta) cta.textContent = s.testCount === 0 ? "Commencer" : "Continuer";
+    });
+  }
+
+  renderHubMeta();
+</script>
