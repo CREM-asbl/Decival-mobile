@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
     <!-- XP and Level Section -->
-        <div class="bg-linear-to-r from-accent to-violet-600 rounded-2xl p-5 sm:p-6 text-white shadow-lg shadow-indigo-900/20 overflow-hidden relative">
+        <div class="bg-linear-to-r from-accent to-accent-active rounded-2xl p-5 sm:p-6 text-white shadow-lg shadow-indigo-900/20 overflow-hidden relative">
       <div class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-6 relative z-10">
         <div class="flex items-center gap-4">
           <div class="bg-white/20 p-2 rounded-2xl backdrop-blur-md border border-white/30 shadow-inner">
@@ -97,14 +97,14 @@
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
         <div class="flex items-center gap-3 mb-2">
-          <div class="bg-violet-100 dark:bg-violet-900/30 p-2 rounded-lg">
-                      <svg class="w-5 h-5 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-accent/10 p-2 rounded-lg">
+                      <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
           <h2 class="text-lg font-semibold dark:text-gray-100">Tests</h2>
         </div>
-        <p class="text-3xl font-black text-violet-600 dark:text-violet-400">{{ testStats.totalTests }}</p>
+        <p class="text-3xl font-black text-accent">{{ testStats.totalTests }}</p>
       </div>
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
