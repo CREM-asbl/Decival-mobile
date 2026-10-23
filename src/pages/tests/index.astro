@@ -96,6 +96,10 @@ const testTypes = [
             : `Moyenne ${s.averageScore}% · ${s.testCount} test${s.testCount > 1 ? "s" : ""} · ${s.masteredCount}/${s.totalTypes} maîtrisées${s.integerMastered ? " · entiers ✓" : ""}`;
       }
       if (cta) cta.textContent = s.testCount === 0 ? "Commencer" : "Continuer";
+      if (s.testCount > 0 && s.masteredCount < s.totalTypes) {
+        card.dataset.recommended = "true";
+        card.classList.add("ring-2", "ring-accent", "ring-offset-2");
+      }
     });
   }
 
