@@ -2,18 +2,17 @@
 import AnimationSettings from "../components/common/AnimationSettings.astro";
 import SoundSettings from "../components/common/SoundSettings.astro";
 import Layout from "../layouts/Layout.astro";
-import { APP_VERSION } from "../config/constants";
 ---
 
-<Layout title="Paramètres - Decival">
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6 text-center dark:text-white">Paramètres</h1>
+<Layout title="Paramètres - Decival" currentPage="settings">
+  <div class="max-w-lg mx-auto px-4 py-6">
+    <h1 class="text-2xl font-bold mb-6 dark:text-white">Paramètres</h1>
 
-    <div class="space-y-6 max-w-lg mx-auto">
+    <div class="space-y-4">
       <SoundSettings />
       <AnimationSettings />
 
-      <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
         <h2 class="text-lg font-semibold mb-2 dark:text-white">
           À propos des paramètres
         </h2>
@@ -22,14 +21,6 @@ import { APP_VERSION } from "../config/constants";
           appliquées à toutes tes sessions.
         </p>
       </div>
-    </div>
-
-    <div
-      class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center"
-    >
-      <p class="text-xs text-gray-500 dark:text-gray-400">
-        Decival version {APP_VERSION}
-      </p>
     </div>
   </div>
 </Layout>
