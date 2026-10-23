@@ -234,6 +234,19 @@ export function useMathTest(config: MathTestConfig) {
         focusInput()
     }
 
+    // Quitter le test en cours (retour au sélecteur de mode)
+    function handleQuit() {
+        testStarted.value = false
+        test.value = null
+        currentQuestionIndex.value = 0
+        answer.value = ''
+        showResultModal.value = false
+        showCompleteModal.value = false
+        score.value = 0
+        gamificationResults.value = null
+        errorAnalysis.value = null
+    }
+
     return {
         // État
         testStarted,
@@ -261,6 +274,7 @@ export function useMathTest(config: MathTestConfig) {
         handleSubmit,
         formatNumber,
         handleContinue,
-        handleRestart
+        handleRestart,
+        handleQuit
     }
 }

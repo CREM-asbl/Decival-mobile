@@ -12,8 +12,17 @@
         <div class="text-sm text-gray-600 dark:text-gray-400">
           Question {{ currentQuestionIndex + 1 }}/{{ test.items.length }}
         </div>
-        <div class="text-sm font-bold text-accent" aria-hidden="true">
-          {{ Math.round(progress) }} %
+        <div class="flex items-center gap-3">
+          <div class="text-sm font-bold text-accent" aria-hidden="true">
+            {{ Math.round(progress) }} %
+          </div>
+          <button
+            type="button"
+            @click="handleQuit"
+            class="text-xs text-gray-500 dark:text-gray-400 underline underline-offset-2 hover:text-gray-800 dark:hover:text-gray-200"
+          >
+            Quitter
+          </button>
         </div>
       </div>
       <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mt-2" role="progressbar" :aria-valuenow="Math.round(progress)" aria-valuemin="0" aria-valuemax="100" aria-label="Progression du test" aria-live="polite">
@@ -160,7 +169,8 @@ const {
   handleSubmit,
   formatNumber,
   handleContinue,
-  handleRestart
+  handleRestart,
+  handleQuit
 } = useMathTest({
   createTest: props.createTest,
   analyzeError: props.analyzeError,
