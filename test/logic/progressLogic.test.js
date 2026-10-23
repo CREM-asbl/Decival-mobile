@@ -8,6 +8,7 @@ import {
   getLevelProgress,
   getLevelTitle,
   getProgressEncouragement,
+  getProgressMessage,
   getScorePercent,
   getTestCompleteCopy,
   getTestEncouragement,
@@ -159,6 +160,15 @@ describe('progressLogic — getProgressEncouragement', () => {
 
     expect(getProgressEncouragement({ totalTests: 2, averageScore: 400 }).title).toBe('Excellent travail !');
     expect(getProgressEncouragement({}).title).toBe("C'est parti !");
+  });
+
+  it('associe chaque titre à son message', () => {
+    expect(getProgressMessage("C'est parti !")).toBe(
+      "Commence ton premier exercice pour voir ta progression s'afficher ici."
+    );
+    expect(getProgressMessage('Titre inconnu')).toBe(
+      "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !"
+    );
   });
 });
 

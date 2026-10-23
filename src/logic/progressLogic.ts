@@ -71,8 +71,7 @@ export function getScorePercent(score: number, maxScore: number): number {
 export function getProgressEncouragement(stats: {
   totalTests?: number;
   averageScore?: number;
-}): { title: string; variant: 'happy' | 'pointing' } {
-  const totalTests = stats.totalTests ?? 0;
+}): { title: string; variant: 'happy' | 'pointing' } {  const totalTests = stats.totalTests ?? 0;
   const averageScore = clampPercent(stats.averageScore ?? 0);
 
   if (totalTests === 0) {
@@ -83,6 +82,20 @@ export function getProgressEncouragement(stats: {
   if (averageScore >= 70) return { title: 'Tu progresses bien !', variant: 'happy' };
   if (averageScore >= 50) return { title: 'Continue tes efforts !', variant: 'pointing' };
   return { title: "N'abandonne pas !", variant: 'pointing' };
+}
+
+const PROGRESS_MESSAGES: Record<string, string> = {
+  "C'est parti !": "Commence ton premier exercice pour voir ta progression s'afficher ici.",
+  'Excellent travail !': 'Tes résultats sont impressionnants. Tu maîtrises vraiment bien les concepts !',
+  'Tu progresses bien !': "Tes efforts portent leurs fruits. Continue comme ça pour atteindre le sommet !",
+  'Continue tes efforts !': 'Tu es sur la bonne voie. Pratique encore un peu pour gagner en assurance.'
+};
+
+const PROGRESS_FALLBACK_MESSAGE =
+  "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !";
+
+export function getProgressMessage(title: string): string {
+  return PROGRESS_MESSAGES[title] ?? PROGRESS_FALLBACK_MESSAGE;
 }
 
 export function getTestEncouragement(

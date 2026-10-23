@@ -40,15 +40,7 @@
               {{ progressEncouragement.title }}
         </h2>
             <p class="text-gray-600 dark:text-gray-300">
-              {{ progressEncouragement.title === "C'est parti !" 
-                ? "Commence ton premier exercice pour voir ta progression s'afficher ici."
-                : progressEncouragement.title === "Excellent travail !"
-                  ? "Tes résultats sont impressionnants. Tu maîtrises vraiment bien les concepts !"
-                  : progressEncouragement.title === "Tu progresses bien !"
-                    ? "Tes efforts portent leurs fruits. Continue comme ça pour atteindre le sommet !"
-                    : progressEncouragement.title === "Continue tes efforts !"
-                      ? "Tu es sur la bonne voie. Pratique encore un peu pour gagner en assurance."
-                      : "Les mathématiques demandent de la pratique. Fais encore quelques tests pour t'améliorer !" }}
+              {{ progressMessage }}
             </p>
           </div>
         </div>
@@ -264,7 +256,7 @@ import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/t
 import { BADGES, unlockedBadges, unlockBadge } from '../../stores/badgeStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
-import { getLevelProgress, getLevelTitle, getProgressEncouragement, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, getProgressMessage, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
 import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
 
 // Données réactives dérivées des stores
@@ -318,6 +310,7 @@ const progressEncouragement = computed(() => getProgressEncouragement({
   totalTests: testStats.value.totalTests,
   averageScore: testStats.value.averageScore
 }))
+const progressMessage = computed(() => getProgressMessage(progressEncouragement.value.title))
 
 const categories = [
   { id: 'addition', name: 'Addition' },
