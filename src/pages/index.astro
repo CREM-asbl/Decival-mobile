@@ -43,9 +43,108 @@ const features = [
               client:load
             />
         </div>
+        <section
+          aria-label="Qui joue ?"
+          class="w-full max-w-sm mb-4 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+        >
+          <h2 class="text-xl font-semibold mb-2 dark:text-white">Qui joue ?</h2>
+          <p data-student-current class="text-sm text-gray-600 dark:text-gray-300 mb-2"></p>
+          <div data-student-list class="flex flex-wrap gap-2 mb-3"></div>
+          <form data-student-form class="flex gap-2">
+            <label class="sr-only" for="student-name">Prénom de l'élève</label>
+            <input
+              id="student-name"
+              name="name"
+              type="text"
+              maxlength="20"
+              autocomplete="off"
+              placeholder="Prénom (ex. Pierre)"
+              class="min-w-0 flex-1 rounded-md border border-gray-300 px-3 py-2 text-base dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+            <button
+              type="submit"
+              class="shrink-0 inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+            >
+              Ajouter
+            </button>
+          </form>
+          <p data-student-error role="alert" class="hidden text-sm text-red-600 mt-2"></p>
+        </section>
         <a href="/tests" class="no-underline relative inline-flex items-center justify-center font-medium rounded-md px-6 py-3 text-lg text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all duration-300 ease-out">Lancer l'évaluation diagnostique</a>
       </div>
     </div>
+
+    <script>
+      import { addStudent, getActiveStudent, getStudents, setActiveStudent } from "../stores/studentStore";
+      import { migrateLegacyToStudent } from "../utils/persistence";
+
+      const list = document.querySelector("[data-student-list]");
+      const current = document.querySelector("[data-student-current]");
+      const form = document.querySelector<HTMLFormElement>("[data-student-form]");
+      const input = document.getElementById("student-name") as HTMLInputElement | null;
+      const error = document.querySelector("[data-student-error]");
+
+      function showError(message: string) {
+        if (!error) return;
+        error.textContent = message;
+        error.classList.remove("hidden");
+      }
+
+      function clearError() {
+        if (!error) return;
+        error.textContent = "";
+        error.classList.add("hidden");
+      }
+
+      function render() {
+        const students = getStudents();
+        const active = getActiveStudent();
+        if (current) {
+          current.textContent = active
+            ? `Session : ${active.name}`
+            : students.length === 0
+              ? "Crée ton prénom pour commencer."
+              : "Choisis ton prénom.";
+        }
+        if (list) {
+          list.innerHTML = "";
+          for (const s of students) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = s.name;
+            btn.setAttribute("aria-pressed", String(active?.id === s.id));
+            btn.className =
+              "px-4 py-2 min-h-[44px] rounded-full text-sm font-medium transition-colors " +
+              (active?.id === s.id
+                ? "bg-accent text-white"
+                : "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600");
+            btn.addEventListener("click", () => {
+              clearError();
+              setActiveStudent(s.id);
+              render();
+            });
+            list.appendChild(btn);
+          }
+        }
+      }
+
+      form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        clearError();
+        const name = input?.value ?? "";
+        try {
+          const isFirst = getStudents().length === 0;
+          const student = addStudent(name);
+          if (isFirst) migrateLegacyToStudent(student.id);
+          if (input) input.value = "";
+          render();
+        } catch (err) {
+          showError(err instanceof Error ? err.message : "Prénom invalide");
+        }
+      });
+
+      render();
+    </script>
 
     <section
       id="beta-note"

@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
-import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
+import { STORAGE_KEYS, loadFromStorage, saveToStorage, scopedKey } from '../utils/persistence';
+import { studentState } from './studentStore';
 
 export type BadgeId = 'FIRST_TEST' | 'PERFECT_SCORE' | 'STREAK_3' | 'MASTERY_REACHED' | 'MASTERY_5' | 'MASTERY_10' | 'MASTERY_ADDITION' | 'MASTERY_SUBTRACTION' | 'MASTERY_MULTIPLICATION' | 'MASTERY_COMPARISON' | 'LEVEL_5' | 'LEVEL_10' | 'LEVEL_20' | 'LEVEL_35' | 'LEVEL_50';
 
@@ -114,16 +115,35 @@ export const OPERATION_ICONS = {
 
 export const unlockedBadges = atom<BadgeId[]>([]);
 
+function activeStudentId(): string | null {
+    if (typeof window === 'undefined') return null;
+    return studentState.get().activeStudentId;
+}
+
 // Initialisation
-if (typeof window !== 'undefined') {
-    const saved = loadFromStorage<BadgeId[]>(STORAGE_KEYS.UNLOCKED_BADGES);
+export function loadStudentData(studentId: string | null = activeStudentId()) {
+    if (typeof window === 'undefined') return;
+    unlockedBadges.set([]);
+    const saved = loadFromStorage<BadgeId[]>(scopedKey(STORAGE_KEYS.UNLOCKED_BADGES, studentId));
     if (saved) unlockedBadges.set(saved);
+}
+
+loadStudentData();
+
+if (typeof window !== 'undefined') {
+    let lastStudentId = activeStudentId();
+    studentState.subscribe((state) => {
+        if (state.activeStudentId !== lastStudentId) {
+            lastStudentId = state.activeStudentId;
+            loadStudentData(state.activeStudentId);
+        }
+    });
 }
 
 // Persistance
 unlockedBadges.subscribe(badges => {
     if (typeof window !== 'undefined') {
-        saveToStorage(STORAGE_KEYS.UNLOCKED_BADGES, badges);
+        saveToStorage(scopedKey(STORAGE_KEYS.UNLOCKED_BADGES, activeStudentId()), badges);
     }
 });
 

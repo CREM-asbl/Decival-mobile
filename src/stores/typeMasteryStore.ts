@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
-import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
+import { STORAGE_KEYS, loadFromStorage, saveToStorage, scopedKey } from '../utils/persistence';
+import { studentState } from './studentStore';
 
 export interface TypeMastery {
   type: number;
@@ -18,10 +19,29 @@ export const typeMastery = atom<TypeMasteryState>({
   mastery: {}
 });
 
+function activeStudentId(): string | null {
+  if (typeof window === 'undefined') return null;
+  return studentState.get().activeStudentId;
+}
+
 // Initialisation
-if (typeof window !== 'undefined') {
-  const saved = loadFromStorage<TypeMasteryState>(STORAGE_KEYS.TYPE_MASTERY || 'decival_type_mastery');
+export function loadStudentData(studentId: string | null = activeStudentId()) {
+  if (typeof window === 'undefined') return;
+  typeMastery.set({ mastery: {} });
+  const saved = loadFromStorage<TypeMasteryState>(scopedKey(STORAGE_KEYS.TYPE_MASTERY, studentId));
   if (saved) typeMastery.set(migrateTypeMasteryKeys(saved));
+}
+
+loadStudentData();
+
+if (typeof window !== 'undefined') {
+  let lastStudentId = activeStudentId();
+  studentState.subscribe((state) => {
+    if (state.activeStudentId !== lastStudentId) {
+      lastStudentId = state.activeStudentId;
+      loadStudentData(state.activeStudentId);
+    }
+  });
 }
 
 /**
@@ -45,7 +65,7 @@ export function migrateTypeMasteryKeys(state: TypeMasteryState): TypeMasteryStat
 // Persistance
 typeMastery.subscribe(state => {
   if (typeof window !== 'undefined') {
-    saveToStorage(STORAGE_KEYS.TYPE_MASTERY || 'decival_type_mastery', state);
+    saveToStorage(scopedKey(STORAGE_KEYS.TYPE_MASTERY, activeStudentId()), state);
   }
 });
 

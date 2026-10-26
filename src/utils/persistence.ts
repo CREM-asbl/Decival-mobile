@@ -7,6 +7,52 @@ export const STORAGE_KEYS = {
   TEST_STATS: 'testStats'
 };
 
+// Clés de données isolées par élève (tout sauf préférences globales).
+const STUDENT_DATA_KEYS = [
+  STORAGE_KEYS.TYPE_MASTERY,
+  STORAGE_KEYS.UNLOCKED_BADGES,
+  STORAGE_KEYS.TEST_HISTORY,
+  STORAGE_KEYS.TEST_STATS
+] as const;
+
+function keySuffix(baseKey: string): string {
+  return baseKey.startsWith('decival_') ? baseKey.slice('decival_'.length) : baseKey;
+}
+
+// Clé namespacée par élève, ou clé globale historique sans élève actif.
+export function scopedKey(baseKey: string, studentId: string | null): string {
+  if (!studentId) return baseKey;
+  return `decival_student_${studentId}_${keySuffix(baseKey)}`;
+}
+
+// Déplace les données globales existantes vers le premier profil créé.
+export function migrateLegacyToStudent(studentId: string): void {
+  try {
+    for (const base of STUDENT_DATA_KEYS) {
+      const scoped = scopedKey(base, studentId);
+      if (localStorage.getItem(scoped) !== null) continue;
+      const legacy = localStorage.getItem(base);
+      if (legacy !== null) {
+        localStorage.setItem(scoped, legacy);
+        localStorage.removeItem(base);
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors de la migration des données élève:', error);
+  }
+}
+
+// Efface les clés de données d'un élève (ou globales historiques sans id).
+export function clearStudentData(studentId: string | null): void {
+  try {
+    for (const base of STUDENT_DATA_KEYS) {
+      localStorage.removeItem(scopedKey(base, studentId));
+    }
+  } catch (error) {
+    console.error('Erreur lors du nettoyage du stockage:', error);
+  }
+}
+
 interface StorageData {
   timestamp: number;
   data: any;
@@ -48,15 +94,8 @@ export function loadFromStorage<T>(key: string): T | null {
   }
 }
 
-// Fonction utilitaire pour nettoyer le stockage
+// Fonction utilitaire pour nettoyer le stockage du profil courant
+// (préférences globales thème/son/animations non touchées).
 export function clearStorage(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEYS.TEST_HISTORY);
-    localStorage.removeItem(STORAGE_KEYS.TEST_STATS);
-    localStorage.removeItem(STORAGE_KEYS.TYPE_MASTERY);
-    localStorage.removeItem(STORAGE_KEYS.UNLOCKED_BADGES);
-    console.log("Stockage effacé avec succès");
-  } catch (error) {
-    console.error('Erreur lors du nettoyage du stockage:', error);
-  }
+  clearStudentData(null);
 }
