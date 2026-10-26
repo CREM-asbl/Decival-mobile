@@ -18,7 +18,7 @@
           </div>
           <button
             type="button"
-            @click="handleQuit"
+            @click="quitToMode"
             class="text-xs text-gray-600 dark:text-gray-300 underline underline-offset-2 hover:text-gray-800 dark:hover:text-white"
           >
             Quitter
@@ -104,7 +104,7 @@
       :testType="testType"
       :testId="completedTestId"
       @restart="handleRestart"
-      @close="handleQuit"
+      @close="quitToMode"
     />
   </div>
 </template>
@@ -113,7 +113,8 @@
 import { useMathTest } from '../../composables/useMathTest'
 import { getInTestEncouragement } from '../../logic/progressLogic'
 import { TEST_TYPE_IDS } from '../../types/test'
-import { computed } from 'vue'
+import { parseTestMode, buildModeUrl } from '../../utils/testModeRoute'
+import { computed, onMounted } from 'vue'
 import { playSound } from '../../stores/soundStore'
 import { clearActiveElementFocus } from '../../utils/clearActiveElementFocus'
 import TestCompleteModal from '../tests/TestCompleteModal.vue'
@@ -182,6 +183,15 @@ const {
 const inTestMessage = computed(() =>
   getInTestEncouragement(currentQuestionIndex.value, test.value.items.length)
 )
+
+onMounted(() => {
+  const mode = parseTestMode(window.location.search);
+  if (mode) startTestWithMode(mode);
+})
+
+function quitToMode() {
+  window.location.assign(buildModeUrl(props.testType));
+}
 
 const handleComparisonSubmit = (answer: string) => {
   if (!['<', '=', '>'].includes(answer)) return

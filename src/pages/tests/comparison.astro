@@ -5,6 +5,6 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <Layout title="Test de comparaison - Decival" currentPage="tests">
-  <TestNavigation title="Test de comparaison" />
+  <TestNavigation title="Test de comparaison" backHref="/tests/mode?op=comparison" backLabel="Retour au choix du mode" />
   <ComparisonTest client:only />
 </Layout>

@@ -15,7 +15,10 @@
       </div>
     </div>
 
-    <h2 class="text-xl font-bold mt-2 mb-5 text-center dark:text-white">Choisis un mode</h2>
+    <h2 class="text-xl font-bold mt-2 mb-1 text-center dark:text-white">Choisis un mode</h2>
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 text-center mb-5">
+      Étape 3 sur 3 — Mode
+    </p>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <button
         @click="selectMode('integer')"
