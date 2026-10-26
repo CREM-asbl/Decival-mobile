@@ -134,10 +134,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Bump version (patch)
+      - name: Determine bump type
+        id: bump
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${LAST_TAG}..HEAD"
+          fi
+          COMMITS=$(git log "$RANGE" --pretty=%B)
+          if echo "$COMMITS" | grep -qE 'BREAKING CHANGE|^[a-z]+(\(.+\))?!:'; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          elif echo "$COMMITS" | grep -qE '^feat(\(.+\))?:'; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Bump version
         id: version
         run: |
-          NEW_VERSION=$(node scripts/bump-version.mjs patch)
+          NEW_VERSION=$(node scripts/bump-version.mjs ${{ steps.bump.outputs.type }})
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit version bump
