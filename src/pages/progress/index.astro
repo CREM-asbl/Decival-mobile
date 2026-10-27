@@ -44,7 +44,18 @@ import MrComma from "../../components/vue/MrComma.vue";
 
     <!-- Composant Vue pour la progression -->
     <div data-progress-wrap>
-      <ProgressPanel client:only />
+      <ProgressPanel client:only>
+        <div aria-hidden="true" class="animate-pulse space-y-4">
+          <div class="h-24 rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="h-16 rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-16 rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-16 rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+          </div>
+          <div class="h-40 rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+        </div>
+        <p class="sr-only">Chargement de ta progression…</p>
+      </ProgressPanel>
     </div>
   </div>
 </Layout>
@@ -53,6 +64,7 @@ import MrComma from "../../components/vue/MrComma.vue";
   // Script pour gérer l'export CSV et la session élève
   import { stats, testHistory } from "../../stores/testStore";
   import { getActiveStudent, getStudents, setActiveStudent, studentState } from "../../stores/studentStore";
+  import { buildResultsCsv } from "../../utils/exportCsv";
 
   const current = document.querySelector("[data-student-current]");
   const select = document.querySelector<HTMLSelectElement>("[data-student-select]");
@@ -108,25 +120,7 @@ import MrComma from "../../components/vue/MrComma.vue";
   function exportResults() {
     const history = testHistory.get();
     const currentStats = stats.get();
-
-    // En-têtes pour les statistiques globales
-    let csvContent = "Statistiques globales\n";
-    csvContent += `Tests complétés,${currentStats.totalTests}\n`;
-    csvContent += `Score moyen,${Math.round(currentStats.averageScore)}%\n`;
-    csvContent += `Meilleur score,${Math.round(currentStats.bestScore)}%\n\n`;
-
-    // En-têtes pour l'historique des tests
-    csvContent += "Historique des tests\n";
-    csvContent += "Date,Type,Mode,Score,Questions correctes,Total questions\n";
-
-    // Données de l'historique
-    history.forEach((test) => {
-      const correctAnswers = test.items.filter((i) => i.isCorrect).length;
-      const date = new Date(test.startTime).toLocaleDateString();
-      const score = Math.round((correctAnswers / test.items.length) * 100);
-
-      csvContent += `${date},${test.type},${test.mode},${score}%,${correctAnswers},${test.items.length}\n`;
-    });
+    const csvContent = buildResultsCsv(currentStats, history);
 
     // Créer et télécharger le fichier
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
