@@ -10,7 +10,7 @@ export const STORAGE_KEYS = {
 export const STUDENTS_KEY = 'decival_students';
 
 // Clés de données isolées par élève (tout sauf préférences globales).
-const STUDENT_DATA_KEYS = [
+export const STUDENT_DATA_KEYS = [
   STORAGE_KEYS.TYPE_MASTERY,
   STORAGE_KEYS.UNLOCKED_BADGES,
   STORAGE_KEYS.TEST_HISTORY,
@@ -25,6 +25,27 @@ function keySuffix(baseKey: string): string {
 export function scopedKey(baseKey: string, studentId: string | null): string {
   if (!studentId) return baseKey;
   return `decival_student_${studentId}_${keySuffix(baseKey)}`;
+}
+
+// Détecte la présence de données globales historiques (legacy) à migrer.
+export function hasLegacyData(): boolean {
+  try {
+    return STUDENT_DATA_KEYS.some((base) => localStorage.getItem(base) !== null);
+  } catch (error) {
+    console.error('Erreur lors de la détection des données legacy:', error);
+    return false;
+  }
+}
+
+// Purge les données globales historiques sans les copier (recommencer à zéro).
+export function discardLegacyData(): void {
+  try {
+    for (const base of STUDENT_DATA_KEYS) {
+      localStorage.removeItem(base);
+    }
+  } catch (error) {
+    console.error('Erreur lors de la purge des données legacy:', error);
+  }
 }
 
 // Déplace les données globales existantes vers le premier profil créé.

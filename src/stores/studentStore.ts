@@ -58,11 +58,16 @@ export function getActiveStudent(): Student | null {
   return students.find((s) => s.id === activeStudentId) ?? null;
 }
 
-export function addStudent(name: string): Student {
+export function validateStudentName(name: string, students: Student[] = studentState.get().students): string {
   const clean = normalizeName(name);
   if (!clean) throw new Error('Prénom vide');
-  const { students } = studentState.get();
   assertUnique(students, clean);
+  return clean;
+}
+
+export function addStudent(name: string): Student {
+  const clean = validateStudentName(name);
+  const { students } = studentState.get();
   const student: Student = { id: makeId(), name: clean, createdAt: new Date().toISOString() };
   studentState.set({ students: [...students, student], activeStudentId: student.id });
   return student;

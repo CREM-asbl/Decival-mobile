@@ -64,6 +64,37 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </div>
+
+  <div
+    data-migration-modal
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settings-migration-title"
+  >
+    <div class="w-full max-w-md rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <h2 id="settings-migration-title" class="text-xl font-bold mb-2">Récupérer les données existantes ?</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        Des données de progression ont été trouvées. Veux-tu les récupérer pour ce profil ou recommencer à zéro ?
+      </p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          data-migration-keep
+          class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+        >
+          Récupérer les données existantes
+        </button>
+        <button
+          type="button"
+          data-migration-reset
+          class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] border border-gray-300 dark:border-gray-600 dark:text-gray-100"
+        >
+          Recommencer à zéro
+        </button>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <script>
@@ -74,8 +105,9 @@ import Layout from "../layouts/Layout.astro";
     removeStudent,
     renameStudent,
     setActiveStudent,
+    validateStudentName,
   } from "../stores/studentStore";
-  import { clearStudentData, migrateLegacyToStudent } from "../utils/persistence";
+  import { clearStudentData, migrateLegacyToStudent, hasLegacyData, discardLegacyData } from "../utils/persistence";
 
   const list = document.querySelector("[data-student-list]");
   const current = document.querySelector("[data-student-current]");
@@ -84,6 +116,10 @@ import Layout from "../layouts/Layout.astro";
   const error = document.querySelector("[data-student-error]");
   const renameBtn = document.querySelector("[data-student-rename]");
   const deleteBtn = document.querySelector("[data-student-delete]");
+  const modal = document.querySelector<HTMLElement>("[data-migration-modal]");
+  const keepBtn = document.querySelector<HTMLButtonElement>("[data-migration-keep]");
+  const resetBtn = document.querySelector<HTMLButtonElement>("[data-migration-reset]");
+  let pendingName: string | null = null;
 
   function showError(message: string) {
     if (!error) return;
@@ -127,18 +163,70 @@ import Layout from "../layouts/Layout.astro";
     }
   }
 
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    clearError();
+  function createStudent(name: string, migrate: boolean) {
     try {
-      const isFirst = getStudents().length === 0;
-      const student = addStudent(input?.value ?? "");
-      if (isFirst) migrateLegacyToStudent(student.id);
+      const student = addStudent(name);
+      if (migrate) {
+        migrateLegacyToStudent(student.id);
+      } else if (hasLegacyData()) {
+        discardLegacyData();
+      }
       if (input) input.value = "";
       render();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Prénom invalide");
     }
+  }
+
+  function showMigrationModal(name: string) {
+    pendingName = name;
+    modal?.classList.remove("hidden");
+    keepBtn?.focus();
+  }
+
+  function hideMigrationModal() {
+    modal?.classList.add("hidden");
+    pendingName = null;
+    input?.focus();
+  }
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    clearError();
+    const name = input?.value ?? "";
+    const isFirst = getStudents().length === 0;
+    let cleanName: string;
+    try {
+      cleanName = validateStudentName(name);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Prénom invalide");
+      return;
+    }
+    if (isFirst && hasLegacyData()) {
+      showMigrationModal(cleanName);
+      return;
+    }
+    createStudent(cleanName, false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+      hideMigrationModal();
+    }
+  });
+
+  keepBtn?.addEventListener("click", () => {
+    if (pendingName === null) return;
+    const name = pendingName;
+    hideMigrationModal();
+    createStudent(name, true);
+  });
+
+  resetBtn?.addEventListener("click", () => {
+    if (pendingName === null) return;
+    const name = pendingName;
+    hideMigrationModal();
+    createStudent(name, false);
   });
 
   renameBtn?.addEventListener("click", () => {
