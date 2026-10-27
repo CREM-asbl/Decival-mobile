@@ -49,9 +49,9 @@
         <button @click="onRestart" class="w-full sm:w-auto px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 font-medium transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
           Recommencer
         </button>
-        <a href="/tests" class="no-underline w-full sm:w-auto sm:ml-auto self-center text-center">
-          <span class="text-sm text-gray-500 dark:text-gray-400 underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-200">
-            Fermer
+        <a href="/tests" class="no-underline w-full sm:w-auto sm:ml-auto self-center text-center focus:outline-none focus:ring-2 focus:ring-accent rounded-sm">
+          <span class="text-sm text-gray-600 dark:text-gray-300 underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-200">
+            Quitter
           </span>
         </a>
       </div>

@@ -3,7 +3,7 @@ import { XP_PER_CORRECT_ANSWER, XP_BONUS_PERFECT_SCORE, XP_PER_LEVEL, CATEGORY_T
 import { type AdditionTest } from '../types/addition';
 import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
-import { STORAGE_KEYS, loadFromStorage, saveToStorage, scopedKey } from '../utils/persistence';
+import { STORAGE_KEYS, loadFromStorage, saveToStorage, scopedKey, hasLegacyData } from '../utils/persistence';
 import { studentState } from './studentStore';
 import { unlockBadge } from './badgeStore';
 import { updateTypeMastery, updateIntegerMastery, getMasteredCount, isCategoryMastered } from './typeMasteryStore';
@@ -134,6 +134,8 @@ export function completeTest(test: Test) {
 
   // Mettre à jour les stats
   const currentStats = stats.get();
+  // Migration legacy différée : proposer la reprise après le 1er test.
+  const legacyMigrationAvailable = currentStats.totalTests === 0 && hasLegacyData();
 
   // Calculer l'XP gagnée (10 pts par réponse correcte + 20 bonus pour un sans-faute)
   const xpGained = (correctAnswers * XP_PER_CORRECT_ANSWER) + (score === 100 ? XP_BONUS_PERFECT_SCORE : 0);
@@ -256,7 +258,7 @@ export function completeTest(test: Test) {
   // Réinitialiser le test en cours
   currentTest.set(null);
 
-  return { score, xpGained, leveledUp, newLevel, newlyUnlockedBadges, teacherFeedback };
+  return { score, xpGained, leveledUp, newLevel, newlyUnlockedBadges, teacherFeedback, legacyMigrationAvailable };
 }
 
 export function getTestStats(): TestStats {

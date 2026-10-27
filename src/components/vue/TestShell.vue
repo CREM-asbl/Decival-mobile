@@ -19,7 +19,7 @@
           <button
             type="button"
             @click="quitToMode"
-            class="text-xs text-gray-600 dark:text-gray-300 underline underline-offset-2 hover:text-gray-800 dark:hover:text-white"
+            class="text-xs text-gray-600 dark:text-gray-300 underline underline-offset-2 hover:text-gray-800 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-accent rounded-sm"
           >
             Quitter
           </button>
@@ -48,7 +48,7 @@
                   :step="inputStep"
                   class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300 bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
                   :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" />
-              <small v-if="test.mode === 'decimal'" class="text-gray-500 dark:text-gray-400 text-center block mt-1">Utilisez une virgule (,) comme séparateur décimal</small>
+              <small v-if="test.mode === 'decimal'" class="text-gray-600 dark:text-gray-300 text-center block mt-1">Utilisez une virgule (,) comme séparateur décimal</small>
             </form>
           </div>
           
@@ -91,6 +91,38 @@
           <button type="submit" :form="`${testType}-form`"
                           class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-transform active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
             Suivant
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proposition différée de reprise des anciennes parties -->
+    <div
+      v-if="showMigrationModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="legacy-migration-title"
+    >
+      <div class="w-full max-w-md rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <h2 id="legacy-migration-title" class="text-xl font-bold mb-2">Reprendre anciennes parties ?</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+          Des anciennes parties ont été trouvées. Veux-tu les reprendre pour ce profil ou recommencer à zéro ?
+        </p>
+        <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            @click="resolveLegacyMigration(true)"
+            class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          >
+            Reprendre anciennes parties
+          </button>
+          <button
+            type="button"
+            @click="resolveLegacyMigration(false)"
+            class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] border border-gray-300 dark:border-gray-600 dark:text-gray-100"
+          >
+            Recommencer à zéro
           </button>
         </div>
       </div>
@@ -154,6 +186,7 @@ const {
   answer,
   showResultModal,
   showCompleteModal,
+  showMigrationModal,
   isCorrect,
   score,
   gamificationResults,
@@ -171,7 +204,8 @@ const {
   formatNumber,
   handleContinue,
   handleRestart,
-  handleQuit
+  handleQuit,
+  resolveLegacyMigration
 } = useMathTest({
   createTest: props.createTest,
   analyzeError: props.analyzeError,

@@ -1,7 +1,9 @@
 import { computed, nextTick, ref, type Ref } from 'vue'
 import { EPSILON, MAX_ANSWER_VALUE, MIN_ANSWER_VALUE } from '../config/constants'
 import { playSound } from '../stores/soundStore'
-import { completeTest, currentTest } from '../stores/testStore'
+import { completeTest, currentTest, getTestStats } from '../stores/testStore'
+import { hasLegacyData, migrateLegacyToStudent, discardLegacyData } from '../utils/persistence'
+import { getActiveStudent } from '../stores/studentStore'
 
 /**
  * Configuration pour un composant de test mathématique
@@ -28,6 +30,8 @@ export function useMathTest(config: MathTestConfig) {
     const answer: Ref<string> = ref('')
     const showResultModal = ref(false)
     const showCompleteModal = ref(false)
+    const showMigrationModal = ref(false)
+    const pendingLegacyTest: Ref<any> = ref(null)
     const isCorrect = ref(false)
     const score = ref(0)
     const gamificationResults: Ref<any> = ref(null)
@@ -212,6 +216,13 @@ export function useMathTest(config: MathTestConfig) {
             score.value = Math.round((correctAnswers / test.value.items.length) * 100)
 
             // Terminer le test
+            // Migration legacy différée : proposer la reprise après le 1er test,
+            // avant d'enregistrer le résultat, pour éviter d'écraser les données.
+            if (hasLegacyData() && getTestStats().totalTests === 0) {
+              pendingLegacyTest.value = test.value
+              showMigrationModal.value = true
+              return
+            }
             const results = completeTest(test.value)
             gamificationResults.value = results
             completedTestId.value = test.value?.id ?? null
@@ -238,6 +249,24 @@ export function useMathTest(config: MathTestConfig) {
         focusInput()
     }
 
+    // Résoudre la proposition différée de reprise des anciennes parties.
+    function resolveLegacyMigration(migrate: boolean) {
+      const pending = pendingLegacyTest.value
+      if (!pending) return
+      const active = getActiveStudent()
+      if (migrate && active) {
+        migrateLegacyToStudent(active.id)
+      } else if (hasLegacyData()) {
+        discardLegacyData()
+      }
+      const results = completeTest(pending)
+      gamificationResults.value = results
+      completedTestId.value = pending?.id ?? null
+      showMigrationModal.value = false
+      pendingLegacyTest.value = null
+      showCompleteModal.value = true
+    }
+
     // Quitter le test en cours (retour au sélecteur de mode)
     function handleQuit() {
         testStarted.value = false
@@ -258,6 +287,7 @@ export function useMathTest(config: MathTestConfig) {
         answer,
         showResultModal,
         showCompleteModal,
+        showMigrationModal,
         isCorrect,
         score,
         gamificationResults,
@@ -280,6 +310,7 @@ export function useMathTest(config: MathTestConfig) {
         formatNumber,
         handleContinue,
         handleRestart,
-        handleQuit
+        handleQuit,
+        resolveLegacyMigration
     }
 }

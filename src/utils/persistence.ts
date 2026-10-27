@@ -76,6 +76,11 @@ export function clearStudentData(studentId: string | null): void {
   }
 }
 
+// Purge les namespaces des profils supprimés définitivement (corbeille expirée).
+export function clearTrashedStudentData(ids: string[]): void {
+  for (const id of ids) clearStudentData(id);
+}
+
 interface StorageData {
   timestamp: number;
   data: any;
