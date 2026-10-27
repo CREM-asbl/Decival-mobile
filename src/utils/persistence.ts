@@ -122,7 +122,7 @@ export function loadFromStorage<T>(key: string): T | null {
   }
 }
 
-// Nettoie le stockage de tous les élèves + legacy
+// Nettoie le stockage de tous les élèves + legacy + tests en cours
 // (préférences globales thème/son/animations non touchées).
 export function clearStorage(): void {
   try {
@@ -135,4 +135,14 @@ export function clearStorage(): void {
     console.error('Erreur lors du nettoyage global:', error);
   }
   clearStudentData(null);
+  try {
+    const doomed: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('decival_in_progress_test_')) doomed.push(key);
+    }
+    for (const key of doomed) localStorage.removeItem(key);
+  } catch (error) {
+    console.error('Erreur lors de la purge des tests en cours:', error);
+  }
 }

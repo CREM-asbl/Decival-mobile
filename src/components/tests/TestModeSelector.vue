@@ -15,6 +15,9 @@
       </div>
     </div>
 
+    <p id="mode-help" class="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
+      Étape 3 sur 3. Choisis un mode pour cet exercice. Tu peux revenir au mode précédent à tout moment.
+    </p>
     <h2 class="text-xl font-bold mt-2 mb-1 text-center dark:text-white">Choisis un mode</h2>
     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 text-center mb-5">
       Étape 3 sur 3 — Mode
@@ -22,7 +25,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <button
         @click="selectMode('integer')"
-        class="px-6 py-5 rounded-xl transition-all min-h-32"
+        aria-describedby="mode-help"
+        class="px-6 py-5 rounded-xl transition-all min-h-32 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         :class="selectedMode === 'integer'
           ? 'bg-accent text-white shadow-lg scale-[1.02]'
           : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200'"
@@ -35,7 +39,8 @@
 
       <button
         @click="selectMode('decimal')"
-        class="px-6 py-5 rounded-xl transition-all min-h-32"
+        aria-describedby="mode-help"
+        class="px-6 py-5 rounded-xl transition-all min-h-32 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         :class="selectedMode === 'decimal'
           ? 'bg-accent text-white shadow-lg scale-[1.02]'
           : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200'"

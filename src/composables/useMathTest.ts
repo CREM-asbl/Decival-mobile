@@ -4,6 +4,7 @@ import { playSound } from '../stores/soundStore'
 import { completeTest, currentTest, getTestStats } from '../stores/testStore'
 import { hasLegacyData, migrateLegacyToStudent, discardLegacyData } from '../utils/persistence'
 import { getActiveStudent } from '../stores/studentStore'
+import { saveInProgressTest, loadInProgressTest, clearInProgressTest } from '../utils/inProgressTest'
 
 /**
  * Configuration pour un composant de test mathématique
@@ -56,9 +57,20 @@ export function useMathTest(config: MathTestConfig) {
     // Démarrer un test avec le mode sélectionné
     function startTestWithMode(mode: 'integer' | 'decimal') {
         testMode.value = mode
+        const studentId = getActiveStudent()?.id ?? null
+        const saved = loadInProgressTest(studentId, config.testType, mode)
+        if (saved?.test) {
+            test.value = saved.test
+            currentTest.set(test.value)
+            currentQuestionIndex.value = saved.currentIndex ?? 0
+            testStarted.value = true
+            focusInput()
+            return
+        }
         test.value = config.createTest(undefined, mode)
         currentTest.set(test.value)
         testStarted.value = true
+        saveInProgressTest(studentId, config.testType, mode, test.value, currentQuestionIndex.value)
         focusInput()
     }
 
@@ -226,18 +238,21 @@ export function useMathTest(config: MathTestConfig) {
             const results = completeTest(test.value)
             gamificationResults.value = results
             completedTestId.value = test.value?.id ?? null
+            clearInProgressTest(getActiveStudent()?.id ?? null, config.testType, testMode.value)
 
             // Afficher la modal de fin
             showCompleteModal.value = true
         } else {
             // Passer à la question suivante
             currentQuestionIndex.value++
+            saveInProgressTest(getActiveStudent()?.id ?? null, config.testType, testMode.value, test.value, currentQuestionIndex.value)
             focusInput()
         }
     }
 
     // Gérer le redémarrage
     function handleRestart() {
+        clearInProgressTest(getActiveStudent()?.id ?? null, config.testType, testMode.value)
         const newTest = config.createTest(undefined, testMode.value)
         test.value = newTest
         currentTest.set(newTest)
@@ -246,6 +261,7 @@ export function useMathTest(config: MathTestConfig) {
         answer.value = ''
         showCompleteModal.value = false
         score.value = 0
+        saveInProgressTest(getActiveStudent()?.id ?? null, config.testType, testMode.value, test.value, 0)
         focusInput()
     }
 
@@ -262,6 +278,7 @@ export function useMathTest(config: MathTestConfig) {
       const results = completeTest(pending)
       gamificationResults.value = results
       completedTestId.value = pending?.id ?? null
+      clearInProgressTest(getActiveStudent()?.id ?? null, config.testType, testMode.value)
       showMigrationModal.value = false
       pendingLegacyTest.value = null
       showCompleteModal.value = true
@@ -269,6 +286,7 @@ export function useMathTest(config: MathTestConfig) {
 
     // Quitter le test en cours (retour au sélecteur de mode)
     function handleQuit() {
+        clearInProgressTest(getActiveStudent()?.id ?? null, config.testType, testMode.value)
         testStarted.value = false
         test.value = null
         currentQuestionIndex.value = 0

@@ -29,6 +29,9 @@
               <div class="bg-accent h-4 rounded-full transition-all duration-300 motion-reduce:transition-none" :style="{ width: `${progress}%` }"></div>
       </div>
       <p class="text-sm font-medium text-accent mt-2 text-center" aria-live="polite">{{ inTestMessage }}</p>
+      <p id="test-help" class="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
+        Astuce : utilise Entrée pour valider. Si tu fermes la page, ton test en cours est repris si possible, sinon il est perdu.
+      </p>
     </div>
 
     <div v-if="testStarted" class="mt-8">
@@ -44,7 +47,7 @@
             </div>
             <form :id="`${testType}-form`" @submit.prevent="handleSubmit" class="w-full max-w-xs mx-auto">
               <label :for="`${testType}-answer`" class="sr-only">{{ answerLabel }}</label>
-              <input ref="answerInput" :id="`${testType}-answer`" v-model="answer" type="text" required
+              <input ref="answerInput" :id="`${testType}-answer`" v-model="answer" type="text" required aria-describedby="test-help"
                   :step="inputStep"
                   class="w-full px-4 py-2 rounded-md border text-center text-2xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-300 bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
                   :inputmode="test.mode === 'decimal' ? 'decimal' : 'numeric'" />

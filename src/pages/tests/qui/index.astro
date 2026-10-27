@@ -14,6 +14,9 @@ import Layout from "../../../layouts/Layout.astro";
       class="mb-4 rounded-lg border border-transparent bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800"
     >
       <p data-student-current class="text-sm text-gray-600 dark:text-gray-300 mb-2"></p>
+    <p id="qui-help" class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+      Parcours en 3 étapes : 1. Qui joue, 2. Choisis ton exercice, 3. Choisis un mode. Tu peux revenir en arrière à tout moment.
+    </p>
       <div data-student-list class="flex flex-wrap gap-2 mb-3"></div>
       <form data-student-form class="flex gap-2">
         <label class="sr-only" for="student-name">Prénom de l'élève</label>
@@ -24,6 +27,7 @@ import Layout from "../../../layouts/Layout.astro";
           maxlength="20"
           autocomplete="off"
           placeholder="Prénom (ex. Pierre)"
+          aria-describedby="qui-help"
           class="min-w-0 flex-1 rounded-md border border-gray-300 px-3 py-2 text-base dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         />
         <button
