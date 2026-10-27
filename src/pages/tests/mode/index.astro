@@ -1,0 +1,10 @@
+---
+import TestNavigation from "../../../components/tests/TestNavigation.astro";
+import ModePicker from "../../../components/vue/ModePicker.vue";
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout title="Choisis ton mode - Decival" currentPage="tests">
+  <TestNavigation title="Choisis ton mode" />
+  <ModePicker client:only />
+</Layout>

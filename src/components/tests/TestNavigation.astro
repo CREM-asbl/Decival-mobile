@@ -2,9 +2,11 @@
 interface Props {
   title: string;
   showBack?: boolean;
+  backHref?: string;
+  backLabel?: string;
 }
 
-const { title, showBack = true } = Astro.props;
+const { title, showBack = true, backHref = "/tests", backLabel = "Retour à la liste des tests" } = Astro.props;
 ---
 
 <nav
@@ -14,9 +16,9 @@ const { title, showBack = true } = Astro.props;
     {
       showBack && (
         <a
-          href="/tests"
+          href={backHref}
           class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-          aria-label="Retour à la liste des tests"
+          aria-label={backLabel}
         >
           <svg
             class="w-6 h-6"

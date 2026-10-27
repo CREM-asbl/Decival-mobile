@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
-import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
+import { STORAGE_KEYS, loadFromStorage, saveToStorage, scopedKey } from '../utils/persistence';
+import { studentState } from './studentStore';
 
 export interface TypeMastery {
   type: number;
@@ -18,10 +19,28 @@ export const typeMastery = atom<TypeMasteryState>({
   mastery: {}
 });
 
+function activeStudentId(): string | null {
+  if (typeof window === 'undefined') return null;
+  return studentState.get().activeStudentId;
+}
+
 // Initialisation
+export function loadStudentData(studentId: string | null = activeStudentId()) {
+  if (typeof window === 'undefined') return;
+  const saved = loadFromStorage<TypeMasteryState>(scopedKey(STORAGE_KEYS.TYPE_MASTERY, studentId));
+  typeMastery.set(saved ? migrateTypeMasteryKeys(saved) : { mastery: {} });
+}
+
+loadStudentData();
+
 if (typeof window !== 'undefined') {
-  const saved = loadFromStorage<TypeMasteryState>(STORAGE_KEYS.TYPE_MASTERY || 'decival_type_mastery');
-  if (saved) typeMastery.set(migrateTypeMasteryKeys(saved));
+  let lastStudentId = activeStudentId();
+  studentState.subscribe((state) => {
+    if (state.activeStudentId !== lastStudentId) {
+      lastStudentId = state.activeStudentId;
+      loadStudentData(state.activeStudentId);
+    }
+  });
 }
 
 /**
@@ -45,7 +64,7 @@ export function migrateTypeMasteryKeys(state: TypeMasteryState): TypeMasteryStat
 // Persistance
 typeMastery.subscribe(state => {
   if (typeof window !== 'undefined') {
-    saveToStorage(STORAGE_KEYS.TYPE_MASTERY || 'decival_type_mastery', state);
+    saveToStorage(scopedKey(STORAGE_KEYS.TYPE_MASTERY, activeStudentId()), state);
   }
 });
 
@@ -106,8 +125,12 @@ export function updateIntegerMastery(category: string, isMastered: boolean, scor
   updateTypeMastery(category, -1, isMastered, score, 'integer');
 }
 /**
- * Réinitialise toutes les données de maîtrise.
+ * Réinitialise la maîtrise du scope élève donné (null = legacy).
  */
-export function resetTypeMastery() {
-  typeMastery.set({ mastery: {} });
+export function resetTypeMastery(studentId: string | null) {
+  const empty = { mastery: {} };
+  typeMastery.set(empty);
+  if (typeof window !== 'undefined') {
+    saveToStorage(scopedKey(STORAGE_KEYS.TYPE_MASTERY, studentId), empty);
+  }
 }

@@ -9,6 +9,47 @@ import Layout from "../layouts/Layout.astro";
     <h1 class="text-2xl font-bold mb-6">Paramètres</h1>
 
     <div class="space-y-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
+        <h2 class="text-xl font-semibold mb-2 dark:text-white">Élèves</h2>
+        <p data-student-current class="text-sm text-gray-600 dark:text-gray-400 mb-3"></p>
+        <div data-student-list class="flex flex-wrap gap-2 mb-3"></div>
+        <form data-student-form class="flex gap-2 mb-2">
+          <label class="sr-only" for="settings-student-name">Prénom de l'élève</label>
+          <input
+            id="settings-student-name"
+            name="name"
+            type="text"
+            maxlength="20"
+            autocomplete="off"
+            placeholder="Nouveau prénom"
+            class="min-w-0 flex-1 rounded-md border border-gray-300 px-3 py-2 text-base dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          />
+          <button
+            type="submit"
+            class="shrink-0 inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          >
+            Ajouter
+          </button>
+        </form>
+        <div class="flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-student-rename
+            class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-sm border border-gray-300 dark:border-gray-600 dark:text-gray-100"
+          >
+            Renommer
+          </button>
+          <button
+            type="button"
+            data-student-delete
+            class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-sm text-red-700 border border-red-200 dark:text-red-300 dark:border-red-900"
+          >
+            Supprimer
+          </button>
+        </div>
+        <p data-student-error role="alert" class="hidden text-sm text-red-600 mt-2"></p>
+      </div>
+
       <SoundSettings />
       <AnimationSettings />
 
@@ -23,4 +64,200 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </div>
+
+  <div
+    data-migration-modal
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settings-migration-title"
+  >
+    <div class="w-full max-w-md rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <h2 id="settings-migration-title" class="text-xl font-bold mb-2">Récupérer les données existantes ?</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        Des données de progression ont été trouvées. Veux-tu les récupérer pour ce profil ou recommencer à zéro ?
+      </p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          data-migration-keep
+          class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+        >
+          Récupérer les données existantes
+        </button>
+        <button
+          type="button"
+          data-migration-reset
+          class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] border border-gray-300 dark:border-gray-600 dark:text-gray-100"
+        >
+          Recommencer à zéro
+        </button>
+      </div>
+    </div>
+  </div>
 </Layout>
+
+<script>
+  import {
+    addStudent,
+    getActiveStudent,
+    getStudents,
+    removeStudent,
+    renameStudent,
+    setActiveStudent,
+    validateStudentName,
+  } from "../stores/studentStore";
+  import { clearStudentData, migrateLegacyToStudent, hasLegacyData, discardLegacyData } from "../utils/persistence";
+
+  const list = document.querySelector("[data-student-list]");
+  const current = document.querySelector("[data-student-current]");
+  const form = document.querySelector<HTMLFormElement>("[data-student-form]");
+  const input = document.getElementById("settings-student-name") as HTMLInputElement | null;
+  const error = document.querySelector("[data-student-error]");
+  const renameBtn = document.querySelector("[data-student-rename]");
+  const deleteBtn = document.querySelector("[data-student-delete]");
+  const modal = document.querySelector<HTMLElement>("[data-migration-modal]");
+  const keepBtn = document.querySelector<HTMLButtonElement>("[data-migration-keep]");
+  const resetBtn = document.querySelector<HTMLButtonElement>("[data-migration-reset]");
+  let pendingName: string | null = null;
+
+  function showError(message: string) {
+    if (!error) return;
+    error.textContent = message;
+    error.classList.remove("hidden");
+  }
+
+  function clearError() {
+    if (!error) return;
+    error.textContent = "";
+    error.classList.add("hidden");
+  }
+
+  function render() {
+    const students = getStudents();
+    const active = getActiveStudent();
+    if (current) {
+      current.textContent = active
+        ? `Élève actif : ${active.name} (${students.length} compte${students.length > 1 ? "s" : ""})`
+        : "Aucun élève pour l'instant. Ajoute un prénom.";
+    }
+    if (list) {
+      list.innerHTML = "";
+      for (const s of students) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = s.name;
+        btn.setAttribute("aria-pressed", String(active?.id === s.id));
+        btn.className =
+          "px-4 py-2 min-h-[44px] rounded-full text-sm font-medium transition-colors " +
+          (active?.id === s.id
+            ? "bg-accent text-white"
+            : "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600");
+        btn.addEventListener("click", () => {
+          clearError();
+          setActiveStudent(s.id);
+          render();
+        });
+        list.appendChild(btn);
+      }
+    }
+  }
+
+  function createStudent(name: string, migrate: boolean) {
+    try {
+      const student = addStudent(name);
+      if (migrate) {
+        migrateLegacyToStudent(student.id);
+      } else if (hasLegacyData()) {
+        discardLegacyData();
+      }
+      if (input) input.value = "";
+      render();
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Prénom invalide");
+    }
+  }
+
+  function showMigrationModal(name: string) {
+    pendingName = name;
+    modal?.classList.remove("hidden");
+    keepBtn?.focus();
+  }
+
+  function hideMigrationModal() {
+    modal?.classList.add("hidden");
+    pendingName = null;
+    input?.focus();
+  }
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    clearError();
+    const name = input?.value ?? "";
+    const isFirst = getStudents().length === 0;
+    let cleanName: string;
+    try {
+      cleanName = validateStudentName(name);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Prénom invalide");
+      return;
+    }
+    if (isFirst && hasLegacyData()) {
+      showMigrationModal(cleanName);
+      return;
+    }
+    createStudent(cleanName, false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+      hideMigrationModal();
+    }
+  });
+
+  keepBtn?.addEventListener("click", () => {
+    if (pendingName === null) return;
+    const name = pendingName;
+    hideMigrationModal();
+    createStudent(name, true);
+  });
+
+  resetBtn?.addEventListener("click", () => {
+    if (pendingName === null) return;
+    const name = pendingName;
+    hideMigrationModal();
+    createStudent(name, false);
+  });
+
+  renameBtn?.addEventListener("click", () => {
+    clearError();
+    const active = getActiveStudent();
+    if (!active) {
+      showError("Choisis d'abord un élève.");
+      return;
+    }
+    const next = window.prompt("Nouveau prénom :", active.name);
+    if (next === null) return;
+    try {
+      renameStudent(active.id, next);
+      render();
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Prénom invalide");
+    }
+  });
+
+  deleteBtn?.addEventListener("click", () => {
+    clearError();
+    const active = getActiveStudent();
+    if (!active) {
+      showError("Choisis d'abord un élève.");
+      return;
+    }
+    if (!window.confirm(`Supprimer le compte de ${active.name} et sa progression ?`)) return;
+    clearStudentData(active.id);
+    removeStudent(active.id);
+    render();
+  });
+
+  render();
+</script>

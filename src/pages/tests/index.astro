@@ -9,7 +9,7 @@ const testTypes = [
     description: "Comparer des nombres",
     hint: "Range des nombres du plus petit au plus grand",
     icon: OPERATION_ICONS.comparison,
-    href: "/tests/comparison",
+    href: "/tests/mode?op=comparison",
   },
   {
     id: "addition",
@@ -17,7 +17,7 @@ const testTypes = [
     description: "Pratiquer les additions",
     hint: "Additionne avec et sans virgule",
     icon: OPERATION_ICONS.addition,
-    href: "/tests/addition",
+    href: "/tests/mode?op=addition",
   },
   {
     id: "subtraction",
@@ -25,7 +25,7 @@ const testTypes = [
     description: "Pratiquer les soustractions",
     hint: "Soustrais en alignant bien les chiffres",
     icon: OPERATION_ICONS.subtraction,
-    href: "/tests/subtraction",
+    href: "/tests/mode?op=subtraction",
   },
   {
     id: "multiplication",
@@ -33,14 +33,21 @@ const testTypes = [
     description: "Pratiquer les multiplications",
     hint: "Multiplie et place la virgule au bon endroit",
     icon: OPERATION_ICONS.multiplication,
-    href: "/tests/multiplication",
+    href: "/tests/mode?op=multiplication",
   },
 ] as const;
 ---
 
 <Layout title="Tests - Decival" currentPage="tests">
   <div class="max-w-lg mx-auto py-6 px-4">
-    <h1 class="text-2xl font-bold mb-6">Choisis ton exercice</h1>
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+      Étape 2 sur 3 — Exercice
+    </p>
+    <h1 class="text-2xl font-bold mb-1">Choisis ton exercice</h1>
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
+      <span data-student-current></span>
+      <a href="/tests/qui" class="underline underline-offset-2 ml-1">Changer d'élève</a>
+    </p>
 
     <div class="space-y-4">
       {
@@ -77,9 +84,22 @@ const testTypes = [
 </Layout>
 
 <script>
+  import { getActiveStudent } from "../../stores/studentStore";
   import { testHistory } from "../../stores/testStore";
   import { typeMastery } from "../../stores/typeMasteryStore";
   import { getCategorySummary } from "../../logic/progressLogic";
+  import { buildModeUrl } from "../../utils/testModeRoute";
+
+  const current = document.querySelector("[data-student-current]");
+
+  function renderStudent() {
+    const active = getActiveStudent();
+    if (!active) {
+      window.location.replace("/tests/qui");
+      return;
+    }
+    if (current) current.textContent = `Session : ${active.name} ·`;
+  }
 
   function renderHubMeta() {
     const history = testHistory.get();
@@ -89,6 +109,7 @@ const testTypes = [
       const s = getCategorySummary(category, history, mastery);
       const meta = card.querySelector("[data-meta]");
       const cta = card.querySelector("[data-cta]");
+      if (cta && cta instanceof HTMLAnchorElement) cta.href = buildModeUrl(category);
       if (meta) {
         meta.textContent =
           s.testCount === 0
@@ -103,5 +124,6 @@ const testTypes = [
     });
   }
 
+  renderStudent();
   renderHubMeta();
 </script>

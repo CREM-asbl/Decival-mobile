@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import Icon from "../../components/common/Icon.astro";
 import Button from "../../components/common/Button.astro";
-import ErrorAnalysisPanel from "../../components/vue/ErrorAnalysisPanel.vue";
 import ProgressPanel from "../../components/vue/ProgressPanel.vue";
 import MrComma from "../../components/vue/MrComma.vue";
 
@@ -12,21 +11,99 @@ import MrComma from "../../components/vue/MrComma.vue";
 <Layout title="Progrès - Decival" currentPage="progress">
   <div class="mx-auto w-full max-w-3xl px-4 py-6 sm:py-8">
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight dark:text-white">Ta progression</h1>
+      <h1 id="progress-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight dark:text-white">Ta progression</h1>
       <Button id="exportButton" variant="secondary" size="sm">
         <Icon name="download" class="w-4 h-4 mr-2" />
         Exporter les résultats
       </Button>
     </div>
 
+    <!-- Session élève -->
+    <div class="mb-4 flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
+      <span data-student-current></span>
+      <select
+        data-student-select
+        class="hidden rounded-md border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        aria-label="Changer d'élève"
+      ></select>
+      <a href="/tests/qui" class="underline underline-offset-2">Gérer les profils</a>
+    </div>
+
+    <!-- État vide -->
+    <div data-student-empty class="hidden rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-8 text-center">
+      <p class="text-gray-600 dark:text-gray-300 mb-4">
+        Aucun profil élève actif. Crée un prénom pour voir ta progression.
+      </p>
+      <a
+        href="/tests/qui"
+        class="no-underline inline-flex items-center justify-center font-medium rounded-md px-6 py-3 text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+      >
+        Créer un profil
+      </a>
+    </div>
+
     <!-- Composant Vue pour la progression -->
-    <ProgressPanel client:only />
+    <div data-progress-wrap>
+      <ProgressPanel client:only />
+    </div>
   </div>
 </Layout>
 
 <script>
-  // Script minimal pour gérer l'export CSV uniquement
+  // Script pour gérer l'export CSV et la session élève
   import { stats, testHistory } from "../../stores/testStore";
+  import { getActiveStudent, getStudents, setActiveStudent, studentState } from "../../stores/studentStore";
+
+  const current = document.querySelector("[data-student-current]");
+  const select = document.querySelector<HTMLSelectElement>("[data-student-select]");
+  const empty = document.querySelector("[data-student-empty]");
+  const exportButton = document.getElementById("exportButton");
+  const title = document.getElementById("progress-title");
+
+  function renderStudent() {
+    const students = getStudents();
+    const active = getActiveStudent();
+
+    if (title) {
+      title.textContent = active ? `Progrès de ${active.name}` : "Ta progression";
+    }
+    if (current) {
+      current.textContent = active
+        ? `Session : ${active.name} ·`
+        : students.length === 0
+          ? "Aucun profil élève."
+          : "Choisis un élève.";
+    }
+    if (select) {
+      select.innerHTML = "";
+      for (const s of students) {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = s.name;
+        if (active?.id === s.id) opt.selected = true;
+        select.appendChild(opt);
+      }
+      select.classList.toggle("hidden", students.length === 0);
+    }
+
+    const showEmpty = !active;
+    if (empty) empty.classList.toggle("hidden", !showEmpty);
+    // Ne jamais masquer le wrap de l'îlot Vue : le cacher au mount casse
+    // l'hydratation (île vide). L'état vide est géré dans Vue via
+    // hasActiveStudent ; on garde le panneau monté dans tous les cas.
+    if (exportButton) exportButton.classList.toggle("hidden", showEmpty);
+  }
+
+  select?.addEventListener("change", () => {
+    if (select.value) {
+      setActiveStudent(select.value);
+      renderStudent();
+    }
+  });
+
+  studentState.subscribe(() => renderStudent());
+
+  renderStudent();
 
   function exportResults() {
     const history = testHistory.get();

@@ -3,7 +3,8 @@ import { XP_PER_CORRECT_ANSWER, XP_BONUS_PERFECT_SCORE, XP_PER_LEVEL, CATEGORY_T
 import { type AdditionTest } from '../types/addition';
 import { type MultiplicationTest } from '../types/multiplication';
 import { type SubtractionTest } from '../types/subtraction';
-import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '../utils/persistence';
+import { STORAGE_KEYS, loadFromStorage, saveToStorage, scopedKey } from '../utils/persistence';
+import { studentState } from './studentStore';
 import { unlockBadge } from './badgeStore';
 import { updateTypeMastery, updateIntegerMastery, getMasteredCount, isCategoryMastered } from './typeMasteryStore';
 import { type ComparisonTest } from '../types/comparison';
@@ -37,27 +38,40 @@ export const stats = atom<TestStats>({
   dailyStreak: 0
 });
 
-// Charger les données sauvegardées
-function initializeStores() {
+function activeStudentId(): string | null {
+  if (typeof window === 'undefined') return null;
+  return studentState.get().activeStudentId;
+}
+
+// Charger les données sauvegardées de l'élève actif
+export function loadStudentData(studentId: string | null = activeStudentId()) {
   if (typeof window === 'undefined') return;
 
   try {
-    // Charger l'historique
-    const savedHistory = loadFromStorage<Test[]>(STORAGE_KEYS.TEST_HISTORY);
+    const savedHistory = loadFromStorage<Test[]>(scopedKey(STORAGE_KEYS.TEST_HISTORY, studentId));
+    const savedStats = loadFromStorage<TestStats>(scopedKey(STORAGE_KEYS.TEST_STATS, studentId));
     if (savedHistory) {
-      // Convertir les dates
       const historyWithDates = savedHistory.map((test: Test) => ({
         ...test,
         startTime: new Date(test.startTime),
         endTime: test.endTime ? new Date(test.endTime) : undefined
       }));
       testHistory.set(historyWithDates);
+    } else {
+      testHistory.set([]);
     }
 
-    // Charger les stats
-    const savedStats = loadFromStorage<TestStats>(STORAGE_KEYS.TEST_STATS);
     if (savedStats) {
       stats.set(savedStats);
+    } else {
+      stats.set({
+        totalTests: 0,
+        averageScore: 0,
+        bestScore: 0,
+        xp: 0,
+        level: 1,
+        dailyStreak: 0
+      });
     }
   } catch (e) {
     console.error("Erreur lors de l'initialisation des stores de test:", e);
@@ -65,19 +79,30 @@ function initializeStores() {
 }
 
 // Initialiser les stores
-initializeStores();
+loadStudentData();
+
+// Recharger quand l'élève actif change
+if (typeof window !== 'undefined') {
+  let lastStudentId = activeStudentId();
+  studentState.subscribe((state) => {
+    if (state.activeStudentId !== lastStudentId) {
+      lastStudentId = state.activeStudentId;
+      loadStudentData(state.activeStudentId);
+    }
+  });
+}
 
 // Sauvegarder l'historique quand il change
 testHistory.subscribe((history) => {
   if (typeof window !== 'undefined') {
-    saveToStorage(STORAGE_KEYS.TEST_HISTORY, history);
+    saveToStorage(scopedKey(STORAGE_KEYS.TEST_HISTORY, activeStudentId()), history);
   }
 });
 
 // Sauvegarder les stats quand elles changent
 stats.subscribe((currentStats) => {
   if (typeof window !== 'undefined') {
-    saveToStorage(STORAGE_KEYS.TEST_STATS, currentStats);
+    saveToStorage(scopedKey(STORAGE_KEYS.TEST_STATS, activeStudentId()), currentStats);
   }
 });
 
@@ -243,16 +268,21 @@ export function getRecentTests(limit: number = 5): Test[] {
   return history.slice(0, limit);
 }
 
-// Fonction utilitaire pour réinitialiser les données de test (utilisée pour les tests unitaires)
-export function resetTestData() {
-  testHistory.set([]);
-  stats.set({
+// Réinitialise les données de test du scope élève donné (null = legacy).
+export function resetTestData(studentId: string | null) {
+  const emptyStats = {
     totalTests: 0,
     averageScore: 0,
     bestScore: 0,
     xp: 0,
     level: 1,
     dailyStreak: 0
-  });
+  };
+  testHistory.set([]);
+  stats.set(emptyStats);
   currentTest.set(null);
+  if (typeof window !== 'undefined') {
+    saveToStorage(scopedKey(STORAGE_KEYS.TEST_HISTORY, studentId), []);
+    saveToStorage(scopedKey(STORAGE_KEYS.TEST_STATS, studentId), emptyStats);
+  }
 }
