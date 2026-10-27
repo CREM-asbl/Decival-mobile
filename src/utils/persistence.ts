@@ -7,6 +7,8 @@ export const STORAGE_KEYS = {
   TEST_STATS: 'testStats'
 };
 
+export const STUDENTS_KEY = 'decival_students';
+
 // Clés de données isolées par élève (tout sauf préférences globales).
 const STUDENT_DATA_KEYS = [
   STORAGE_KEYS.TYPE_MASTERY,
@@ -94,8 +96,17 @@ export function loadFromStorage<T>(key: string): T | null {
   }
 }
 
-// Fonction utilitaire pour nettoyer le stockage du profil courant
+// Nettoie le stockage de tous les élèves + legacy
 // (préférences globales thème/son/animations non touchées).
 export function clearStorage(): void {
+  try {
+    const state = loadFromStorage<{ students?: { id?: string }[] }>(STUDENTS_KEY);
+    const ids = Array.isArray(state?.students)
+      ? state.students.map((s) => s?.id).filter((id): id is string => !!id)
+      : [];
+    for (const id of ids) clearStudentData(id);
+  } catch (error) {
+    console.error('Erreur lors du nettoyage global:', error);
+  }
   clearStudentData(null);
 }

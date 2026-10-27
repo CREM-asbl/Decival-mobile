@@ -27,9 +27,8 @@ function activeStudentId(): string | null {
 // Initialisation
 export function loadStudentData(studentId: string | null = activeStudentId()) {
   if (typeof window === 'undefined') return;
-  typeMastery.set({ mastery: {} });
   const saved = loadFromStorage<TypeMasteryState>(scopedKey(STORAGE_KEYS.TYPE_MASTERY, studentId));
-  if (saved) typeMastery.set(migrateTypeMasteryKeys(saved));
+  typeMastery.set(saved ? migrateTypeMasteryKeys(saved) : { mastery: {} });
 }
 
 loadStudentData();
@@ -126,8 +125,12 @@ export function updateIntegerMastery(category: string, isMastered: boolean, scor
   updateTypeMastery(category, -1, isMastered, score, 'integer');
 }
 /**
- * Réinitialise toutes les données de maîtrise.
+ * Réinitialise la maîtrise du scope élève donné (null = legacy).
  */
-export function resetTypeMastery() {
-  typeMastery.set({ mastery: {} });
+export function resetTypeMastery(studentId: string | null) {
+  const empty = { mastery: {} };
+  typeMastery.set(empty);
+  if (typeof window !== 'undefined') {
+    saveToStorage(scopedKey(STORAGE_KEYS.TYPE_MASTERY, studentId), empty);
+  }
 }

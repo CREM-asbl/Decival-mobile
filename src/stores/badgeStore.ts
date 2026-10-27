@@ -123,9 +123,8 @@ function activeStudentId(): string | null {
 // Initialisation
 export function loadStudentData(studentId: string | null = activeStudentId()) {
     if (typeof window === 'undefined') return;
-    unlockedBadges.set([]);
     const saved = loadFromStorage<BadgeId[]>(scopedKey(STORAGE_KEYS.UNLOCKED_BADGES, studentId));
-    if (saved) unlockedBadges.set(saved);
+    unlockedBadges.set(saved ?? []);
 }
 
 loadStudentData();

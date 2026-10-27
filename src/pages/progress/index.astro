@@ -57,7 +57,6 @@ import MrComma from "../../components/vue/MrComma.vue";
   const current = document.querySelector("[data-student-current]");
   const select = document.querySelector<HTMLSelectElement>("[data-student-select]");
   const empty = document.querySelector("[data-student-empty]");
-  const wrap = document.querySelector("[data-progress-wrap]");
   const exportButton = document.getElementById("exportButton");
   const title = document.getElementById("progress-title");
 
@@ -89,7 +88,9 @@ import MrComma from "../../components/vue/MrComma.vue";
 
     const showEmpty = !active;
     if (empty) empty.classList.toggle("hidden", !showEmpty);
-    if (wrap) wrap.classList.toggle("hidden", showEmpty);
+    // Ne jamais masquer le wrap de l'îlot Vue : le cacher au mount casse
+    // l'hydratation (île vide). L'état vide est géré dans Vue via
+    // hasActiveStudent ; on garde le panneau monté dans tous les cas.
     if (exportButton) exportButton.classList.toggle("hidden", showEmpty);
   }
 

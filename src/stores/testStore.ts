@@ -46,10 +46,10 @@ function activeStudentId(): string | null {
 // Charger les données sauvegardées de l'élève actif
 export function loadStudentData(studentId: string | null = activeStudentId()) {
   if (typeof window === 'undefined') return;
-  resetTestData();
 
   try {
     const savedHistory = loadFromStorage<Test[]>(scopedKey(STORAGE_KEYS.TEST_HISTORY, studentId));
+    const savedStats = loadFromStorage<TestStats>(scopedKey(STORAGE_KEYS.TEST_STATS, studentId));
     if (savedHistory) {
       const historyWithDates = savedHistory.map((test: Test) => ({
         ...test,
@@ -57,11 +57,21 @@ export function loadStudentData(studentId: string | null = activeStudentId()) {
         endTime: test.endTime ? new Date(test.endTime) : undefined
       }));
       testHistory.set(historyWithDates);
+    } else {
+      testHistory.set([]);
     }
 
-    const savedStats = loadFromStorage<TestStats>(scopedKey(STORAGE_KEYS.TEST_STATS, studentId));
     if (savedStats) {
       stats.set(savedStats);
+    } else {
+      stats.set({
+        totalTests: 0,
+        averageScore: 0,
+        bestScore: 0,
+        xp: 0,
+        level: 1,
+        dailyStreak: 0
+      });
     }
   } catch (e) {
     console.error("Erreur lors de l'initialisation des stores de test:", e);
@@ -258,16 +268,21 @@ export function getRecentTests(limit: number = 5): Test[] {
   return history.slice(0, limit);
 }
 
-// Fonction utilitaire pour réinitialiser les données de test (utilisée pour les tests unitaires)
-export function resetTestData() {
-  testHistory.set([]);
-  stats.set({
+// Réinitialise les données de test du scope élève donné (null = legacy).
+export function resetTestData(studentId: string | null) {
+  const emptyStats = {
     totalTests: 0,
     averageScore: 0,
     bestScore: 0,
     xp: 0,
     level: 1,
     dailyStreak: 0
-  });
+  };
+  testHistory.set([]);
+  stats.set(emptyStats);
   currentTest.set(null);
+  if (typeof window !== 'undefined') {
+    saveToStorage(scopedKey(STORAGE_KEYS.TEST_HISTORY, studentId), []);
+    saveToStorage(scopedKey(STORAGE_KEYS.TEST_STATS, studentId), emptyStats);
+  }
 }

@@ -242,7 +242,7 @@
 
     <!-- Zone dangereuse : réinitialisation, séparée et confirmée -->
     <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6 flex justify-center">
-      <button @click="resetData" class="px-4 py-2 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors underline underline-offset-2">
+      <button @click="resetData" :disabled="!hasActiveStudent" class="px-4 py-2 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors underline underline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed">
         Réinitialiser ma progression
       </button>
     </div>
@@ -250,16 +250,24 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from '@nanostores/vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
-import { BADGES, unlockedBadges, unlockBadge } from '../../stores/badgeStore'
+import { BADGES, unlockedBadges } from '../../stores/badgeStore'
+import { getActiveStudent, studentState } from '../../stores/studentStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
-import { getLevelProgress, getLevelTitle, getProgressEncouragement, getProgressMessage, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, getProgressMessage, getBadgeProgress, summarizeMastery } from '../../logic/progressLogic'
 import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
+import { onErrorCaptured } from 'vue'
 
+const activeStudent = useStore(studentState)
+const hasActiveStudent = computed(() => !!activeStudent.value.activeStudentId)
+onErrorCaptured((err) => {
+  console.error('[ProgressPanel] mount error:', err)
+  return false
+})
 // Données réactives dérivées des stores (réactives aux changements d'élève actif)
 const testStats = useStore(stats)
 const unlockedBadgesIds = useStore(unlockedBadges)
@@ -456,32 +464,11 @@ function getCorrectAnswersCount(test) {
 }
 
 function resetData() {
+  const active = getActiveStudent()
+  if (!active) return
   if (!window.confirm('Effacer toute ta progression ? Cette action est définitive.')) return
-  resetTestData()
-  resetTypeMastery()
+  resetTestData(active.id)
+  resetTypeMastery(active.id)
 }
-
-// Débloque les badges dont la progression atteint 100 % (aligne le stockage sur l'affichage)
-onMounted(() => {
-  const categories = {}
-  for (const badgeId of CATEGORY_BADGES) {
-    const category = badgeId.replace('MASTERY_', '').toLowerCase()
-    categories[category] = {
-      mastered: countMasteredInCategory(category),
-      total: CATEGORY_TYPE_COUNTS[category]
-    }
-  }
-  const earned = getEarnedBadges({
-    level: levelProgress.value.level,
-    xpIntoLevel: levelProgress.value.xpIntoLevel,
-    xpForNextLevel: levelProgress.value.xpForNextLevel,
-    masteredCount: masterySummary.value.masteredCount,
-    dailyStreak: testStats.value.dailyStreak,
-    totalTests: testStats.value.totalTests,
-    bestScore: testStats.value.bestScore,
-    categories
-  })
-  for (const badgeId of earned) unlockBadge(badgeId)
-})
 
 </script>

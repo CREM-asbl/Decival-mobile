@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { typeMastery, updateIntegerMastery, isIntegerMastered, migrateTypeMasteryKeys, resetTypeMastery } from '../../src/stores/typeMasteryStore';
 
 beforeEach(() => {
-  resetTypeMastery();
+  resetTypeMastery(null);
 });
 
 describe('Integer prerequisite (store)', () => {
