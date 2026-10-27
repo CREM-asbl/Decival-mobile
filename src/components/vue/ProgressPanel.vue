@@ -251,6 +251,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useStore } from '@nanostores/vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
 import { BADGES, unlockedBadges, unlockBadge } from '../../stores/badgeStore'
@@ -259,10 +260,11 @@ import BadgeIcon from './BadgeIcon.vue'
 import { getLevelProgress, getLevelTitle, getProgressEncouragement, getProgressMessage, getBadgeProgress, getEarnedBadges, summarizeMastery } from '../../logic/progressLogic'
 import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
 
-// Données réactives dérivées des stores
-const testStats = computed(() => stats.get())
-const unlockedBadgesIds = computed(() => unlockedBadges.get())
-const masteryState = computed(() => typeMastery.get())
+// Données réactives dérivées des stores (réactives aux changements d'élève actif)
+const testStats = useStore(stats)
+const unlockedBadgesIds = useStore(unlockedBadges)
+const masteryState = useStore(typeMastery)
+const testHistoryStore = useStore(testHistory)
 
 const CATEGORY_BADGE_MAP = {
   MASTERY_ADDITION: 'addition',
@@ -391,7 +393,7 @@ const commaClass = computed(() => {
 
 // Récupération des tests récents
 const recentTests = computed(() => {
-  const history = testHistory.get()
+  const history = testHistoryStore.value
   return history.slice(0, 10) // Limiter à 10 tests
 })
 
