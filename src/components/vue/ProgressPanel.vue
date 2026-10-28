@@ -1,5 +1,22 @@
 <template>
   <div class="flex flex-col gap-6">
+    <div role="tablist" aria-label="Sections de ta progression" class="flex gap-2 p-1 bg-gray-100 dark:bg-gray-700/50 rounded-full" @keydown="onTabKeydown">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        :id="`tab-${tab.id}`"
+        role="tab"
+        :aria-selected="activeTab === tab.id"
+        :aria-controls="`panel-${tab.id}`"
+        :tabindex="activeTab === tab.id ? 0 : -1"
+        @click="selectTab(tab.id)"
+        class="flex-1 min-h-[44px] px-4 rounded-full text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+        :class="activeTab === tab.id ? 'bg-white dark:bg-gray-800 text-accent shadow' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+    <div v-show="activeTab === 'progres'" role="tabpanel" id="panel-progres" aria-labelledby="tab-progres" tabindex="0" class="flex flex-col gap-6">
     <!-- XP and Level Section -->
         <div class="bg-linear-to-r from-accent to-accent-active rounded-2xl p-5 sm:p-6 text-white shadow-lg shadow-indigo-900/20 overflow-hidden relative">
       <div class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-6 relative z-10">
@@ -45,6 +62,9 @@
           </div>
         </div>
 
+    <a href="/tests" class="flex items-center justify-center min-h-[44px] px-6 rounded-full bg-accent text-white font-bold hover:bg-accent-active transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">Continuer à t'entraîner</a>
+    </div>
+    <div v-show="activeTab === 'badges'" role="tabpanel" id="panel-badges" aria-labelledby="tab-badges" tabindex="0" class="flex flex-col gap-6">
     <!-- Mes Badges -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-transparent dark:border-gray-700 overflow-hidden">
       <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
@@ -75,6 +95,8 @@
       </div>
     </div>
 
+    </div>
+    <div v-show="activeTab === 'stats'" role="tabpanel" id="panel-stats" aria-labelledby="tab-stats" tabindex="0" class="flex flex-col gap-6">
     <!-- Statistiques globales -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-transparent dark:border-gray-700">
@@ -232,6 +254,7 @@
       </div>
     </div>
 
+    </div>
     <!-- Demande aide à ton enseignant -->
     <div class="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800/50 flex items-center gap-3">
       <span class="text-2xl" aria-hidden="true">🧑‍🏫</span>
@@ -242,15 +265,49 @@
 
     <!-- Zone dangereuse : réinitialisation, séparée et confirmée -->
     <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6 flex justify-center">
-      <button @click="resetData" :disabled="!hasActiveStudent" class="px-4 py-2 text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors underline underline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed">
+      <button @click="showResetModal = true" :disabled="!hasActiveStudent" class="px-4 py-2 min-h-[44px] text-xs text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors underline underline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2">
         Réinitialiser ma progression
       </button>
+    </div>
+
+    <div
+      v-if="showResetModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="progress-reset-title"
+      @click.self="showResetModal = false"
+      @keydown.esc="showResetModal = false"
+      @keydown.tab="trapResetFocus"
+    >
+      <div class="w-full max-w-md rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <h2 id="progress-reset-title" class="text-xl font-bold mb-2 dark:text-white">Effacer ta progression ?</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+          Tes tests, tes badges et ta maîtrise seront remis à zéro. Cette action est définitive.
+        </p>
+        <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <button
+            ref="resetConfirmRef"
+            data-autofocus
+            @click="confirmReset"
+            class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
+          >
+            Tout effacer
+          </button>
+          <button
+            @click="showResetModal = false"
+            class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] border border-gray-300 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+          >
+            Garder ma progression
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useStore } from '@nanostores/vue'
 import { stats, testHistory, resetTestData } from '../../stores/testStore'
 import { typeMastery, resetTypeMastery, isIntegerMastered } from '../../stores/typeMasteryStore'
@@ -258,9 +315,28 @@ import { BADGES, unlockedBadges } from '../../stores/badgeStore'
 import { getActiveStudent, studentState } from '../../stores/studentStore'
 import MrComma from './MrComma.vue'
 import BadgeIcon from './BadgeIcon.vue'
-import { getLevelProgress, getLevelTitle, getProgressEncouragement, getProgressMessage, getBadgeProgress, summarizeMastery } from '../../logic/progressLogic'
+import { getLevelProgress, getLevelTitle, getProgressEncouragement, getProgressMessage, getBadgeProgress, summarizeMastery, PROGRESS_TABS, resolveProgressTab } from '../../logic/progressLogic'
 import { CATEGORY_TYPE_COUNTS, CATEGORY_BADGES } from '../../config/constants'
 import { onErrorCaptured } from 'vue'
+
+const tabs = PROGRESS_TABS
+const activeTab = ref('progres')
+function selectTab(id) {
+  activeTab.value = resolveProgressTab(id)
+}
+function onTabKeydown(event) {
+  const ids = tabs.map((t) => t.id)
+  const current = ids.indexOf(activeTab.value)
+  let next = -1
+  if (event.key === 'ArrowRight') next = (current + 1) % ids.length
+  else if (event.key === 'ArrowLeft') next = (current - 1 + ids.length) % ids.length
+  else if (event.key === 'Home') next = 0
+  else if (event.key === 'End') next = ids.length - 1
+  if (next < 0) return
+  event.preventDefault()
+  selectTab(ids[next])
+  document.getElementById(`tab-${ids[next]}`)?.focus()
+}
 
 const activeStudent = useStore(studentState)
 const hasActiveStudent = computed(() => !!activeStudent.value.activeStudentId)
@@ -466,9 +542,35 @@ function getCorrectAnswersCount(test) {
 function resetData() {
   const active = getActiveStudent()
   if (!active) return
-  if (!window.confirm('Effacer toute ta progression ? Cette action est définitive.')) return
   resetTestData(active.id)
   resetTypeMastery(active.id)
+}
+
+const showResetModal = ref(false)
+const resetConfirmRef = ref(null)
+
+watch(showResetModal, (open) => {
+  if (open) nextTick(() => resetConfirmRef.value?.focus?.())
+})
+
+function confirmReset() {
+  resetData()
+  showResetModal.value = false
+}
+
+function trapResetFocus(event) {
+  const dialog = event.currentTarget
+  const focusables = Array.from(dialog.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])')).filter(el => !el.disabled)
+  if (focusables.length === 0) return
+  const first = focusables[0]
+  const last = focusables[focusables.length - 1]
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
 }
 
 </script>

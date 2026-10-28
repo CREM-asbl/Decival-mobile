@@ -252,6 +252,27 @@ export function getBadgeProgress(badgeId: string, ctx: BadgeProgressContext = {}
   return 0;
 }
 
+export interface ProgressTab {
+  id: string;
+  label: string;
+}
+
+export const PROGRESS_TABS: ProgressTab[] = [
+  { id: 'progres', label: 'Progrès' },
+  { id: 'badges', label: 'Badges' },
+  { id: 'stats', label: 'Stats' }
+];
+
+export function resolveProgressTab(tab: unknown): string {
+  const ids = PROGRESS_TABS.map((t) => t.id);
+  return typeof tab === 'string' && ids.includes(tab) ? tab : 'progres';
+}
+
+export function getProgressTabLabel(tab: unknown): string {
+  const found = PROGRESS_TABS.find((t) => t.id === tab);
+  return found ? found.label : 'Progrès';
+}
+
 export interface CategoryTestLike {
   type: string;
   items: Array<{ isCorrect?: boolean }>;

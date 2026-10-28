@@ -27,6 +27,10 @@ const localStorageMock = (() => {
     clear: () => {
       store = {};
     },
+    key: (index) => Object.keys(store)[index] ?? null,
+    get length() {
+      return Object.keys(store).length;
+    },
   };
 })();
 
@@ -64,5 +68,19 @@ describe('clearStorage — purge tous les namespaces élèves', () => {
     localStorageMock.setItem(STORAGE_KEYS.TEST_STATS, 'legacy');
     expect(() => clearStorage()).not.toThrow();
     expect(localStorageMock.getItem(STORAGE_KEYS.TEST_STATS)).toBeNull();
+  });
+
+  it('purge aussi les tests en cours (reprise)', () => {
+    saveToStorage(STUDENT_LIST_KEY, {
+      students: [{ id: 'a', name: 'Pierre' }],
+      activeStudentId: 'a',
+    });
+    localStorageMock.setItem('decival_in_progress_test_a_addition_integer', '{"testType":"addition"}');
+    localStorageMock.setItem('decival_in_progress_test_global_comparison_decimal', '{"testType":"comparison"}');
+
+    clearStorage();
+
+    expect(localStorageMock.getItem('decival_in_progress_test_a_addition_integer')).toBeNull();
+    expect(localStorageMock.getItem('decival_in_progress_test_global_comparison_decimal')).toBeNull();
   });
 });

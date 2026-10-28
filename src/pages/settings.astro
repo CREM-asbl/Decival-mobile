@@ -48,6 +48,16 @@ import Layout from "../layouts/Layout.astro";
           </button>
         </div>
         <p data-student-error role="alert" class="hidden text-sm text-red-600 mt-2"></p>
+        <div data-student-undo class="hidden mt-2 flex flex-wrap items-center gap-2 rounded-md bg-gray-100 px-3 py-2 text-sm dark:bg-gray-700">
+          <span data-student-undo-text class="flex-1"></span>
+          <button
+            type="button"
+            data-student-undo-btn
+            class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-sm text-accent underline underline-offset-2"
+          >
+            Annuler
+          </button>
+        </div>
       </div>
 
       <SoundSettings />
@@ -66,35 +76,75 @@ import Layout from "../layouts/Layout.astro";
   </div>
 
   <div
-    data-migration-modal
+    data-rename-modal
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="settings-migration-title"
+    aria-labelledby="settings-rename-title"
   >
     <div class="w-full max-w-md rounded-lg bg-white p-6 shadow dark:bg-gray-800">
-      <h2 id="settings-migration-title" class="text-xl font-bold mb-2">Récupérer les données existantes ?</h2>
-      <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-        Des données de progression ont été trouvées. Veux-tu les récupérer pour ce profil ou recommencer à zéro ?
-      </p>
-      <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+      <h2 id="settings-rename-title" class="text-xl font-bold mb-2">Renommer ton profil</h2>
+      <p data-rename-current class="text-sm text-gray-600 dark:text-gray-300 mb-3"></p>
+      <label class="sr-only" for="settings-rename-name">Nouveau prénom</label>
+      <input
+        id="settings-rename-name"
+        type="text"
+        maxlength="20"
+        autocomplete="off"
+        data-rename-input
+        data-autofocus
+        class="w-full rounded-md border border-gray-300 px-3 py-2 text-base dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+      />
+      <p data-rename-error role="alert" class="hidden text-sm text-red-600 mt-2"></p>
+      <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
         <button
           type="button"
-          data-migration-keep
+          data-rename-confirm
           class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
         >
-          Récupérer les données existantes
+          Renommer
         </button>
         <button
           type="button"
-          data-migration-reset
+          data-rename-cancel
           class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] border border-gray-300 dark:border-gray-600 dark:text-gray-100"
         >
-          Recommencer à zéro
+          Annuler
         </button>
       </div>
     </div>
   </div>
+
+  <div
+    data-delete-modal
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settings-delete-title"
+  >
+    <div class="w-full max-w-md rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <h2 id="settings-delete-title" class="text-xl font-bold mb-2">Supprimer ce profil ?</h2>
+      <p data-delete-text class="text-sm text-gray-600 dark:text-gray-300 mb-4"></p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          data-delete-confirm
+          data-autofocus
+          class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
+        >
+          Supprimer
+        </button>
+        <button
+          type="button"
+          data-delete-cancel
+          class="inline-flex items-center justify-center font-medium rounded-md px-4 py-2 min-h-[44px] border border-gray-300 dark:border-gray-600 dark:text-gray-100"
+        >
+          Garder mon profil
+        </button>
+      </div>
+    </div>
+  </div>
+
 </Layout>
 
 <script>
@@ -102,12 +152,14 @@ import Layout from "../layouts/Layout.astro";
     addStudent,
     getActiveStudent,
     getStudents,
-    removeStudent,
+    purgeExpiredTrash,
     renameStudent,
+    restoreStudent,
     setActiveStudent,
+    trashStudent,
     validateStudentName,
   } from "../stores/studentStore";
-  import { clearStudentData, migrateLegacyToStudent, hasLegacyData, discardLegacyData } from "../utils/persistence";
+  import { clearTrashedStudentData, migrateLegacyToStudent, hasLegacyData, discardLegacyData } from "../utils/persistence";
 
   const list = document.querySelector("[data-student-list]");
   const current = document.querySelector("[data-student-current]");
@@ -119,7 +171,54 @@ import Layout from "../layouts/Layout.astro";
   const modal = document.querySelector<HTMLElement>("[data-migration-modal]");
   const keepBtn = document.querySelector<HTMLButtonElement>("[data-migration-keep]");
   const resetBtn = document.querySelector<HTMLButtonElement>("[data-migration-reset]");
+  const renameModal = document.querySelector<HTMLElement>("[data-rename-modal]");
+  const renameInput = document.querySelector<HTMLInputElement>("[data-rename-input]");
+  const renameCurrent = document.querySelector("[data-rename-current]");
+  const renameError = document.querySelector("[data-rename-error]");
+  const renameConfirm = document.querySelector<HTMLButtonElement>("[data-rename-confirm]");
+  const renameCancel = document.querySelector<HTMLButtonElement>("[data-rename-cancel]");
+  const deleteModal = document.querySelector<HTMLElement>("[data-delete-modal]");
+  const deleteText = document.querySelector("[data-delete-text]");
+  const deleteConfirm = document.querySelector<HTMLButtonElement>("[data-delete-confirm]");
+  const deleteCancel = document.querySelector<HTMLButtonElement>("[data-delete-cancel]");
+  const undoBar = document.querySelector<HTMLElement>("[data-student-undo]");
+  const undoText = document.querySelector("[data-student-undo-text]");
+  const undoBtn = document.querySelector<HTMLButtonElement>("[data-student-undo-btn]");
   let pendingName: string | null = null;
+  let lastFocused: HTMLElement | null = null;
+  let lastTrashedId: string | null = null;
+
+  function trapFocus(container: HTMLElement | null, e: KeyboardEvent) {
+    if (!container || e.key !== "Tab") return;
+    const focusables = Array.from(
+      container.querySelectorAll<HTMLElement>("button, input, [href], [tabindex]:not([tabindex='-1'])")
+    ).filter((el) => !el.hasAttribute("disabled"));
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  function openModal(modalEl: HTMLElement | null) {
+    if (!modalEl) return;
+    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    modalEl.classList.remove("hidden");
+    const target = modalEl.querySelector<HTMLElement>("[data-autofocus]");
+    (target ?? modalEl.querySelector<HTMLElement>("button, input"))?.focus();
+  }
+
+  function closeModal(modalEl: HTMLElement | null) {
+    if (!modalEl) return;
+    modalEl.classList.add("hidden");
+    lastFocused?.focus();
+    lastFocused = null;
+  }
 
   function showError(message: string) {
     if (!error) return;
@@ -180,14 +279,96 @@ import Layout from "../layouts/Layout.astro";
 
   function showMigrationModal(name: string) {
     pendingName = name;
-    modal?.classList.remove("hidden");
+    openModal(modal);
     keepBtn?.focus();
   }
 
   function hideMigrationModal() {
-    modal?.classList.add("hidden");
+    closeModal(modal);
     pendingName = null;
     input?.focus();
+  }
+
+  function showRenameModal() {
+    clearError();
+    const active = getActiveStudent();
+    if (!active) {
+      showError("Choisis d'abord un élève.");
+      return;
+    }
+    if (renameCurrent) renameCurrent.textContent = `Profil actuel : ${active.name}. Choisis ton nouveau prénom.`;
+    if (renameInput) renameInput.value = active.name;
+    renameError?.classList.add("hidden");
+    openModal(renameModal);
+  }
+
+  function hideRenameModal() {
+    closeModal(renameModal);
+  }
+
+  function confirmRename() {
+    const active = getActiveStudent();
+    if (!active || !renameInput) return;
+    try {
+      renameStudent(active.id, renameInput.value);
+      hideRenameModal();
+      render();
+    } catch (err) {
+      if (renameError) {
+        renameError.textContent = err instanceof Error ? err.message : "Prénom invalide";
+        renameError.classList.remove("hidden");
+      }
+    }
+  }
+
+  function showDeleteModal() {
+    clearError();
+    const active = getActiveStudent();
+    if (!active) {
+      showError("Choisis d'abord un élève.");
+      return;
+    }
+    if (deleteText)
+      deleteText.textContent = `Supprimer le profil de ${active.name} ? Ta progression sera conservée 30 jours et tu pourras l'annuler juste après.`;
+    openModal(deleteModal);
+  }
+
+  function hideDeleteModal() {
+    closeModal(deleteModal);
+  }
+
+  function showUndo(name: string, id: string) {
+    lastTrashedId = id;
+    if (undoText) undoText.textContent = `Profil de ${name} supprimé. Tu as 30 jours pour l'annuler.`;
+    undoBar?.classList.remove("hidden");
+    undoBtn?.focus();
+  }
+
+  function hideUndo() {
+    lastTrashedId = null;
+    undoBar?.classList.add("hidden");
+  }
+
+  function confirmDelete() {
+    const active = getActiveStudent();
+    if (!active) return;
+    const name = active.name;
+    const trashed = trashStudent(active.id);
+    hideDeleteModal();
+    render();
+    showUndo(name, trashed.id);
+  }
+
+  function undoDelete() {
+    if (!lastTrashedId) return;
+    try {
+      restoreStudent(lastTrashedId);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Restauration impossible");
+      return;
+    }
+    hideUndo();
+    render();
   }
 
   form?.addEventListener("submit", (e) => {
@@ -210,9 +391,21 @@ import Layout from "../layouts/Layout.astro";
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
-      hideMigrationModal();
+    if (e.key === "Escape") {
+      if (renameModal && !renameModal.classList.contains("hidden")) hideRenameModal();
+      else if (deleteModal && !deleteModal.classList.contains("hidden")) hideDeleteModal();
+      else if (modal && !modal.classList.contains("hidden")) hideMigrationModal();
     }
+    if (renameModal && !renameModal.classList.contains("hidden")) trapFocus(renameModal, e);
+    if (deleteModal && !deleteModal.classList.contains("hidden")) trapFocus(deleteModal, e);
+  });
+
+  renameModal?.addEventListener("click", (e) => {
+    if (e.target === renameModal) hideRenameModal();
+  });
+
+  deleteModal?.addEventListener("click", (e) => {
+    if (e.target === deleteModal) hideDeleteModal();
   });
 
   keepBtn?.addEventListener("click", () => {
@@ -229,35 +422,28 @@ import Layout from "../layouts/Layout.astro";
     createStudent(name, false);
   });
 
-  renameBtn?.addEventListener("click", () => {
-    clearError();
-    const active = getActiveStudent();
-    if (!active) {
-      showError("Choisis d'abord un élève.");
-      return;
-    }
-    const next = window.prompt("Nouveau prénom :", active.name);
-    if (next === null) return;
-    try {
-      renameStudent(active.id, next);
-      render();
-    } catch (err) {
-      showError(err instanceof Error ? err.message : "Prénom invalide");
+  renameBtn?.addEventListener("click", showRenameModal);
+
+  renameCancel?.addEventListener("click", hideRenameModal);
+
+  renameConfirm?.addEventListener("click", confirmRename);
+
+  renameInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      confirmRename();
     }
   });
 
-  deleteBtn?.addEventListener("click", () => {
-    clearError();
-    const active = getActiveStudent();
-    if (!active) {
-      showError("Choisis d'abord un élève.");
-      return;
-    }
-    if (!window.confirm(`Supprimer le compte de ${active.name} et sa progression ?`)) return;
-    clearStudentData(active.id);
-    removeStudent(active.id);
-    render();
-  });
+  deleteBtn?.addEventListener("click", showDeleteModal);
+
+  deleteCancel?.addEventListener("click", hideDeleteModal);
+
+  deleteConfirm?.addEventListener("click", confirmDelete);
+
+  undoBtn?.addEventListener("click", undoDelete);
+
+  clearTrashedStudentData(purgeExpiredTrash());
 
   render();
 </script>
