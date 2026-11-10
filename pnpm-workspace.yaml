@@ -6,3 +6,5 @@ allowBuilds:
   sharp: true
 minimumReleaseAgeExclude:
   - firebase-tools@15.32.1
+overrides:
+  parse5: ^8.1.0
