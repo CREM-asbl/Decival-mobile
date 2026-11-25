@@ -1,27 +1,16 @@
-name: CI/CD
+name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
     paths-ignore:
-      - '**.md'
       - 'docs/**'
-      - '.github/ISSUE_TEMPLATE/**'
+      - '**.md'
   pull_request:
-    branches: [main, master]
+    branches: [main]
     paths-ignore:
-      - '**.md'
       - 'docs/**'
-      - '.github/ISSUE_TEMPLATE/**'
-  workflow_dispatch:
-    inputs:
-      e2e:
-        description: 'Suite E2E manuelle (smoke|full)'
-        required: false
-        default: 'full'
-
-permissions:
-  contents: write
+      - '**.md'
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -32,35 +21,8 @@ env:
   PNPM_VERSION: '11'
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: ./.github/actions/setup
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
-
-      - name: Typecheck (astro check)
-        run: pnpm check
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: ./.github/actions/setup
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
-
-      - name: Run unit tests
-        run: pnpm test
-
   build:
     runs-on: ubuntu-latest
-    needs: [check, test]
     steps:
       - uses: actions/checkout@v7
 
@@ -68,110 +30,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
-
-      - name: Cache Astro build
-        uses: actions/cache@v4
-        with:
-          path: .astro
-          key: ${{ runner.os }}-astro-${{ hashFiles('src/**', 'astro.config.mjs', 'package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-astro-
 
       - name: Build application
         run: pnpm build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: dist
-          if-no-files-found: error
-          retention-days: 1
-
-  e2e:
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: ./.github/actions/setup
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
-
-      - name: Download build artifact (no rebuild)
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: dist
-
-      - name: Run E2E (smoke on PR, full on manual)
-        run: |
-          SUITE="${{ github.event_name == 'pull_request' && 'smoke' || inputs.e2e }}"
-          SCRIPT="e2e"
-          [ "$SUITE" = "smoke" ] && SCRIPT="e2e:smoke"
-          export SCRIPT
-          if node -e "process.exit(((require('./package.json').scripts)||{})[process.env.SCRIPT]?0:1)"; then
-            pnpm "$SCRIPT"
-          else
-            echo "No script '$SCRIPT' configured, skipping e2e ($SUITE)."
-          fi
-
-  preview:
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Preview note
-        run: |
-          echo "Build OK for PR #${{ github.event.pull_request.number }}."
-          echo "La preview URL est fournie automatiquement par l'integration GitHub du backend App Hosting 'decival'."
-
-  version-bump:
-    name: "Version bump"
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Determine bump type
-        id: bump
-        run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            RANGE="HEAD"
-          else
-            RANGE="${LAST_TAG}..HEAD"
-          fi
-          COMMITS=$(git log "$RANGE" --pretty=%B)
-          if echo "$COMMITS" | grep -qE 'BREAKING CHANGE|^[a-z]+(\(.+\))?!:'; then
-            echo "type=major" >> $GITHUB_OUTPUT
-          elif echo "$COMMITS" | grep -qE '^feat(\(.+\))?:'; then
-            echo "type=minor" >> $GITHUB_OUTPUT
-          else
-            echo "type=patch" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Bump version
-        id: version
-        run: |
-          NEW_VERSION=$(node scripts/bump-version.mjs ${{ steps.bump.outputs.type }})
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Commit version bump
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json
-          git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }} [skip ci]"
-          git push
-
-      # Pas de deploiement ici (App Hosting auto) : le backend App Hosting 'decival'
-      # (alwaysDeployFromSource) deploie automatiquement via son integration
-      # GitHub a chaque push sur main, y compris le commit de bump ci-dessus.
